@@ -1,0 +1,13 @@
+### Format: relation|@id|@name|@place|@highway|@route|@ref|@oneway|@maxspeed|relation_type|membertype;@id;@role|...
+### Format: way|@id|@name|@place|@highway|@route|@ref|@oneway|@maxspeed|member nodes|...
+### Format: node|@id|@name|@place|@highway|@route|@ref|@oneway|@maxspeed|node_lat|node_lon
+node|8670491||||||||41.2319821|1.690731
+node|8670492||||||||41.2324218|1.6907178
+node|8670493||||||||41.2324218|1.690924
+node|8670494||||||||41.2320083|1.690924
+node|8670495||||||||41.2326092|1.6907006
+node|8670496||||||||41.2327255|1.6907521
+node|8670497||||||||41.2327771|1.6908896
+node|8670498||||||||41.2327642|1.6910099
+node|8670500||||||||41.2326932|1.6911216
+node|8670502||||||||41.2325704|1.6911387
