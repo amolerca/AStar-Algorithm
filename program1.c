@@ -74,7 +74,7 @@ int main(){
 
         else if(strcmp("way", p) == 0){
           
-
+              ///hola
 
 
         }       
