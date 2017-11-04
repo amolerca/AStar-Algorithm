@@ -78,6 +78,15 @@ int main(){
 
         }
 
+        else if(strcmp("way", p) == 0){
+          
+              ///Codi o funció que faci tot lo de enmagatzemar successors
+          //això és el 50% de la feina que faltaria, que és la part chunga
+
+
+        }       
+
+
         
 
 
