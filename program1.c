@@ -32,6 +32,7 @@ int main(){
 
 
    int node_index = 0;
+   char *ptr;
 
    while ((read = getline(&line, &len, fp)) != -1) {
         //printf("Retrieved line of length %zu :\n", read);
@@ -44,16 +45,28 @@ int main(){
         if(strcmp("node", p) == 0){ 
           while (p) {
                           
-              if(count == 2){ 
-                char *ptr;
+              if(count == 2){                 
                 nodes[node_index].id = strtoul(p, &ptr,10);
-                printf("node id: %lu\n", nodes[node_index].id);
+                //printf("node id: %lu\n", nodes[node_index].id);
 
                 }
-
+              else if(count == 3){//node name
+                if( (nodes[node_index].name = (char *) malloc(strlen(p)*sizeof(char))) == NULL) ExitError("when allocating memory for the name of a node", 5);
+                nodes[node_index].name = strcpy(nodes[node_index].name, p);
+                //printf("node %i, name %s\n", node_index, nodes[node_index].name);
               
+              }
+              else if(count ==10){ //node lat
+                nodes[node_index].lat = atof(p);
+                //printf("node %i, lat: %lf\n", node_index, nodes[node_index].lat);
+              }
 
-              printf ("%s\n", *p ? p : "");
+              else if(count ==11){ //node lon
+                nodes[node_index].lon = atof(p);
+                //printf("node %i, lon: %.8lf\n", node_index, nodes[node_index].lon);
+              }              
+
+              //printf ("%s\n", *p ? p : "");
               p = strtok_single (NULL, delims);
               count++;
             }
