@@ -22,7 +22,7 @@ int main(){
     size_t len = 0; 
     ssize_t read;
    //fp = fopen("C:/Users/Daniel/Dropbox/Master/Optimization/Astar_Algorithm/AStar_Deliver/catalunya_test", "r");
-   fp = fopen("/home/dsalgador/Dropbox/Master/Optimization/Astar_Algorithm/AStar_deliver2/catalunya_test.txt", "r");
+   fp = fopen("/home/dsalgador/Dropbox/Master/Optimization/Astar_Algorithm/AStar_deliver2/catalunya.csv", "r");
    char delims[] = "|";
 
 
@@ -40,6 +40,7 @@ int main(){
 
         char * p    = strtok_single (line, delims);
         int count = 1;
+        int name_size;
 
         //read node lines
         if(strcmp("node", p) == 0){ 
@@ -51,9 +52,12 @@ int main(){
 
                 }
               else if(count == 3){//node name
-                if( (nodes[node_index].name = (char *) malloc(strlen(p)*sizeof(char))) == NULL) ExitError("when allocating memory for the name of a node", 5);
+                //if( (nodes[node_index].name = (char *) malloc(strlen(p)*sizeof(char))) == NULL) ExitError("when allocating memory for the name of a node", 5);
+                name_size = strlen(p);
+                if( (nodes[node_index].name = (char *) malloc((name_size +1)*sizeof(char))) == NULL) ExitError("when allocating memory for the name of a node", 5);
+
                 nodes[node_index].name = strcpy(nodes[node_index].name, p);
-                //printf("node %i, name %s\n", node_index, nodes[node_index].name);
+                printf("node %i, name %s\n", node_index, nodes[node_index].name);
               
               }
               else if(count ==10){ //node lat
