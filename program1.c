@@ -13,20 +13,16 @@ int main(){
 	node *nodes;
 	if((nodes = (node *) malloc(nnodes*sizeof(node))) == NULL) ExitError("when allocating memory for the nodes vector", 5);
   
-  
-
-
-    //printf("Hola que ase");
-    FILE *fp;
-    char *line = NULL;
-    size_t len = 0; 
-    ssize_t read;
+  FILE *fp;
+  char *line = NULL;
+  size_t len = 0; 
+  ssize_t read;
    //fp = fopen("C:/Users/Daniel/Dropbox/Master/Optimization/Astar_Algorithm/AStar_Deliver/catalunya_test", "r");
-   fp = fopen("/home/dsalgador/Dropbox/Master/Optimization/Astar_Algorithm/AStar_deliver2/catalunya.csv", "r");
-   char delims[] = "|";
+  fp = fopen("/home/dsalgador/Dropbox/Master/Optimization/Astar_Algorithm/AStar_deliver2/catalunya.csv", "r");
+  char delims[] = "|";
 
 
-   if (fp == NULL){ 
+  if (fp == NULL){ 
     ExitError("when reading the file", 32);
     exit(EXIT_FAILURE);}
 
@@ -34,10 +30,8 @@ int main(){
    int node_index = 0;
    char *ptr;
 
-   while ((read = getline(&line, &len, fp)) != -1) {
-        //printf("Retrieved line of length %zu :\n", read);
-        //printf("%s", line);
-
+  while ((read = getline(&line, &len, fp)) != -1) {
+        
         char * p    = strtok_single (line, delims);
         int count = 1;
         int name_size;
@@ -57,7 +51,7 @@ int main(){
                 if( (nodes[node_index].name = (char *) malloc((name_size +1)*sizeof(char))) == NULL) ExitError("when allocating memory for the name of a node", 5);
 
                 nodes[node_index].name = strcpy(nodes[node_index].name, p);
-                printf("node %i, name %s\n", node_index, nodes[node_index].name);
+                //printf("node %i, name %s\n", node_index, nodes[node_index].name);
               
               }
               else if(count ==10){ //node lat
@@ -78,14 +72,19 @@ int main(){
 
         }
 
-        
+        else if(strcmp("way", p) == 0){
+          
 
 
 
-    }
+        }       
 
-   free(line);
-   exit(EXIT_SUCCESS);
+
+
+   }
+
+  free(line);
+  exit(EXIT_SUCCESS);
 
 
 	return 0;
