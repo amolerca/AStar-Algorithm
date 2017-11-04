@@ -6,3 +6,5 @@ typedef struct {
 	unsigned long *successors;
 } node;
 
+void ExitError(char * message, int num);
+char * strtok_single (char * str, char const * delims);
