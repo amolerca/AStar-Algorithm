@@ -1,4 +1,4 @@
-#define _GNU_SOURCE
+//#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,6 +41,7 @@ int main(){
         char * p    = strtok_single (line, delims);
         int count = 1;
         int name_size;
+        int is_oneway = 0; //initialised to false
 
         //read node lines
         if(strcmp("node", p) == 0){ 
@@ -57,7 +58,7 @@ int main(){
                 if( (nodes[node_index].name = (char *) malloc((name_size +1)*sizeof(char))) == NULL) ExitError("when allocating memory for the name of a node", 5);
 
                 nodes[node_index].name = strcpy(nodes[node_index].name, p);
-                printf("node %i, name %s\n", node_index, nodes[node_index].name);
+                //printf("node %i, name %s\n", node_index, nodes[node_index].name);
               
               }
               else if(count ==10){ //node lat
@@ -78,21 +79,45 @@ int main(){
 
         }
 
-        else if(strcmp("way", p) == 0){
+        else if(strcmp("way", p) == 0){ 
           
               ///Codi o funció que faci tot lo de enmagatzemar successors
           //això és el 50% de la feina que faltaria, que és la part chunga
+         while (p) {
+             //if this field is empty --> twoways,if there is "oneway" --> oneway
+             if(count == 7 & strcmp("oneway",p) == 0) is_oneway = 1;
+
+                
+
+             
 
 
-        }       
+
+
+
+
+
+
+
+
+
+            p = strtok_single (NULL, delims);
+            count++;
+
+
+
+
+         }       
 
 
         
 
 
 
-    }
+       }
 
+
+   }
    free(line);
    exit(EXIT_SUCCESS);
 
@@ -107,7 +132,7 @@ void ExitError(char * message, int num){
 
 
 
-char * strtok_single (char * str, char const * delims)
+char * strtok_single(char * str, char const * delims)
 {
   //source: https://stackoverflow.com/questions/8705844/need-to-know-when-no-data-appears-between-two-token-separators-using-strtok
   static char  * src = NULL;
