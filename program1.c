@@ -6,6 +6,28 @@
 
 #include "program1.h"
 
+int IDtoPOSITION(node * Vector, int Vlen, unsigned long id){
+  int imin=0,imax= Vlen-1;
+  int imid;
+  while(imax >= imin){
+    imid = (int) ( (imin+imax)/2.0 );
+    if(Vector[imid].id == id) return imid;
+    else if(Vector[imid].id < id) imin = imid+1;
+    else imax = imid-1;
+
+  } 
+
+  return -1;
+
+}
+
+int POSITIONtoID(node * Vector, int position){  
+
+  return Vector[position].id;
+
+}
+
+
 
 
 int main(){
@@ -13,17 +35,14 @@ int main(){
 	node *nodes;
 	if((nodes = (node *) malloc(nnodes*sizeof(node))) == NULL) ExitError("when allocating memory for the nodes vector", 5);
   
-  
-
-
     //printf("Hola que ase");
-    FILE *fp;
-    char *line = NULL;
-    size_t len = 0; 
-    ssize_t read;
+  FILE *fp;
+  char *line = NULL;
+  size_t len = 0; 
+  ssize_t read;
    //fp = fopen("C:/Users/Daniel/Dropbox/Master/Optimization/Astar_Algorithm/AStar_Deliver/catalunya_test", "r");
-   fp = fopen("/home/dsalgador/Dropbox/Master/Optimization/Astar_Algorithm/AStar_deliver2/catalunya.csv", "r");
-   char delims[] = "|";
+  fp = fopen("/home/dsalgador/Dropbox/Master/Optimization/Astar_Algorithm/AStar_deliver2/catalunya.csv", "r");
+  char delims[] = "|";
 
 
    if (fp == NULL){ 
@@ -34,6 +53,8 @@ int main(){
    int node_index = 0;
    char *ptr;
 
+   unsigned short nsuccdim[nnodes];
+
    while ((read = getline(&line, &len, fp)) != -1) {
         //printf("Retrieved line of length %zu :\n", read);
         //printf("%s", line);
@@ -41,7 +62,7 @@ int main(){
         char * p    = strtok_single (line, delims);
         int count = 1;
         int name_size;
-        int is_oneway = 0; //initialised to false
+        _Bool is_oneway = 0; //initialised to false
 
         //read node lines
         if(strcmp("node", p) == 0){ 
@@ -79,13 +100,17 @@ int main(){
 
         }
 
-        else if(strcmp("way", p) == 0){ 
+        else if(strcmp("way", p) == 0){
+
           
               ///Codi o funció que faci tot lo de enmagatzemar successors
           //això és el 50% de la feina que faltaria, que és la part chunga
-         while (p) {
+          while (p) {
              //if this field is empty --> twoways,if there is "oneway" --> oneway
              if(count == 7 & strcmp("oneway",p) == 0) is_oneway = 1;
+
+
+
 
                 
 
@@ -107,14 +132,14 @@ int main(){
 
 
 
-         }       
+         }//endwhile p of ways       
 
 
         
 
 
 
-       }
+       }//end elseif (ways)
 
 
    }
@@ -123,7 +148,10 @@ int main(){
 
 
 	return 0;
-}
+}//endmain
+
+
+
 
 void ExitError(char * message, int num){
      fprintf(stderr, "%s\n", message);
