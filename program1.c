@@ -17,7 +17,7 @@ int IDtoPOSITION(node * Vector, int Vlen, unsigned long id){
 
   } 
 
-  return -1;
+  return -1; //if the id does not exist on de Vector of nodes
 
 }
 
@@ -66,6 +66,8 @@ int main(){
 
         //read node lines
         if(strcmp("node", p) == 0){ 
+          nsuccdim[node_index] = 0; //Initialise the number of successors of the current node to 0
+          nodes[node_index].successors = (unsigned long *) malloc(sizeof(unsigned long)); 
           while (p) {
                           
               if(count == 2){                 
@@ -96,11 +98,17 @@ int main(){
               p = strtok_single (NULL, delims);
               count++;
             }
+
+            //RESERVAR MEMÒRIA PELS  *successors???
           node_index++;
 
         }
-/*
+
         else if(strcmp("way", p) == 0){
+
+            unsigned long idA, idB;
+            int posA, posB;
+            unsigned long way_nodes = 0;
 
           
               ///Codi o funció que faci tot lo de enmagatzemar successors
@@ -108,6 +116,67 @@ int main(){
           while (p) {
              //if this field is empty --> twoways,if there is "oneway" --> oneway
              if(count == 7 & strcmp("oneway",p) == 0) is_oneway = 1;
+
+             //   |A|B|C|D|.... IDS
+
+             else if(count >= 9){
+                if(count % 2 == 1){
+                  idA =  strtoul(p, &ptr,10); //nodes[way_nodes].id;
+                  posA = IDtoPOSITION(nodes, nnodes, idA);
+                }
+                else{
+                  idB = strtoul(p, &ptr,10);
+                  posB = IDtoPOSITION(nodes, nnodes, idB);
+
+                }
+
+
+
+                way_nodes += 1;
+             }
+
+             if(count >= 9 & way_nodes % 2 == 0 & way_nodes >=2){
+                if(!is_oneway){
+                  //idB is a succesor of idA                     
+                  nodes[posA].successors[nsuccdim[posA]] = idB;
+                  nodes[posB].successors[nsuccdim[posB]] = idA;
+
+                  if( (nsuccdim[posA]++) > 1){
+                    nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long));
+                  }
+                  if( (nsuccdim[posB]++) > 1){
+                    nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
+                  }
+
+
+                }
+                else{
+                  nodes[posA].successors[nsuccdim[posA]] = idB;
+                  nsuccdim[posA]+=1;
+                }
+
+
+             }
+
+             else if(count >= 9 & way_nodes % 2 == 1 & way_nodes >=3){
+               //|B|C|   B is in idB C is in idA so B does the rol of A and C does the rol of B
+                if(!is_oneway){
+                  //idB is a succesor of idA                     
+                  nodes[posA].successors[nsuccdim[posA]] = idB;
+                  nodes[posB].successors[nsuccdim[posB]] = idA;
+
+                  nsuccdim[posA]+=1;
+                  nsuccdim[posB]+=1;
+                }
+                else{
+                  nodes[posB].successors[nsuccdim[posB]] = idA;
+                  nsuccdim[posB]+=1;
+                }
+
+                //note that we have only changed the else inside with respect to the big if above
+
+             }
+
 
 
 
@@ -139,7 +208,7 @@ int main(){
 
 
 
-       }//end elseif (ways)*/
+       }//end elseif (ways)
 
 
    }
