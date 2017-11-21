@@ -109,12 +109,14 @@ int main(){
             unsigned long idA, idB;
             int posA, posB;
             unsigned long way_nodes = 0;
+            unsigned long way_id; // to record de way id
 
 
           
               ///Codi o funció que faci tot lo de enmagatzemar successors
           //això és el 50% de la feina que faltaria, que és la part chunga
           while (p) {
+             if(count == 2){way_id = strtoul(p, &ptr,10);}
              //if this field is empty --> twoways,if there is "oneway" --> oneway
              if(count == 8 & strcmp("oneway",p) == 0) is_oneway = 1;
 
@@ -124,7 +126,7 @@ int main(){
                 if(count % 2 == 1){
                   idA =  strtoul(p, &ptr,10); //nodes[way_nodes].id;
                   if(  (posA = IDtoPOSITION(nodes, nnodes, idA)) == -1  ){
-                    //printf("Found a way with nonvalid nodes\n");
+                    printf("Found a way with nonvalid nodes\n");
                     //exit(0);
                     break;
                   }
@@ -132,7 +134,7 @@ int main(){
                 else{
                   idB = strtoul(p, &ptr,10);
                   if(  (posB = IDtoPOSITION(nodes, nnodes, idB)) == -1  ){
-                    //printf("FOund a way with nonvalid nodes\n");
+                    printf("FOund a way with nonvalid nodes\n");
                     //exit(0);
                     break;
                   }
@@ -201,9 +203,9 @@ int main(){
 
          }//endwhile p of ways
 
-          if(way_nodes >0){
-           printf("Way nodes: %lu \n", way_nodes);
-         }
+          //if(way_nodes >0){
+           printf("Number of nodes of the way with id %lu: %lu \n", way_id, way_nodes);
+         //}
        }//end elseif (ways)
 
 
