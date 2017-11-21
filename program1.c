@@ -99,7 +99,7 @@ int main(){
           node_index++;
 
         }
-
+/*
         else if(strcmp("way", p) == 0){
 
           
@@ -139,10 +139,19 @@ int main(){
 
 
 
-       }//end elseif (ways)
+       }//end elseif (ways)*/
 
 
    }
+
+   //testing IDtoPOSITION:
+   //unsigned long id = 8670491;
+   unsigned long id = 8670500;
+   printf("\nThe position of the id %lu is %d \n ", id, IDtoPOSITION(nodes, nnodes, id) );
+
+
+
+
    free(line);
    exit(EXIT_SUCCESS);
 
