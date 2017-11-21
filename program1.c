@@ -110,29 +110,30 @@ int main(){
             int posA, posB;
             unsigned long way_nodes = 0;
 
+
           
               ///Codi o funció que faci tot lo de enmagatzemar successors
           //això és el 50% de la feina que faltaria, que és la part chunga
           while (p) {
              //if this field is empty --> twoways,if there is "oneway" --> oneway
-             if(count == 7 & strcmp("oneway",p) == 0) is_oneway = 1;
+             if(count == 8 & strcmp("oneway",p) == 0) is_oneway = 1;
 
              //   |A|B|C|D|.... IDS
 
-             else if(count >= 9){
+             else if(count >= 10){
                 if(count % 2 == 1){
                   idA =  strtoul(p, &ptr,10); //nodes[way_nodes].id;
                   if(  (posA = IDtoPOSITION(nodes, nnodes, idA)) == -1  ){
-                    printf("Found a way with nonvalid nodes\n");
-                    exit(0);
+                    //printf("Found a way with nonvalid nodes\n");
+                    //exit(0);
                     break;
                   }
                 }
                 else{
                   idB = strtoul(p, &ptr,10);
                   if(  (posB = IDtoPOSITION(nodes, nnodes, idB)) == -1  ){
-                    printf("FOund a way with nonvalid nodes\n");
-                     exit(0);
+                    //printf("FOund a way with nonvalid nodes\n");
+                    //exit(0);
                     break;
                   }
                   //posB = IDtoPOSITION(nodes, nnodes, idB);
@@ -144,7 +145,7 @@ int main(){
                 way_nodes += 1;
              }
 
-             if(count >= 9 & way_nodes % 2 == 0 & way_nodes >=2){
+             if(count >= 10 & way_nodes % 2 == 0 & way_nodes >=2){
                 if(!is_oneway){
                   //idB is a succesor of idA                     
                   nodes[posA].successors[nsuccdim[posA]] = idB;
@@ -169,7 +170,7 @@ int main(){
 
              }
 
-             else if(count >= 9 & way_nodes % 2 == 1 & way_nodes >=3){
+             else if(count >= 10 & way_nodes % 2 == 1 & way_nodes >=3){
                //|B|C|   B is in idB C is in idA so B does the rol of A and C does the rol of B
                 if(!is_oneway){
                   //idB is a succesor of idA                     
@@ -192,39 +193,17 @@ int main(){
 
                 //note that we have only changed the else inside with respect to the big if above
 
-             }
+             }        
 
-
-
-
-
-                
-
-             
-
-
-
-
-
-
-
-
-
-
-
+        
             p = strtok_single (NULL, delims);
             count++;
 
+         }//endwhile p of ways
 
-
-
-         }//endwhile p of ways       
-
-
-        
-
-
-
+          if(way_nodes >0){
+           printf("Way nodes: %lu \n", way_nodes);
+         }
        }//end elseif (ways)
 
 
@@ -237,7 +216,7 @@ int main(){
    int pos = 8;
    printf("\nThe id of the position %d is %lu \n ", pos, POSITIONtoID(nodes, pos) );
 
-
+   
 
 
    free(line);
