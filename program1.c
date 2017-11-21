@@ -169,10 +169,10 @@ int main(){
                     nodes[posA].successors[nsuccdim[posA]] = idB;
                     nodes[posB].successors[nsuccdim[posB]] = idA;
 
-                    if( (nsuccdim[posA]++) > 1){
+                    if( (++nsuccdim[posA]) > 1){
                       nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long));
                     }
-                    if( (nsuccdim[posB]++) > 1){
+                    if( (++nsuccdim[posB]) > 1){
                       nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
                     }
 
@@ -180,8 +180,10 @@ int main(){
                   }
                   else{
                     nodes[posA].successors[nsuccdim[posA]] = idB;
-                     if( (nsuccdim[posA]++) > 1){
+                     if( (++nsuccdim[posA]) > 1){
                       nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long));
+                      if(nsuccdim[posA] == 0){ printf("0 realloc size, idB = %lu \n", idB); exit(0);}
+
                     }
                   }
 
@@ -195,16 +197,16 @@ int main(){
                     nodes[posA].successors[nsuccdim[posA]] = idB;
                     nodes[posB].successors[nsuccdim[posB]] = idA;
 
-                    if( (nsuccdim[posA]++) > 1){
+                    if( (++nsuccdim[posA]) > 1){
                       nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long));
                     }
-                    if( (nsuccdim[posB]++) > 1){
+                    if( (++nsuccdim[posB]) > 1){
                       nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
                     }
                   }
                   else{
                     nodes[posB].successors[nsuccdim[posB]] = idA;
-                    if( (nsuccdim[posB]++) > 1){
+                    if( (++nsuccdim[posB]) > 1){
                       nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
                     }
                   }
