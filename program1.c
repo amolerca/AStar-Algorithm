@@ -110,6 +110,7 @@ int main(){
             int posA, posB;
             unsigned long way_nodes = 0;
             unsigned long way_id; // to record de way id
+            _Bool nonvalidnodefound = 0; 
 
 
           
@@ -128,7 +129,13 @@ int main(){
                   if(  (posA = IDtoPOSITION(nodes, nnodes, idA)) == -1  ){
                     printf("Found a way with nonvalid nodes\n");
                     //exit(0);
-                    break;
+                    //                    break; 
+                    count--; 
+                    nonvalidnodefound = 1;                 
+                  }
+                  else{
+                    way_nodes += 1;
+                    nonvalidnodefound = 0;
                   }
                 }
                 else{
@@ -136,68 +143,77 @@ int main(){
                   if(  (posB = IDtoPOSITION(nodes, nnodes, idB)) == -1  ){
                     printf("FOund a way with nonvalid nodes\n");
                     //exit(0);
-                    break;
+                    //break;
+                    count--;
+                    nonvalidnodefound = 1;                                
                   }
+                  else{way_nodes += 1;
+                                      nonvalidnodefound = 0;}
                   //posB = IDtoPOSITION(nodes, nnodes, idB);
 
                 }
 
 
 
-                way_nodes += 1;
+                //way_nodes += 1;
              }
 
-             if(count >= 10 & way_nodes % 2 == 0 & way_nodes >=2){
-                if(!is_oneway){
-                  //idB is a succesor of idA                     
-                  nodes[posA].successors[nsuccdim[posA]] = idB;
-                  nodes[posB].successors[nsuccdim[posB]] = idA;
 
-                  if( (nsuccdim[posA]++) > 1){
-                    nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long));
+             if(!nonvalidnodefound){
+
+
+
+               if(count >= 10 & way_nodes % 2 == 0 & way_nodes >=2){
+                  if(!is_oneway){
+                    //idB is a succesor of idA                     
+                    nodes[posA].successors[nsuccdim[posA]] = idB;
+                    nodes[posB].successors[nsuccdim[posB]] = idA;
+
+                    if( (nsuccdim[posA]++) > 1){
+                      nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long));
+                    }
+                    if( (nsuccdim[posB]++) > 1){
+                      nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
+                    }
+
+
                   }
-                  if( (nsuccdim[posB]++) > 1){
-                    nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
+                  else{
+                    nodes[posA].successors[nsuccdim[posA]] = idB;
+                     if( (nsuccdim[posA]++) > 1){
+                      nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long));
+                    }
                   }
 
 
-                }
-                else{
-                  nodes[posA].successors[nsuccdim[posA]] = idB;
-                   if( (nsuccdim[posA]++) > 1){
-                    nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long));
+               }
+
+               else if(count >= 10 & way_nodes % 2 == 1 & way_nodes >=3){
+                 //|B|C|   B is in idB C is in idA so B does the rol of A and C does the rol of B
+                  if(!is_oneway){
+                    //idB is a succesor of idA                     
+                    nodes[posA].successors[nsuccdim[posA]] = idB;
+                    nodes[posB].successors[nsuccdim[posB]] = idA;
+
+                    if( (nsuccdim[posA]++) > 1){
+                      nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long));
+                    }
+                    if( (nsuccdim[posB]++) > 1){
+                      nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
+                    }
                   }
-                }
-
-
-             }
-
-             else if(count >= 10 & way_nodes % 2 == 1 & way_nodes >=3){
-               //|B|C|   B is in idB C is in idA so B does the rol of A and C does the rol of B
-                if(!is_oneway){
-                  //idB is a succesor of idA                     
-                  nodes[posA].successors[nsuccdim[posA]] = idB;
-                  nodes[posB].successors[nsuccdim[posB]] = idA;
-
-                  if( (nsuccdim[posA]++) > 1){
-                    nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long));
+                  else{
+                    nodes[posB].successors[nsuccdim[posB]] = idA;
+                    if( (nsuccdim[posB]++) > 1){
+                      nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
+                    }
                   }
-                  if( (nsuccdim[posB]++) > 1){
-                    nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
-                  }
-                }
-                else{
-                  nodes[posB].successors[nsuccdim[posB]] = idA;
-                  if( (nsuccdim[posB]++) > 1){
-                    nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
-                  }
-                }
 
-                //note that we have only changed the else inside with respect to the big if above
+                  //note that we have only changed the else inside with respect to the big if above
 
-             }        
-
-        
+               }        
+            }
+                     
             p = strtok_single (NULL, delims);
             count++;
 
