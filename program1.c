@@ -122,11 +122,20 @@ int main(){
              else if(count >= 9){
                 if(count % 2 == 1){
                   idA =  strtoul(p, &ptr,10); //nodes[way_nodes].id;
-                  posA = IDtoPOSITION(nodes, nnodes, idA);
+                  if(  (posA = IDtoPOSITION(nodes, nnodes, idA)) == -1  ){
+                    printf("Found a way with nonvalid nodes\n");
+                    exit(0);
+                    break;
+                  }
                 }
                 else{
                   idB = strtoul(p, &ptr,10);
-                  posB = IDtoPOSITION(nodes, nnodes, idB);
+                  if(  (posB = IDtoPOSITION(nodes, nnodes, idB)) == -1  ){
+                    printf("FOund a way with nonvalid nodes\n");
+                     exit(0);
+                    break;
+                  }
+                  //posB = IDtoPOSITION(nodes, nnodes, idB);
 
                 }
 
