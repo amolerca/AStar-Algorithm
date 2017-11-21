@@ -21,7 +21,7 @@ int IDtoPOSITION(node * Vector, int Vlen, unsigned long id){
 
 }
 
-int POSITIONtoID(node * Vector, int position){  
+unsigned long POSITIONtoID(node * Vector, int position){  
 
   return Vector[position].id;
 
@@ -148,6 +148,8 @@ int main(){
    //unsigned long id = 8670491;
    unsigned long id = 8670500;
    printf("\nThe position of the id %lu is %d \n ", id, IDtoPOSITION(nodes, nnodes, id) );
+   int pos = 8;
+   printf("\nThe id of the position %d is %lu \n ", pos, POSITIONtoID(nodes, pos) );
 
 
 
