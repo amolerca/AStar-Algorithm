@@ -152,7 +152,9 @@ int main(){
                 }
                 else{
                   nodes[posA].successors[nsuccdim[posA]] = idB;
-                  nsuccdim[posA]+=1;
+                   if( (nsuccdim[posA]++) > 1){
+                    nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long));
+                  }
                 }
 
 
@@ -165,12 +167,18 @@ int main(){
                   nodes[posA].successors[nsuccdim[posA]] = idB;
                   nodes[posB].successors[nsuccdim[posB]] = idA;
 
-                  nsuccdim[posA]+=1;
-                  nsuccdim[posB]+=1;
+                  if( (nsuccdim[posA]++) > 1){
+                    nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long));
+                  }
+                  if( (nsuccdim[posB]++) > 1){
+                    nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
+                  }
                 }
                 else{
                   nodes[posB].successors[nsuccdim[posB]] = idA;
-                  nsuccdim[posB]+=1;
+                  if( (nsuccdim[posB]++) > 1){
+                    nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
+                  }
                 }
 
                 //note that we have only changed the else inside with respect to the big if above
