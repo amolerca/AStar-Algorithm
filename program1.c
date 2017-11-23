@@ -68,7 +68,7 @@ int main(){
         //read node lines
         if(strcmp("node", p) == 0){ 
           nsuccdim[node_index] = 0; //Initialise the number of successors of the current node to 0
-          nodes[node_index].successors = (unsigned long *) malloc(2*sizeof(unsigned long)); 
+          //nodes[node_index].successors = (unsigned long *) malloc(1*sizeof(unsigned long)); 
           while (p) {
                           
               if(count == 2){                 
@@ -120,12 +120,12 @@ int main(){
           while (p) {
              if(count == 2){way_id = strtoul(p, &ptr,10);}
              //if this field is empty --> twoways,if there is "oneway" --> oneway
-             if(count == 8 & strcmp("oneway",p) == 0) is_oneway = 1;
+             if( (count == 8) & (strcmp("oneway",p) == 0) ) is_oneway = 1;
 
              //   |A|B|C|D|.... IDS
 
              else if(count >= 10){
-                if(count % 2 == 1){
+                if(count % 2 == 0){
                   idA =  strtoul(p, &ptr,10); //nodes[way_nodes].id;
                   if(  (posA = IDtoPOSITION(nodes, nnodes, idA)) == -1  ){
                     printf("Found a way with nonvalid nodes\n");
@@ -164,132 +164,125 @@ int main(){
 
 
 
-               if(count >= 10 & way_nodes % 2 == 0 & way_nodes >=2){
+               if( (count >= 10) & (way_nodes % 2 == 0) & (way_nodes >=2)  ){
                   if(!is_oneway){
-                    //idB is a succesor of idA                     
-                    nodes[posA].successors[nsuccdim[posA]] = idB;
-                    nodes[posB].successors[nsuccdim[posB]] = idA;
-                    ++nsuccdim[posA];
-                    ++nsuccdim[posB];
 
-/*
-                    if( (++nsuccdim[posA]) > 1){
-                      printf("nsuccdimposA = %d \n", nsuccdim[posA]);
+                    if(nsuccdim[posA] == 0){
+                        nodes[posA].successors = (unsigned long *) malloc(1*sizeof(unsigned long)); 
+                                              }
 
+                    else {
+                      ++nsuccdim[posA];
                       if( (nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long)))  == NULL){
                         printf("Error when allocating memory for the successors of node posA = %d\n",posA);
                         exit(0);
-                      }
-                    
+                      } 
+                                          }                
 
-                    }
-                    if( (++nsuccdim[posB]) > 1){
-                      printf("nsuccdimposB ss = %d \n", nsuccdim[posB]);
+                    if(nsuccdim[posB] == 0){
+                      nodes[posB].successors = (unsigned long *) malloc(1*sizeof(unsigned long));
+                      }                    
+
+                    else{
+                      ++nsuccdim[posB];
                       //nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
                       if( (nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long)) ) == NULL){
                       printf("Error when allocating memory for the successors of node posB = %d\n",posB);
                         exit(0);
-                      }
-                      printf("hi\n");
 
-                    }*/
+                      }
+
+                    }
+
+                    nodes[posA].successors[nsuccdim[posA]] = idB;
+                    nodes[posB].successors[nsuccdim[posB]] = idA;                  
+
 
 
                   }
                   else{
-                    nodes[posA].successors[nsuccdim[posA]] = idB;
-                    ++nsuccdim[posA];
-                  
-                    /*
-                     if( (++nsuccdim[posA]) > 1){
-                      printf("nsuccdimposA = %d \n", nsuccdim[posA]);
-                      //nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long));
+                    
+                   if(nsuccdim[posA] == 0){
+                        nodes[posA].successors = (unsigned long *) malloc(1*sizeof(unsigned long)); 
+                                              }
+
+                   else {
+                      ++nsuccdim[posA];
+
                       if( (nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long)))  == NULL){
                         printf("Error when allocating memory for the successors of node posA = %d\n",posA);
                         exit(0);
-                      }
 
-                    }*/
-                  }
+                          } 
+                      }  
+                      nodes[posA].successors[nsuccdim[posA]] = idB;   
 
-                  if( (nsuccdim[posA]) > 1){
-
-                  if( (nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long)) ) == NULL){
-                      printf("Error when allocating memory for the successors of node posA = %d\n",posA);
-                        exit(0);
-                      }
-                    }
-                    if( (nsuccdim[posB]) > 1){
-                  if( (nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long)) ) == NULL){
-                      printf("Error when allocating memory for the successors of node posB = %d\n",posB);
-                        exit(0);
-                      }    
-                    }
 
 
                }
+             }
 
-               else if(count >= 10 & way_nodes % 2 == 1 & way_nodes >=3){
+               else if( (count >= 10) & (way_nodes % 2 == 1) & (way_nodes >=3) ){
                  //|B|C|   B is in idB C is in idA so B does the rol of A and C does the rol of B
                   if(!is_oneway){
                     //idB is a succesor of idA                     
-                    nodes[posA].successors[nsuccdim[posA]] = idB;
-                    nodes[posB].successors[nsuccdim[posB]] = idA;
-                    ++nsuccdim[posA];
-                    ++nsuccdim[posB];
-/*
+                    
 
-                    if( (++nsuccdim[posA]) > 1){
-                      printf("nsuccdimposA = %d \n", nsuccdim[posA]);
-                      //nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long));
-                       if( (nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long)))  == NULL){
+                    if(nsuccdim[posA] == 0){
+                        nodes[posA].successors = (unsigned long *) malloc(1*sizeof(unsigned long)); 
+                                              }
+
+                    else {
+                      ++nsuccdim[posA];
+                      if( (nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long)))  == NULL){
                         printf("Error when allocating memory for the successors of node posA = %d\n",posA);
                         exit(0);
-                      }
+                      } 
+                                          }                
 
+                    if(nsuccdim[posB] == 0){
+                      nodes[posB].successors = (unsigned long *) malloc(1*sizeof(unsigned long));
+                      }                    
 
+                    else{
+                      ++nsuccdim[posB];
+
+                      //nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
+                      if( (nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long)) ) == NULL){
+                      printf("Error when allocating memory for the successors of node posB = %d\n",posB);
+                        exit(0);
+
+                      }                     
                     }
-                    if( (++nsuccdim[posB]) > 1){
-                      printf("nsuccdimposB = %d \n", nsuccdim[posB]);
-                      //nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
-                      if( (nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long)) ) == NULL){
-                      printf("Error when allocating memory for the successors of node posB = %d\n",posB);
-                        exit(0);
-                      }
-                    }*/
+                    nodes[posA].successors[nsuccdim[posA]] = idB;
+                    nodes[posB].successors[nsuccdim[posB]] = idA;
                   }
+
+
                   else{
-                    nodes[posB].successors[nsuccdim[posB]] = idA;                    
-                    ++nsuccdim[posB];
-/*
-                    if( (++nsuccdim[posB]) > 1){
+                    
+                    if(nsuccdim[posB] == 0){
+                      nodes[posB].successors = (unsigned long *) malloc(1*sizeof(unsigned long));
+                      }                    
+
+                    else{
+                      ++nsuccdim[posB];
                       //nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
                       printf("nsuccdimposB = %d \n", nsuccdim[posB]);
                       if( (nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long)) ) == NULL){
                       printf("Error when allocating memory for the successors of node posB = %d\n",posB);
                         exit(0);
-                      }
 
-                    }*/
+                      }                     
+                    }
+                    nodes[posB].successors[nsuccdim[posB]] = idA;
                   }
 
                   //note that we have only changed the else inside with respect to the big if above
-                  if( (nsuccdim[posA]) > 1){
-                  if( (nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long)) ) == NULL){
-                      printf("Error when allocating memory for the successors of node posA = %d\n",posA);
-                        exit(0);
-                      }
-                    }
-                      if( (nsuccdim[posB]) > 1){
-                  if( (nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long)) ) == NULL){
-                      printf("Error when allocating memory for the successors of node posB = %d\n",posB);
-                        exit(0);
-                      }    }
-
 
 
                }        
-            }
+          }
 
 
                      
