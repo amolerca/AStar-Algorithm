@@ -329,7 +329,7 @@ int main(){
   
    }
    
-
+  //sed "s/,$//" nsuccdims.txt | tr "," "\n" | sort -rn | head -10
 
    free(line);
    exit(EXIT_SUCCESS);
