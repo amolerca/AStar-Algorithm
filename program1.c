@@ -169,7 +169,10 @@ int main(){
                     //idB is a succesor of idA                     
                     nodes[posA].successors[nsuccdim[posA]] = idB;
                     nodes[posB].successors[nsuccdim[posB]] = idA;
+                    ++nsuccdim[posA];
+                    ++nsuccdim[posB];
 
+/*
                     if( (++nsuccdim[posA]) > 1){
                       printf("nsuccdimposA = %d \n", nsuccdim[posA]);
 
@@ -189,12 +192,15 @@ int main(){
                       }
                       printf("hi\n");
 
-                    }
+                    }*/
 
 
                   }
                   else{
                     nodes[posA].successors[nsuccdim[posA]] = idB;
+                    ++nsuccdim[posA];
+                  
+                    /*
                      if( (++nsuccdim[posA]) > 1){
                       printf("nsuccdimposA = %d \n", nsuccdim[posA]);
                       //nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long));
@@ -203,8 +209,22 @@ int main(){
                         exit(0);
                       }
 
-                    }
+                    }*/
                   }
+
+                  if( (nsuccdim[posA]) > 1){
+
+                  if( (nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long)) ) == NULL){
+                      printf("Error when allocating memory for the successors of node posA = %d\n",posA);
+                        exit(0);
+                      }
+                    }
+                    if( (nsuccdim[posB]) > 1){
+                  if( (nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long)) ) == NULL){
+                      printf("Error when allocating memory for the successors of node posB = %d\n",posB);
+                        exit(0);
+                      }    
+                    }
 
 
                }
@@ -215,6 +235,9 @@ int main(){
                     //idB is a succesor of idA                     
                     nodes[posA].successors[nsuccdim[posA]] = idB;
                     nodes[posB].successors[nsuccdim[posB]] = idA;
+                    ++nsuccdim[posA];
+                    ++nsuccdim[posB];
+/*
 
                     if( (++nsuccdim[posA]) > 1){
                       printf("nsuccdimposA = %d \n", nsuccdim[posA]);
@@ -233,10 +256,12 @@ int main(){
                       printf("Error when allocating memory for the successors of node posB = %d\n",posB);
                         exit(0);
                       }
-                    }
+                    }*/
                   }
                   else{
-                    nodes[posB].successors[nsuccdim[posB]] = idA;
+                    nodes[posB].successors[nsuccdim[posB]] = idA;                    
+                    ++nsuccdim[posB];
+/*
                     if( (++nsuccdim[posB]) > 1){
                       //nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
                       printf("nsuccdimposB = %d \n", nsuccdim[posB]);
@@ -245,13 +270,28 @@ int main(){
                         exit(0);
                       }
 
-                    }
+                    }*/
                   }
 
                   //note that we have only changed the else inside with respect to the big if above
+                  if( (nsuccdim[posA]) > 1){
+                  if( (nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long)) ) == NULL){
+                      printf("Error when allocating memory for the successors of node posA = %d\n",posA);
+                        exit(0);
+                      }
+                    }
+                      if( (nsuccdim[posB]) > 1){
+                  if( (nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long)) ) == NULL){
+                      printf("Error when allocating memory for the successors of node posB = %d\n",posB);
+                        exit(0);
+                      }    }
+
+
 
                }        
             }
+
+
                      
             p = strtok_single (NULL, delims);
             count++;
