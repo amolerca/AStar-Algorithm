@@ -125,7 +125,7 @@ int main(){
              //   |A|B|C|D|.... IDS
 
              else if(count >= 10){
-                if(count % 2 == 1){
+                if(count % 2 == 0){
                   idA =  strtoul(p, &ptr,10); //nodes[way_nodes].id;
                   if(  (posA = IDtoPOSITION(nodes, nnodes, idA)) == -1  ){
                     printf("Found a way with nonvalid nodes\n");
