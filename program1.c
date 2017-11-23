@@ -169,6 +169,7 @@ int main(){
 
                     if(nsuccdim[posA] == 0){
                         nodes[posA].successors = (unsigned long *) malloc(1*sizeof(unsigned long)); 
+                        ++nsuccdim[posA];                   
                                               }
 
                     else {
@@ -181,6 +182,7 @@ int main(){
 
                     if(nsuccdim[posB] == 0){
                       nodes[posB].successors = (unsigned long *) malloc(1*sizeof(unsigned long));
+                      ++nsuccdim[posB];
                       }                    
 
                     else{
@@ -194,8 +196,8 @@ int main(){
 
                     }
 
-                    nodes[posA].successors[nsuccdim[posA]] = idB;
-                    nodes[posB].successors[nsuccdim[posB]] = idA;                  
+                    nodes[posA].successors[nsuccdim[posA]-1] = idB;
+                    nodes[posB].successors[nsuccdim[posB]-1] = idA;                  
 
 
 
@@ -204,6 +206,7 @@ int main(){
                     
                    if(nsuccdim[posA] == 0){
                         nodes[posA].successors = (unsigned long *) malloc(1*sizeof(unsigned long)); 
+                        ++nsuccdim[posA];                     
                                               }
 
                    else {
@@ -215,7 +218,7 @@ int main(){
 
                           } 
                       }  
-                      nodes[posA].successors[nsuccdim[posA]] = idB;   
+                      nodes[posA].successors[nsuccdim[posA]-1] = idB;   
 
 
 
@@ -230,6 +233,7 @@ int main(){
 
                     if(nsuccdim[posA] == 0){
                         nodes[posA].successors = (unsigned long *) malloc(1*sizeof(unsigned long)); 
+                        ++nsuccdim[posA];
                                               }
 
                     else {
@@ -242,6 +246,8 @@ int main(){
 
                     if(nsuccdim[posB] == 0){
                       nodes[posB].successors = (unsigned long *) malloc(1*sizeof(unsigned long));
+                      ++nsuccdim[posB];
+
                       }                    
 
                     else{
@@ -254,8 +260,10 @@ int main(){
 
                       }                     
                     }
-                    nodes[posA].successors[nsuccdim[posA]] = idB;
-                    nodes[posB].successors[nsuccdim[posB]] = idA;
+                    nodes[posA].successors[nsuccdim[posA]-1] = idB;
+                    nodes[posB].successors[nsuccdim[posB]-1] = idA;
+
+
                   }
 
 
@@ -263,6 +271,7 @@ int main(){
                     
                     if(nsuccdim[posB] == 0){
                       nodes[posB].successors = (unsigned long *) malloc(1*sizeof(unsigned long));
+                      ++nsuccdim[posB];
                       }                    
 
                     else{
@@ -275,7 +284,7 @@ int main(){
 
                       }                     
                     }
-                    nodes[posB].successors[nsuccdim[posB]] = idA;
+                    nodes[posB].successors[nsuccdim[posB]-1] = idA;
                   }
 
                   //note that we have only changed the else inside with respect to the big if above
@@ -292,7 +301,7 @@ int main(){
          }//endwhile p of ways
 
           //if(way_nodes >0){
-           printf("Number of nodes of the way with id %lu: %lu \n", way_id, way_nodes);
+           //printf("Number of nodes of the way with id %lu: %lu \n", way_id, way_nodes);
          //}
        }//end elseif (ways)
 
@@ -312,7 +321,16 @@ int main(){
     free(nodes[i].successors);
     free(nodes[i].name);
    }*/
+
+   FILE * f = fopen("nsuccdims.txt", "a"); 
+
+  for(int i = 0; i<nnodes;i++){
+      if(nsuccdim[i] != 0){fprintf(f, "%u,", nsuccdim[i]);}
+  
+   }
    
+
+
    free(line);
    exit(EXIT_SUCCESS);
 
