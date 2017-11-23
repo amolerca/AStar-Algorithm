@@ -31,7 +31,8 @@ unsigned long POSITIONtoID(node * Vector, int position){
 
 
 int main(){
-	unsigned long nnodes = 3472620UL;
+	unsigned long nnodes = 3472620UL;  //CATALUNYA
+  //unsigned long nnodes = 23895681UL; //ESPANYA
 	node *nodes;
 	if((nodes = (node *) malloc(nnodes*sizeof(node))) == NULL) ExitError("when allocating memory for the nodes vector", 5);
   
@@ -40,8 +41,8 @@ int main(){
   char *line = NULL;
   size_t len = 0; 
   ssize_t read;
-   //fp = fopen("C:/Users/Daniel/Dropbox/Master/Optimization/Astar_Algorithm/AStar_Deliver/catalunya_test", "r");
-  fp = fopen("/home/dsalgador/Dropbox/Master/Optimization/Astar_Algorithm/AStar_deliver2/catalunya.csv", "r");
+   fp = fopen("/home/dsalgador/Dropbox/Master/Optimization/Astar_Algorithm/AStar_deliver2/catalunya.csv", "r");
+  //fp = fopen("/home/dsalgador/LargeFiles/spain.csv", "r");
   char delims[] = "|";
 
 
@@ -128,7 +129,7 @@ int main(){
                 if(count % 2 == 0){
                   idA =  strtoul(p, &ptr,10); //nodes[way_nodes].id;
                   if(  (posA = IDtoPOSITION(nodes, nnodes, idA)) == -1  ){
-                    printf("Found a way with nonvalid nodes\n");
+                    //printf("Found a way with nonvalid nodes\n");
                     //exit(0);
                     //                    break; 
                     count--; 
@@ -142,7 +143,7 @@ int main(){
                 else{
                   idB = strtoul(p, &ptr,10);
                   if(  (posB = IDtoPOSITION(nodes, nnodes, idB)) == -1  ){
-                    printf("FOund a way with nonvalid nodes\n");
+                    //printf("FOund a way with nonvalid nodes\n");
                     //exit(0);
                     //break;
                     count--;
@@ -277,7 +278,7 @@ int main(){
                     else{
                       ++nsuccdim[posB];
                       //nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
-                      printf("nsuccdimposB = %d \n", nsuccdim[posB]);
+                      //printf("nsuccdimposB = %d \n", nsuccdim[posB]);
                       if( (nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long)) ) == NULL){
                       printf("Error when allocating memory for the successors of node posB = %d\n",posB);
                         exit(0);
@@ -310,10 +311,10 @@ int main(){
 
    //testing IDtoPOSITION:
    //unsigned long id = 8670491;
-   unsigned long id = 8670500;
+   /*unsigned long id = 8670500;
    printf("\nThe position of the id %lu is %d \n ", id, IDtoPOSITION(nodes, nnodes, id) );
    int pos = 8;
-   printf("\nThe id of the position %d is %lu \n ", pos, POSITIONtoID(nodes, pos) );
+   printf("\nThe id of the position %d is %lu \n ", pos, POSITIONtoID(nodes, pos) );*/
 
    
    
@@ -321,16 +322,17 @@ int main(){
     free(nodes[i].successors);
     free(nodes[i].name);
    }*/
-
-   FILE * f = fopen("nsuccdims.txt", "a"); 
+   //FILE * f = fopen("nsuccdims.txt", "a"); 
+   FILE * f = fopen("nsuccdims_spain.txt", "a"); 
 
   for(int i = 0; i<nnodes;i++){
-      if(nsuccdim[i] != 0){fprintf(f, "%u,", nsuccdim[i]);}
+      fprintf(f, "%u,", nsuccdim[i]);
+      nodes[i].nsucc = nsuccdim[i];
   
    }
    
   //sed "s/,$//" nsuccdims.txt | tr "," "\n" | sort -rn | head -10
-
+    printf("\n HE ACABAT! \n");
    free(line);
    exit(EXIT_SUCCESS);
 
