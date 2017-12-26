@@ -32,7 +32,7 @@ unsigned long POSITIONtoID(node * Vector, int position){
 
 int main(){
 	unsigned long nnodes = 3472620UL;  //CATALUNYA
-  //unsigned long nnodes = 23895681UL; //ESPANYA
+    //unsigned long nnodes = 23895681UL; //ESPANYA
 	node *nodes;
 	if((nodes = (node *) malloc(nnodes*sizeof(node))) == NULL) ExitError("when allocating memory for the nodes vector", 5);
   
@@ -323,10 +323,10 @@ int main(){
     free(nodes[i].name);
    }*/
    //FILE * f = fopen("nsuccdims.txt", "a"); 
-   FILE * f = fopen("nsuccdims_spain.txt", "a"); 
+   //FILE * f = fopen("nsuccdims_spain.txt", "a"); 
 
   for(int i = 0; i<nnodes;i++){
-      fprintf(f, "%u,", nsuccdim[i]);
+      //fprintf(f, "%u,", nsuccdim[i]);
       nodes[i].nsucc = nsuccdim[i];
   
    }
