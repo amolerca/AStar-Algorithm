@@ -6,9 +6,9 @@
 
 #include "program1.h"
 
-int IDtoPOSITION(node * Vector, int Vlen, unsigned long id){
-  int imin=0,imax= Vlen-1;
-  int imid;
+unsigned long IDtoPOSITION(node * Vector, unsigned long Vlen, unsigned long id){
+  unsigned long imin=0,imax= Vlen-1;
+  unsigned long imid;
   while(imax >= imin){
     imid = (int) ( (imin+imax)/2.0 );
     if(Vector[imid].id == id) return imid;
@@ -21,7 +21,7 @@ int IDtoPOSITION(node * Vector, int Vlen, unsigned long id){
 
 }
 
-unsigned long POSITIONtoID(node * Vector, int position){  
+unsigned long POSITIONtoID(node * Vector, unsigned long position){  
 
   return Vector[position].id;
 
@@ -51,7 +51,7 @@ int main(){
     exit(EXIT_FAILURE);}
 
 
-   int node_index = 0;
+   unsigned long node_index = 0;
    char *ptr;
 
    unsigned short nsuccdim[nnodes];
@@ -62,8 +62,8 @@ int main(){
         //printf("%s", line);
 
         char * p    = strtok_single (line, delims);
-        int count = 1;
-        int name_size;
+        int count = 1; //to unsigned long??
+        int name_size; //to unsigned long¿
         _Bool is_oneway = 0; //initialised to false
 
         //read node lines
@@ -109,7 +109,7 @@ int main(){
         else if(strcmp("way", p) == 0){
 
             unsigned long idA, idB;
-            int posA, posB;
+            unsigned long posA, posB;
             unsigned long way_nodes = 0;
             unsigned long way_id; // to record de way id
             _Bool nonvalidnodefound = 0; 
@@ -176,7 +176,7 @@ int main(){
                     else {
                       ++nsuccdim[posA];
                       if( (nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long)))  == NULL){
-                        printf("Error when allocating memory for the successors of node posA = %d\n",posA);
+                        printf("Error when allocating memory for the successors of node posA = %lu\n",posA);
                         exit(0);
                       } 
                                           }                
@@ -190,7 +190,7 @@ int main(){
                       ++nsuccdim[posB];
                       //nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
                       if( (nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long)) ) == NULL){
-                      printf("Error when allocating memory for the successors of node posB = %d\n",posB);
+                      printf("Error when allocating memory for the successors of node posB = %lu\n",posB);
                         exit(0);
 
                       }
@@ -214,7 +214,7 @@ int main(){
                       ++nsuccdim[posA];
 
                       if( (nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long)))  == NULL){
-                        printf("Error when allocating memory for the successors of node posA = %d\n",posA);
+                        printf("Error when allocating memory for the successors of node posA = %lu\n",posA);
                         exit(0);
 
                           } 
@@ -240,7 +240,7 @@ int main(){
                     else {
                       ++nsuccdim[posA];
                       if( (nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long)))  == NULL){
-                        printf("Error when allocating memory for the successors of node posA = %d\n",posA);
+                        printf("Error when allocating memory for the successors of node posA = %lu\n",posA);
                         exit(0);
                       } 
                                           }                
@@ -256,7 +256,7 @@ int main(){
 
                       //nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
                       if( (nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long)) ) == NULL){
-                      printf("Error when allocating memory for the successors of node posB = %d\n",posB);
+                      printf("Error when allocating memory for the successors of node posB = %lu\n",posB);
                         exit(0);
 
                       }                     
@@ -280,7 +280,7 @@ int main(){
                       //nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long));
                       //printf("nsuccdimposB = %d \n", nsuccdim[posB]);
                       if( (nodes[posB].successors = (unsigned long *) realloc(nodes[posB].successors, nsuccdim[posB]*sizeof(unsigned long)) ) == NULL){
-                      printf("Error when allocating memory for the successors of node posB = %d\n",posB);
+                      printf("Error when allocating memory for the successors of node posB = %lu\n",posB);
                         exit(0);
 
                       }                     
@@ -325,7 +325,7 @@ int main(){
    //FILE * f = fopen("nsuccdims.txt", "a"); 
    //FILE * f = fopen("nsuccdims_spain.txt", "a"); 
 
-  for(int i = 0; i<nnodes;i++){
+  for(unsigned long i = 0; i<nnodes;i++){
       //fprintf(f, "%u,", nsuccdim[i]);
       nodes[i].nsucc = nsuccdim[i];
   
