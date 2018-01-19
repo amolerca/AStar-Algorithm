@@ -1,56 +1,71 @@
+/*****************************************************************************
+ *                                                                           *
+ *                        <Routing - AStar Algorithm>                        *
+ *             Copyright (C) <2018>   <Municoy, M., Salgado, D.>             *
+ *                                                                           *
+ *   Contact the authors at: mail@martimunicoy.com                           *
+ *                           daniel.salgado@e-campus.uab.cat                 *
+ *                                                                           *
+ *   This program is free software: you can redistribute it and/or modify    *
+ *   it under the terms of the GNU General Public License as published by    *
+ *   the Free Software Foundation, either version 3 of the License, or       *
+ *   (at your option) any later version.                                     *
+ *                                                                           *
+ *   This program is distributed in the hope that it will be useful,         *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ *   GNU General Public License for more details.                            *
+ *                                                                           *
+ *****************************************************************************/
+
+// Include Libraries
 //#define _GNU_SOURCE
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
+#include "routing.h"
+#include "constants.h"
+#include "util.h"
+#include "graph.h"
+#include "reader.h"
 
-#include "program1.h"
 
+/*
 unsigned long IDtoPOSITION(node * Vector, unsigned long Vlen, unsigned long id){
-  unsigned long imin=0,imax= Vlen-1;
-  unsigned long imid;
-  while(imax >= imin){
-    imid = (int) ( (imin+imax)/2.0 );
-    if(Vector[imid].id == id) return imid;
-    else if(Vector[imid].id < id) imin = imid+1;
-    else imax = imid-1;
+    unsigned long imin=0,imax= Vlen-1;
+    unsigned long imid;
+    while(imax >= imin){
+        imid = (int) ( (imin+imax)/2.0 );
+        if(Vector[imid].id == id) return imid;
+        else if(Vector[imid].id < id) imin = imid+1;
+        else imax = imid-1;
 
-  } 
+  }
 
   return -1; //if the id does not exist on de Vector of nodes
 
 }
 
-unsigned long POSITIONtoID(node * Vector, unsigned long position){  
+unsigned long POSITIONtoID(node * Vector, unsigned long position){
 
   return Vector[position].id;
 
-}
+}*/
+
+
+int main()
+{
+
+    Node *nodes;
+    nodes = (Node *) malloc(NNODES*sizeof(Node));
+    if(nodes == NULL)
+        ExitError("when allocating memory to the nodes vector", 5);
+
+      //printf("Hola que ase");
+
+    ReadFile("inputs/spain.map");
 
 
 
 
-int main(){
-	unsigned long nnodes = 3472620UL;  //CATALUNYA
-    //unsigned long nnodes = 23895681UL; //ESPANYA
-	node *nodes;
-	if((nodes = (node *) malloc(nnodes*sizeof(node))) == NULL) ExitError("when allocating memory for the nodes vector", 5);
-  
-    //printf("Hola que ase");
-  FILE *fp;
-  char *line = NULL;
-  size_t len = 0; 
-  ssize_t read;
-   fp = fopen("/home/dsalgador/Dropbox/Master/Optimization/Astar_Algorithm/AStar_deliver2/catalunya.csv", "r");
-  //fp = fopen("/home/dsalgador/LargeFiles/spain.csv", "r");
-  char delims[] = "|";
-
-
-   if (fp == NULL){ 
-    ExitError("when reading the file", 32);
-    exit(EXIT_FAILURE);}
-
-
+/*
    unsigned long node_index = 0;
    char *ptr;
 
@@ -61,18 +76,18 @@ int main(){
         //printf("Retrieved line of length %zu :\n", read);
         //printf("%s", line);
 
-        char * p    = strtok_single (line, delims);
+        char * p    = strtok_single (line, INPUT_FIELD_DELIMITORS);
         int count = 1; //to unsigned long??
         int name_size; //to unsigned long¿
         _Bool is_oneway = 0; //initialised to false
 
         //read node lines
-        if(strcmp("node", p) == 0){ 
+        if(strcmp("node", p) == 0){
           nsuccdim[node_index] = 0; //Initialise the number of successors of the current node to 0
-          //nodes[node_index].successors = (unsigned long *) malloc(1*sizeof(unsigned long)); 
+          //nodes[node_index].successors = (unsigned long *) malloc(1*sizeof(unsigned long));
           while (p) {
-                          
-              if(count == 2){                 
+
+              if(count == 2){
                 nodes[node_index].id = strtoul(p, &ptr,10);
                 //printf("node id: %lu\n", nodes[node_index].id);
 
@@ -84,7 +99,7 @@ int main(){
 
                 nodes[node_index].name = strcpy(nodes[node_index].name, p);
                 //printf("node %i, name %s\n", node_index, nodes[node_index].name);
-              
+
               }
               else if(count ==10){ //node lat
                 nodes[node_index].lat = atof(p);
@@ -94,7 +109,7 @@ int main(){
               else if(count ==11){ //node lon
                 nodes[node_index].lon = atof(p);
                 //printf("node %i, lon: %.8lf\n", node_index, nodes[node_index].lon);
-              }              
+              }
 
               //printf ("%s\n", *p ? p : "");
               p = strtok_single (NULL, delims);
@@ -112,10 +127,10 @@ int main(){
             unsigned long posA, posB;
             unsigned long way_nodes = 0;
             unsigned long way_id; // to record de way id
-            _Bool nonvalidnodefound = 0; 
+            _Bool nonvalidnodefound = 0;
 
 
-          
+
               ///Codi o funció que faci tot lo de enmagatzemar successors
           //això és el 50% de la feina que faltaria, que és la part chunga
           while (p) {
@@ -131,9 +146,9 @@ int main(){
                   if(  (posA = IDtoPOSITION(nodes, nnodes, idA)) == -1  ){
                     //printf("Found a way with nonvalid nodes\n");
                     //exit(0);
-                    //                    break; 
-                    count--; 
-                    nonvalidnodefound = 1;                 
+                    //                    break;
+                    count--;
+                    nonvalidnodefound = 1;
                   }
                   else{
                     way_nodes += 1;
@@ -147,7 +162,7 @@ int main(){
                     //exit(0);
                     //break;
                     count--;
-                    nonvalidnodefound = 1;                                
+                    nonvalidnodefound = 1;
                   }
                   else{way_nodes += 1;
                                       nonvalidnodefound = 0;}
@@ -169,8 +184,8 @@ int main(){
                   if(!is_oneway){
 
                     if(nsuccdim[posA] == 0){
-                        nodes[posA].successors = (unsigned long *) malloc(1*sizeof(unsigned long)); 
-                        ++nsuccdim[posA];                   
+                        nodes[posA].successors = (unsigned long *) malloc(1*sizeof(unsigned long));
+                        ++nsuccdim[posA];
                                               }
 
                     else {
@@ -178,13 +193,13 @@ int main(){
                       if( (nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long)))  == NULL){
                         printf("Error when allocating memory for the successors of node posA = %lu\n",posA);
                         exit(0);
-                      } 
-                                          }                
+                      }
+                                          }
 
                     if(nsuccdim[posB] == 0){
                       nodes[posB].successors = (unsigned long *) malloc(1*sizeof(unsigned long));
                       ++nsuccdim[posB];
-                      }                    
+                      }
 
                     else{
                       ++nsuccdim[posB];
@@ -198,16 +213,16 @@ int main(){
                     }
 
                     nodes[posA].successors[nsuccdim[posA]-1] = idB;
-                    nodes[posB].successors[nsuccdim[posB]-1] = idA;                  
+                    nodes[posB].successors[nsuccdim[posB]-1] = idA;
 
 
 
                   }
                   else{
-                    
+
                    if(nsuccdim[posA] == 0){
-                        nodes[posA].successors = (unsigned long *) malloc(1*sizeof(unsigned long)); 
-                        ++nsuccdim[posA];                     
+                        nodes[posA].successors = (unsigned long *) malloc(1*sizeof(unsigned long));
+                        ++nsuccdim[posA];
                                               }
 
                    else {
@@ -217,9 +232,9 @@ int main(){
                         printf("Error when allocating memory for the successors of node posA = %lu\n",posA);
                         exit(0);
 
-                          } 
-                      }  
-                      nodes[posA].successors[nsuccdim[posA]-1] = idB;   
+                          }
+                      }
+                      nodes[posA].successors[nsuccdim[posA]-1] = idB;
 
 
 
@@ -229,11 +244,11 @@ int main(){
                else if( (count >= 10) & (way_nodes % 2 == 1) & (way_nodes >=3) ){
                  //|B|C|   B is in idB C is in idA so B does the rol of A and C does the rol of B
                   if(!is_oneway){
-                    //idB is a succesor of idA                     
-                    
+                    //idB is a succesor of idA
+
 
                     if(nsuccdim[posA] == 0){
-                        nodes[posA].successors = (unsigned long *) malloc(1*sizeof(unsigned long)); 
+                        nodes[posA].successors = (unsigned long *) malloc(1*sizeof(unsigned long));
                         ++nsuccdim[posA];
                                               }
 
@@ -242,14 +257,14 @@ int main(){
                       if( (nodes[posA].successors = (unsigned long *) realloc(nodes[posA].successors, nsuccdim[posA]*sizeof(unsigned long)))  == NULL){
                         printf("Error when allocating memory for the successors of node posA = %lu\n",posA);
                         exit(0);
-                      } 
-                                          }                
+                      }
+                                          }
 
                     if(nsuccdim[posB] == 0){
                       nodes[posB].successors = (unsigned long *) malloc(1*sizeof(unsigned long));
                       ++nsuccdim[posB];
 
-                      }                    
+                      }
 
                     else{
                       ++nsuccdim[posB];
@@ -259,7 +274,7 @@ int main(){
                       printf("Error when allocating memory for the successors of node posB = %lu\n",posB);
                         exit(0);
 
-                      }                     
+                      }
                     }
                     nodes[posA].successors[nsuccdim[posA]-1] = idB;
                     nodes[posB].successors[nsuccdim[posB]-1] = idA;
@@ -269,11 +284,11 @@ int main(){
 
 
                   else{
-                    
+
                     if(nsuccdim[posB] == 0){
                       nodes[posB].successors = (unsigned long *) malloc(1*sizeof(unsigned long));
                       ++nsuccdim[posB];
-                      }                    
+                      }
 
                     else{
                       ++nsuccdim[posB];
@@ -283,7 +298,7 @@ int main(){
                       printf("Error when allocating memory for the successors of node posB = %lu\n",posB);
                         exit(0);
 
-                      }                     
+                      }
                     }
                     nodes[posB].successors[nsuccdim[posB]-1] = idA;
                   }
@@ -291,11 +306,11 @@ int main(){
                   //note that we have only changed the else inside with respect to the big if above
 
 
-               }        
+               }
           }
 
 
-                     
+
             p = strtok_single (NULL, delims);
             count++;
 
@@ -310,67 +325,32 @@ int main(){
    }
 
    //testing IDtoPOSITION:
-   //unsigned long id = 8670491;
+   //unsigned long id = 8670491;*/
    /*unsigned long id = 8670500;
    printf("\nThe position of the id %lu is %d \n ", id, IDtoPOSITION(nodes, nnodes, id) );
    int pos = 8;
    printf("\nThe id of the position %d is %lu \n ", pos, POSITIONtoID(nodes, pos) );*/
 
-   
-   
+
+
    /*for(int i = 1; i<=nnodes;i++){
     free(nodes[i].successors);
     free(nodes[i].name);
    }*/
-   //FILE * f = fopen("nsuccdims.txt", "a"); 
-   //FILE * f = fopen("nsuccdims_spain.txt", "a"); 
-
+   //FILE * f = fopen("nsuccdims.txt", "a");
+   //FILE * f = fopen("nsuccdims_spain.txt", "a");
+    /*
   for(unsigned long i = 0; i<nnodes;i++){
       //fprintf(f, "%u,", nsuccdim[i]);
       nodes[i].nsucc = nsuccdim[i];
-  
+
    }
-   
+
   //sed "s/,$//" nsuccdims.txt | tr "," "\n" | sort -rn | head -10
     printf("\n HE ACABAT! \n");
    free(line);
    exit(EXIT_SUCCESS);
 
 
-	return 0;
+	return 0;*/
 }//endmain
-
-
-
-
-void ExitError(char * message, int num){
-     fprintf(stderr, "%s\n", message);
-     exit(num);
-}
-
-
-
-char * strtok_single(char * str, char const * delims)
-{
-  //source: https://stackoverflow.com/questions/8705844/need-to-know-when-no-data-appears-between-two-token-separators-using-strtok
-  static char  * src = NULL;
-  char  *  p,  * ret = 0;
-
-  if (str != NULL)
-    src = str;
-
-  if (src == NULL)
-    return NULL;
-
-  if ((p = strpbrk (src, delims)) != NULL) {
-    *p  = 0;
-    ret = src;
-    src = ++p;
-
-  } else if (*src) {
-    ret = src;
-    src = NULL;
-  }
-
-  return ret;
-}
