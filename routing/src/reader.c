@@ -2,33 +2,48 @@
 #include "constants.h"
 #include "util.h"
 #include "graph.h"
+#include "reader.h"
 
-unsigned long CountLines(char line_type[], FILE *f)
+void Counter(FILE *f, unsigned long *nnodes, unsigned long *nways,
+             unsigned long *nedges)
 {
     char *line = NULL;
     size_t line_size = INPUT_MAX_CHARS_PER_LINE;
     size_t len;
-    char *first_field;
+    char *field;
+    int fn;
 
+    // Set counters to zero
+    *nnodes = 0;
+    *nways  = 0;
+    *nedges = 0;
+
+    // Read first line
     len = getline(&line, &line_size, f);
-
-    // Set the counter to zero
-    unsigned long counter = 0;
 
     // Count the number of lines starting by a specific line_type string
     while (len != -1)
     {
-        first_field = SplitFields(line, INPUT_FIELD_DELIMITORS);
-        if (StartsWith(first_field, line_type))
-            counter++;
+        field = SplitFields(line, INPUT_FIELD_DELIMITORS);
+        if (StartsWith("n", field))
+            (*nnodes)++;
+        else if (StartsWith("w", field))
+        {
+            fn = 0;
+            (*nways)++;
+            while(field)
+            {
+                if (fn > WAY_FIELD_NODES)
+                    (*nedges)++;
+                field = SplitFields(NULL, INPUT_FIELD_DELIMITORS);
+                fn++;
+            }
+        }
         len = getline(&line, &line_size, f);
     }
 
     // Set the file again to the beginning
     rewind(f);
-
-    // Return the number of matchs
-    return counter;
 }
 
 Node GetNodeFromFields(char *fields)
@@ -171,57 +186,42 @@ FILE *OpenFile(char file_dir[])
 
 }
 
-void ReadFile(char file_dir[])
+Node *ReadFile(char file_dir[], unsigned long *nnodes, unsigned long *nways,
+               unsigned long *nedges)
 {
+    // Open file
     FILE *f;
-
     f = OpenFile(file_dir);
 
-
-    //len = getline(&line, &len, f);
-    //printf("Retrieved line of length %zu:\n", len);
-    //printf("%s", line);
-
-    // Determine map size
-    printf("Determining map size...\n");
-
-    // Get the total number of nodes from the input file
-    unsigned long nnodes = CountLines("node", f);
-
-    // Get the total number of ways from the input file (useless)
-    unsigned long nways = CountLines("way", f);
-
-    // Print information about map file
-    printf(" Number of nodes to read: %lu\n", nnodes);
-    printf(" Number of ways to read: %lu\n", nways);
+    // Get the total number of nodes and ways from the input file
+    printf("Determining graph size...\n");
+    Counter(f, nnodes, nways, nedges);
+    printf(" Number of nodes to read: %lu\n", *nnodes);
+    printf(" Number of ways to read: %lu\n", *nways);
+    printf(" Number of edges to establish: %lu\n", *nedges);
 
     // Allocate memory to save all nodes
-    printf("Allocating memory to save all nodes...\n");
-    Node *node = (Node *) malloc(sizeof(Node) * nnodes);
+    printf("Allocating memory to save the graph...\n");
+    Node *node = (Node *) malloc(sizeof(Node) * (*nnodes));
     if (node == NULL)
-        ExitError("when allocating memory to save the nodes", 5);
+        ExitError("when allocating memory to save the graph", 5);
 
-    // Read and parse the file (line by line)
-    printf("Parsing data from file...\n");
-    printf(" Registering nodes...\n");
-    FileParser(f, "n", node, nnodes);
-    printf(" Linking ways...\n");
-    FileParser(f, "w", node, nnodes);
+    // Read and parse nodes (line by line)
+    printf("Parsing data from file...\n Registering nodes...\n");
+    FileParser(f, "n", node, *nnodes);
 
-    printf("%lu\n", node[nnodes-1].id);
-    Node *index1 = FromIdToNode(8670492, node, nnodes);
-    if (index1 == NULL)
-        printf("NULL!\n");
-    else
-        printf("ID: %lu\n", index1->id);
+    // Check if node ids were sorted in map file. If not, sort them
+    printf(" Checking nodes...\n");
+    if (!CheckNodes(node, *nnodes))
+            ExitError("when checking nodes. Nodes need to be previously "
+                      "sorted in map file.\n", 57);
 
-    Node *index = FromIdToNode(30227456, node, nnodes);
-    if (index == NULL)
-        printf("NULL!\n");
-    else
-        printf("ID: %lu\n", index->id);
-    printf("%lu:", node[0].id);
-    for (int i = 0; i < node[0].nsucc; i++)
-        printf(" %lu", node[0].successor[i]->id);
-    printf("\n");
+    // Link nodes according to ways
+    printf(" Stablishing edges...\n");
+    FileParser(f, "w", node, *nnodes);
+
+    // Close input map file
+    fclose(f);
+
+    return node;
 }

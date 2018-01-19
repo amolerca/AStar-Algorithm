@@ -20,6 +20,7 @@
 
 // Include Libraries
 #include "routing.h"
+#include "util.h"
 
 /*
 void RemoveNewLine(char* string)
@@ -81,8 +82,23 @@ char * SplitFields(char *str, char const *delims)
     return ret;
 }
 
+bool ParseYesNo()
+{
+    printf("Yes[Y] or No[N]?\n");
+
+    char ans[100];
+    scanf("%s", ans);
+
+    if (StartsWith(ans, "Yes") || StartsWith(ans, "yes"))
+        return true;
+    else if (StartsWith(ans, "No") || StartsWith(ans, "no"))
+        return false;
+
+    return ParseYesNo();
+}
+
 void ExitError(char * message, int num)
 {
-    fprintf(stderr, "Error: %s\n", message);
+    fprintf(stderr, "Error %d: %s\n", num, message);
     exit(num);
 }

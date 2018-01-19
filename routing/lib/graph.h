@@ -30,3 +30,8 @@ long BinarySearch(unsigned long id, Node *node, unsigned long left,
 void AddSuccessor(Node *A, Node *B);
 
 Node *FromIdToNode(unsigned long id, Node *node, unsigned long nnodes);
+
+bool CheckNodes(Node *node, unsigned long nnodes);
+
+Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
+                       unsigned long nedges);

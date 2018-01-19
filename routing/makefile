@@ -26,14 +26,14 @@ ifeq ($(UNAME), Linux)
 endif
 
 # define C source files
-_SRCS1 = routing.c constants.c util.c graph.c reader.c
+_SRCS1 = map_reader.c constants.c util.c graph.c reader.c binary.c
 
 # place them into the right repository folder
 SDIR = src
 SRCS1 = $(patsubst %,$(SDIR)/%,$(_SRCS1))
 
 # define executable files
-P1 = routing.exe
+P1 = map_reader.exe
 
 .PHONY: clean
 
