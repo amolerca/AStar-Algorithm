@@ -20,7 +20,7 @@
 
 // Include Libraries
 #include "routing.h"
-//#include "constants.h"
+#include "constants.h"
 #include "util.h"
 #include "graph.h"
 
@@ -96,6 +96,18 @@ long BinarySearch(unsigned long id, Node *node, unsigned long left,
 
    // No node found
    return -1;
+}
+
+unsigned long BinarySearchChkd(unsigned long id, Node *node,
+                               unsigned long left, unsigned long right,
+                               int errnum)
+{
+    long search_results = BinarySearch(id, node, left, right);
+
+    if (search_results == -1)
+        ExitError("when finding node by binary search in graph", errnum);
+
+    return (unsigned long) search_results;
 }
 
 void AddSuccessor(Node *A, Node *B)
@@ -198,11 +210,8 @@ Node *CleanGraph(Node *node, char *linked_nodes, unsigned long nnodes,
             for (j = 0; j < node[i].nsucc; j++)
             {
                 id = node[i].successor[j]->id;
-                search_results = BinarySearch(id, clean_node, 0, nnodes - 1);
-                if (search_results == -1)
-                    ExitError("when enhancing graph", 140);
-
-                clean_id = (unsigned long) search_results;
+                clean_id = BinarySearchChkd(id, clean_node, 0, nnodes - 1,
+                                            140);
                 //memcpy(&node[index], &clean_node[i], sizeof(Node));
                 clean_node[index].successor[j] = &clean_node[clean_id];
             }
@@ -275,4 +284,93 @@ Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
     printf(" No unlinked nodes were found\n");
 
     return node;
+}
+
+bool AnyOpen(AStarNode *asnode, unsigned long nnodes)
+{
+    int i;
+    for (i = 0; i < nnodes; i++)
+        if (asnode[i].stat == OPEN)
+            return true;
+    return false;
+}
+
+double HeuristicHaversine(AStarNode node1, AStarNode node2)
+{
+    double lat1 = ToRadians(node1.node->lat);
+    double lat2 = ToRadians(node2.node->lat);
+    double deltalat = lat2 - lat1;
+    double deltalon = ToRadians(node2.node->lon - node1.node->lon);
+    double a = sin(deltalat / 2) * sin(deltalat / 2) + cos(lat1) * cos(lat2) *
+               sin(deltalon / 2) * sin(deltalon / 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    return EARTH_RADIUS * c;
+}
+
+AStarNode *NodeWithLowestF(AStarNode *asnode, unsigned long nnodes)
+{
+    AStarNode *lowfnode = NULL;
+    int i;
+    for (i = 0; i < nnodes; i++)
+    {
+        if (asnode[i].stat == OPEN)
+        {
+            if (lowfnode != NULL)
+            {
+                if (lowfnode->f > asnode[i].f)
+                {
+                    lowfnode = &asnode[i];
+                }
+            }
+            else
+                lowfnode = &asnode[i];
+        }
+    }
+
+    if (lowfnode == NULL)
+        ExitError("unable to find the lowest f node", 150);
+
+    return lowfnode;
+}
+
+void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
+           unsigned long id_goal)
+{
+    AStarNode *asnode, *start_node, *goal_node, *current_node;
+    asnode = (AStarNode *) malloc(sizeof(AStarNode) * nnodes);
+
+    // Initiate status of all nodes
+    unsigned long i;
+    for (i = 0; i < nnodes; i++)
+    {
+        asnode[i].node = &node[i];
+        asnode[i].stat = NOT_VISITED;
+    }
+
+    // Search for start and goal nodes
+    id_start = BinarySearchChkd(id_start, node, 0, nnodes - 1, 140);
+    start_node = &asnode[id_start];
+    id_goal = BinarySearchChkd(id_goal, node, 0, nnodes - 1, 141);
+    goal_node = &asnode[id_goal];
+
+    // Initialization
+    asnode[id_start].stat = OPEN;
+    asnode[id_start].g = 0;
+    asnode[id_start].f = HeuristicHaversine(asnode[id_start], *goal_node);
+
+    printf("%f %f\n%f %f\n", asnode[id_start].node->lat,asnode[id_start].node->lon,asnode[id_goal].node->lat,asnode[id_goal].node->lon);
+    printf("%f\n", asnode[id_start].f);
+
+    while (AnyOpen(asnode, nnodes))
+    {
+        current_node = NodeWithLowestF(asnode, nnodes);
+
+        if (current_node->node->id == id_goal)
+            break;
+
+        //printf("%lu\n", current_node->node->id);
+        //asnode[id_start].stat = CLOSE;
+    }
+    //free(asnode);
 }

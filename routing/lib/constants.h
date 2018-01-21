@@ -14,3 +14,8 @@ const int WAY_FIELD_ONEWAY;
 const int WAY_FIELD_NODES;
 char TEST_MAP_DIR[100];
 char TEST_BIN_DIR[100];
+const unsigned char NOT_VISITED;
+const unsigned char OPEN;
+const unsigned char CLOSE;
+const float EARTH_RADIUS;
+const double PI;

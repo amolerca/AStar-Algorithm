@@ -31,15 +31,15 @@ int main()
 {
     Node *node;
     unsigned long nnodes, nways, nedges;
-    const char FILE_DIR[100] = "inputs/spain.map";
+    const char FILE_DIR[100] = "inputs/catalonia.map";
     const char BIN_DIR[100] = "bin/map.bin";
 
     // Read and check map file data
     node = ReadFile(FILE_DIR, &nnodes, &nways, &nedges);
 
     // Minimize graph inconsistencies
-    node = GraphEnhancement(node, &nnodes, nways, nedges);
+    //node = GraphEnhancement(node, &nnodes, nways, nedges);
 
     // Write graph to a binary file
-    WriteCmap(BIN_DIR, node, nnodes);
+    WriteBin(BIN_DIR, node, nnodes);
 }

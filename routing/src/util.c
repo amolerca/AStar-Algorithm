@@ -21,6 +21,7 @@
 // Include Libraries
 #include "routing.h"
 #include "util.h"
+#include "constants.h"
 
 /*
 void RemoveNewLine(char* string)
@@ -210,4 +211,9 @@ void Decompress(const char *bin_dir)
 
     // Free memory
     free(command);
+}
+
+double ToRadians(double degrees)
+{
+    return degrees * PI / 180;
 }

@@ -21,3 +21,5 @@ char *Concat(const char *s1, const char *s2);
 void Compress(const char *bin_dir);
 
 void Decompress(const char *bin_dir);
+
+double ToRadians(double degrees);

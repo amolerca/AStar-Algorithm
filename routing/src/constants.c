@@ -26,3 +26,13 @@ const int WAY_FIELD_NODES = 9;
 char TEST_MAP_DIR[100] = "inputs/catalonia.map";
 
 char TEST_BIN_DIR[100] = "bin/testmap.bin";
+
+const unsigned char NOT_VISITED = 0;
+
+const unsigned char OPEN = 1;
+
+const unsigned char CLOSE = 2;
+
+const float EARTH_RADIUS = 6371000;
+
+const double PI = 3.141592653589793;

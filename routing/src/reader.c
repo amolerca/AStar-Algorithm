@@ -176,7 +176,7 @@ Node *ReadFile(const char file_dir[], unsigned long *nnodes,
                unsigned long *nways, unsigned long *nedges)
 {
     // Let user know what we are doing
-    printf("Reading map file \'%s\'...\n", TEST_MAP_DIR);
+    printf("Reading map file \'%s\'...\n", file_dir);
 
     // Open file
     FILE *f;
