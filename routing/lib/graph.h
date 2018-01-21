@@ -16,13 +16,11 @@ struct Node
     Node **successor;          /* Pointer to successor nodes */
 };
 
-/*
-typedef struct
-{
+void PrintNodeByIndex(unsigned long id, Node *node, unsigned long nnodes);
 
+void PrintNodeById(unsigned long id, Node *node, unsigned long nnodes);
 
-} NodesList
-*/
+bool IsIndexed(Node *node, unsigned long nnodes);
 
 long BinarySearch(unsigned long id, Node *node, unsigned long left,
                   unsigned long right);
@@ -30,6 +28,11 @@ long BinarySearch(unsigned long id, Node *node, unsigned long left,
 void AddSuccessor(Node *A, Node *B);
 
 Node *FromIdToNode(unsigned long id, Node *node, unsigned long nnodes);
+
+char *GetLinkedNodes(Node *node, unsigned long nnodes);
+
+Node *CleanGraph(Node *node, char *linked_nodes, unsigned long nnodes,
+                 unsigned long n_del);
 
 bool CheckNodes(Node *node, unsigned long nnodes);
 

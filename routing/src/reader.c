@@ -165,7 +165,6 @@ void FileParser(FILE *f, char line_type[], Node *node, unsigned long nnodes)
                 GetSuccessorsFromFields(fields, node, nnodes);
         }
 
-
         len = getline(&line, &line_size, f);
     }
 
@@ -173,25 +172,15 @@ void FileParser(FILE *f, char line_type[], Node *node, unsigned long nnodes)
     rewind(f);
 }
 
-FILE *OpenFile(char file_dir[])
+Node *ReadFile(const char file_dir[], unsigned long *nnodes,
+               unsigned long *nways, unsigned long *nedges)
 {
-    FILE *f;
+    // Let user know what we are doing
+    printf("Reading map file \'%s\'...\n", TEST_MAP_DIR);
 
-    f = fopen(file_dir, "r");
-
-    if (f == NULL)
-        ExitError("when reading the input map file", 32);
-
-    return f;
-
-}
-
-Node *ReadFile(char file_dir[], unsigned long *nnodes, unsigned long *nways,
-               unsigned long *nedges)
-{
     // Open file
     FILE *f;
-    f = OpenFile(file_dir);
+    f = OpenFile(file_dir, "r", 32);
 
     // Get the total number of nodes and ways from the input file
     printf("Determining graph size...\n");
@@ -210,7 +199,7 @@ Node *ReadFile(char file_dir[], unsigned long *nnodes, unsigned long *nways,
     printf("Parsing data from file...\n Registering nodes...\n");
     FileParser(f, "n", node, *nnodes);
 
-    // Check if node ids were sorted in map file. If not, sort them
+    // Check if node ids were sorted in map file
     printf(" Checking nodes...\n");
     if (!CheckNodes(node, *nnodes))
             ExitError("when checking nodes. Nodes need to be previously "

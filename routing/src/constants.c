@@ -22,3 +22,7 @@ const int NODE_FIELD_LON = 10;
 const int WAY_FIELD_ONEWAY = 7;
 
 const int WAY_FIELD_NODES = 9;
+
+char TEST_MAP_DIR[100] = "inputs/catalonia.map";
+
+char TEST_BIN_DIR[100] = "bin/testmap.bin";

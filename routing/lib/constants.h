@@ -12,3 +12,5 @@ const int NODE_FIELD_LAT;
 const int NODE_FIELD_LON;
 const int WAY_FIELD_ONEWAY;
 const int WAY_FIELD_NODES;
+char TEST_MAP_DIR[100];
+char TEST_BIN_DIR[100];

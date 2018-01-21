@@ -1,0 +1,3 @@
+void TestBinWR();
+
+void TestEnh();

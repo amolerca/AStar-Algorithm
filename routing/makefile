@@ -26,25 +26,46 @@ ifeq ($(UNAME), Linux)
 endif
 
 # define C source files
-_SRCS1 = map_reader.c constants.c util.c graph.c reader.c binary.c
+_SRCS1 = bincreator.c constants.c util.c graph.c reader.c binary.c
+_SRCST = test.c constants.c util.c graph.c reader.c binary.c
 
 # place them into the right repository folder
 SDIR = src
 SRCS1 = $(patsubst %,$(SDIR)/%,$(_SRCS1))
+SRCST = $(patsubst %,$(SDIR)/%,$(_SRCST))
 
 # define executable files
-P1 = map_reader.exe
+P1 = bincreator.exe
+T = test.exe
 
 .PHONY: clean
 
 # run the compiler
-all: $(P1)
-	@echo The executable \'$(P1)\' has been compiled
+all: $(P1) $(T)
+	@echo All executables have been compiled
 
 $(P1):
-	@$(CC) $(CFLAGS) $(INCLUDES) -o $(P1) $(SRCS1) $(LFLAGS) $(LIBS)
+	@$(CC) $(CFLAGS) $(INCLUDES) -o $(P1) $(SRCS1) $(LFLAGS)
+
+$(T):
+	@$(CC) $(CFLAGS) $(INCLUDES) -o $(T) $(SRCST) $(LFLAGS)
+
+install: $(P1)
+	@echo The executable \'$(P1)\' has been compiled
+
+test: $(T)
+	@echo The executable \'$(T)\' has been compiled
 
 # in case we want to delete the executables
 clean:
-	@$(RM) -r $(P1)
-	@echo The executable \'$(P1)\' has been deleted
+	@$(RM) -r $(P1) $(T)
+	@echo All executables have been deleted
+
+help:
+	@echo --------------------
+	@echo \ make instructions:
+	@echo --------------------
+	@echo  - Type \'make\' to install all executables
+	@echo  - Type \'make install\' to install only the main executables of the program
+	@echo  - Type \'make test\' to install the testing executable of the program
+	@echo  - Type \'make clean\' to remove all executables

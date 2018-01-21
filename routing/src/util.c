@@ -48,6 +48,11 @@ void CopyString(char *target, char *source)
     *target = '\0';
 }
 
+bool EqualStrings(const char *s1, const char *s2)
+{
+    return strcmp(s1, s2) == 0;
+}
+
 bool StartsWith(const char *pre, const char *str)
 {
     return strncmp(pre, str, strlen(pre)) == 0;
@@ -101,4 +106,108 @@ void ExitError(char * message, int num)
 {
     fprintf(stderr, "Error %d: %s\n", num, message);
     exit(num);
+}
+
+FILE *OpenFile(const char file_dir[], char mode[], int i)
+{
+    FILE *f;
+
+    f = fopen(file_dir, mode);
+
+    if (f == NULL)
+    {
+        char *dir = Concat(SplitFields(strdup(file_dir), "."), ".cmap");
+        if (access(dir, F_OK) != -1)
+        {
+            Decompress(file_dir);
+            free(dir);
+            return OpenFile(file_dir, mode, i);
+        }
+        else
+        {
+            free(dir);
+            ExitError("when reading input file", i);
+        }
+    }
+
+    return f;
+
+}
+
+const char *SingleArgumentParser(int argc, char *argv[])
+{
+    if (argc == 1)
+        return NULL;
+
+    else if (argc != 2)
+        ExitError("when parsing program arguments", 45);
+
+    return argv[1];
+}
+
+char *Concat(const char *s1, const char *s2)
+{
+    const size_t len1 = strlen(s1);
+    const size_t len2 = strlen(s2);
+
+    char *result = malloc(len1+len2+1);
+    memcpy(result, s1, len1);
+    memcpy(result+len1, s2, len2+1);
+
+    return result;
+}
+
+void Compress(const char *bin_dir)
+{
+    printf("Compressing binary file...\n");
+
+    char *command, *dir, *c1, *c2;
+
+    // Run command to compress file
+    command = Concat("gzip -f ", bin_dir);
+    system(command);
+
+    // Free memory
+    free(command);
+
+    // Run command to change file extension
+    dir = Concat(SplitFields(strdup(bin_dir), "."), ".cmap");
+    c1 = Concat(bin_dir, ".gz ");
+    c2 = Concat("mv ", c1);
+    command = Concat(c2, dir);
+    system(command);
+
+    // Free memory
+    free(dir);
+    free(c1);
+    free(c2);
+    free(command);
+
+}
+
+void Decompress(const char *bin_dir)
+{
+    printf("Decompressing binary file...\n");
+
+    char *command, *dir, *c1, *c2;
+
+    // Run command to change file extension
+    dir = Concat(bin_dir, ".gz");
+    c1 = Concat(SplitFields(strdup(bin_dir), "."), ".cmap ");
+    c2 = Concat("mv ", c1);
+    command = Concat(c2, dir);
+    system(command);
+
+    //Free memory
+    free(dir);
+    free(c1);
+    free(c2);
+    free(command);
+
+    // Run command to decompress binary file
+    command = Concat("gzip -d ", Concat(bin_dir, ".gz"));
+    system(command);
+
+    // Free memory
+    free(command);
 }

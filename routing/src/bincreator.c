@@ -31,18 +31,15 @@ int main()
 {
     Node *node;
     unsigned long nnodes, nways, nedges;
-    char file_dir[100] = "inputs/spain.map";
-    char bin_dir[100] = "bin/map.bin";
+    const char FILE_DIR[100] = "inputs/spain.map";
+    const char BIN_DIR[100] = "bin/map.bin";
 
     // Read and check map file data
-    printf("Reading map file \'%s\'...\n", file_dir);
-    node = ReadFile(file_dir, &nnodes, &nways, &nedges);
+    node = ReadFile(FILE_DIR, &nnodes, &nways, &nedges);
 
     // Minimize graph inconsistencies
-    //printf("Minimizing graph inconsistencies...\n");
-    //node = GraphEnhancement(node, &nnodes, nways, nedges);
+    node = GraphEnhancement(node, &nnodes, nways, nedges);
 
     // Write graph to a binary file
-    printf("Writting graph to binary file \'%s\'...\n", bin_dir);
-    WriteBin(bin_dir, node, nnodes);
+    WriteCmap(BIN_DIR, node, nnodes);
 }

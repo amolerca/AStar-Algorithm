@@ -1,4 +1,5 @@
 *.exe
 *.map
+*.cmap
 *.bin
 .DS_Store
