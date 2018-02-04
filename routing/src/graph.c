@@ -367,20 +367,42 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
     asnode[id_start].g = 0;
     asnode[id_start].f = HeuristicHaversine(asnode[id_start], *goal_node);
 
-    printf("%f %f\n%f %f\n", asnode[id_start].node->lat,asnode[id_start].node->lon,asnode[id_goal].node->lat,asnode[id_goal].node->lon);
-    printf("%f\n", asnode[id_start].f);
-
+    printf("\nlatitude (start): %f longitude (start): %f\nlatitude (goal): %f longitude (goal): %f\n", asnode[id_start].node->lat,asnode[id_start].node->lon,asnode[id_goal].node->lat,asnode[id_goal].node->lon);
+    printf("Distance from node start to node goal: %f\n\n", asnode[id_start].f);
+    
+    //Extra stop condition parameters
     int max_iterations = 10000;
     int current_iteration = 0;
+
+    // Initialization of auxiliary id and node objects for successors
+    unsigned long id_successor;
+    AStarNOde * successor_node;
+    unsigned short current_nsucc;
 
     while ( AnyOpen(asnode, nnodes) & (current_iteration <= max_iterations) )
     {   
         current_iteration += 1;
+
         current_node = NodeWithLowestF(asnode, nnodes);
+        current_nsucc = current_node->node->nsucc;
 
         if (current_node->node->id == id_goal)
             break;
+
+        for (i = 0; i < current_nsucc; i++)
+        {
+            id_successor = BinarySearchChkd(current_node->node->successor[i]->id, node, 0, nnodes - 1, 142);
+            successor_node = &asnode[id_successor];
+
+
+
+
+
+        }
+
         
+        //END A* ITERATION
+
         if(current_iteration % 100 == 0){
              printf("Finished iteration %d\n", current_iteration);
         }
