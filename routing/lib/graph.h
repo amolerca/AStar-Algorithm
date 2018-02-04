@@ -24,6 +24,7 @@ typedef struct
     double f;                   /* f(n) = g(n) + h(n), g(n) is the path cost
                                    from start to node n and h(n) is the
                                    heuristic function at node n */
+    AStarNode *parent;          /* Parent of the (current) node*/
 } AStarNode;
 
 void PrintNodeByIndex(unsigned long id, Node *node, unsigned long nnodes);
