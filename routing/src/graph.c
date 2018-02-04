@@ -387,7 +387,9 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
         current_node = NodeWithLowestF(asnode, nnodes);
         current_nsucc = current_node->node->nsucc;
         id_current = BinarySearchChkd(current_node->node->id, node, 0, nnodes - 1, 200);
-
+        if(current_iteration == 1){
+                printf("ID of current node in iteration 1: %lu\n ", current_node->node->id);
+        }
 
         if (id_current == id_goal)
             break;
