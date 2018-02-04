@@ -218,7 +218,7 @@ Node *ReadFile(const char file_dir[], unsigned long *nnodes,
     FileParser(f, "n", node, *nnodes);
 
     PrintNodeById(13850449,node,*nnodes);
-    printf("despres del NODES file parser del ReadFile, intento printejar info del node start\n");
+    printf("despres del NODES file parser del ReadFile, intento printejar info d'un node amb name no buit\n");
 
     // Check if node ids were sorted in map file
     printf(" Checking nodes...\n");
@@ -230,7 +230,7 @@ Node *ReadFile(const char file_dir[], unsigned long *nnodes,
     printf(" Stablishing edges...\n");
     FileParser(f, "w", node, *nnodes);
     PrintNodeById(13850449,node,*nnodes);
-    printf("despres del WAYS file parser del ReadFile, intento printejar info del node start\n");
+    printf("despres del WAYS file parser del ReadFile, intento printejar info d'un node amb name no buit\n");
 
     // Close input map file
     fclose(f);

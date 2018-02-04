@@ -105,7 +105,16 @@ Node *ReadBin(const char bin_dir[], unsigned long *nnodes)
     Node *node = (Node *) malloc(sizeof(Node) * (*nnodes));
     if (node == NULL)
         ExitError("when allocating memory to save the graph", 7);
-
+    ///////////////////////////////////////////
+    //AFEGIT DANI
+    /////////////////////////////////////////////
+    for(int i = 0; i<(*nnodes) ;i++){
+        if( (node[i].name = (char *) malloc(sizeof(char) * 184)) == NULL){
+            ExitError("when allocating memory for a node.name in ReadBin from binary.c \n", 184);
+        } //184 is the maximum length of name (PDF of the assignment)
+    }
+    //////////////////////////////////////////////////////////////
+    
     // Allocate memory to save node successor ids
     unsigned long *ids;
     ids = (unsigned long *) malloc(sizeof(unsigned long) * nsucc);
@@ -147,7 +156,7 @@ Node *ReadBin(const char bin_dir[], unsigned long *nnodes)
                 index++;
             }
         }
-
+    printf(" ReadBIn finished...\n");
     // Close file
     fclose(f);
 
