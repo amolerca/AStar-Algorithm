@@ -39,8 +39,8 @@ int main()
     	printf("Name current node: %s\n", node[i].name);
 
     }*/
-    PrintNodeByIndex(0,node,nnodes);
-
+    PrintNodeById(771979683,node,nnodes); //dona el segmentation fault just quan va a printejar el nom
+    exit(0);
 
     AStar(node, nnodes, 771979683, 429854583);
 }
