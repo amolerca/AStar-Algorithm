@@ -316,6 +316,27 @@ double HeuristicHaversine(AStarNode node1, AStarNode node2)
     return EARTH_RADIUS * c;
 }
 
+double edge_weight(Node node1, Node node2)
+{
+    double lat1 = ToRadians(node1.lat);
+    double lat2 = ToRadians(node2.lat);
+    double deltalat = lat2 - lat1;
+    double deltalon = ToRadians(node2.lon - node1.lon);
+    double a = sin(deltalat / 2) * sin(deltalat / 2) + cos(lat1) * cos(lat2) *
+               sin(deltalon / 2) * sin(deltalon / 2);
+    double c = 2 * atan2(sqrt(a), sqrt( (1 - a)*(1+a)));
+
+    //double c = 2 * asin(sqrt(a));
+
+    /*double y1 = cos(lat2)*sin(deltalon);
+    double y2 = cos(lat1)*cos(lat2)-sin(lat1)*cos(lat2)*cos(deltalon);
+    double y = sqrt(y1*y1 + y2*y2);
+    double x = sin(lat1)*sin(lat2) + cos(lat1)*cos(lat2)*cos(deltalon);
+    double c = atan2(y,x);  */
+
+    return EARTH_RADIUS * c;
+}
+
 AStarNode *NodeWithLowestF(AStarNode *asnode, unsigned long nnodes)
 {
     AStarNode *lowfnode = NULL;
@@ -389,6 +410,7 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
         id_current = BinarySearchChkd(current_node->node->id, node, 0, nnodes - 1, 200);
         if(current_iteration == 1){
                 printf("ID of current node in iteration 1: %lu\n ", current_node->node->id);
+                printf("Name current node iteration 1: %c\n", current_node->node->name[0]);
         }
 
         if (id_current == id_goal)
@@ -426,10 +448,59 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
         }//END WHILE
         if(id_current != id_goal) ExitError("the OPEN list is empty.", 300);  // exit with error (the OPEN list is empty)  
         else{
+            printf("ID of current node in iteration %i: %lu\n ", current_iteration, current_node->node->id);
             printf("Optimal path found!\n");
         }
+        
+        //Print the path:
+       // Node *current_path_node = current_node->node;
+        //Node *next_path_node;
+        //Node **tmp;
+
+        unsigned long id = current_node->node->id;
+        double distance = 0.0;
+
+        current_iteration = 0;
+
+        printf("Node id: %lu | Distance: %.2lf | Name: %s \n", id, distance, current_node->node->name);
+        while( id != goal_node->node->id &  (current_iteration <= max_iterations) ){
+            current_iteration+=1;
+
+            //next_path_node = current_node->parent;
+            id = current_node->parent->id;
+            distance += edge_weight(*(current_node->parent), *(current_node->node));
+            printf("Node id: %lu | Distance: %.2lf | Name: %s \n", id, distance, current_node->parent->name);
+            //current_path_node = next_path_node; 
+        }
+
+       /* Node id:  240949599                             | Name: PlaÃ§a Santa Maria
+          Node id:  240944785 | Distance:           26.93 | Name: Carrer Abaixadors; PlaÃ§a Santa Maria*/
+
         //printf("%lu\n", current_node->node->id);
         //asnode[id_start].stat = CLOSE;
     //free(asnode);
 }
 
+/*
+
+ //Print the path:
+        Node *current_path_node = current_node->node;
+        Node *next_path_node;
+        //Node **tmp;
+
+        unsigned long id = current_path_node->id;
+        double distance = 0.0;
+
+        current_iteration = 0;
+
+        printf("Node id: %lu | Distance: %.2lf | Name: %s \n", id, distance, current_path_node->name);
+        while( id != goal_node->node->id &  (current_iteration <= max_iterations) ){
+            current_iteration+=1;
+
+            next_path_node = current_node->parent;
+            id = next_path_node->id;
+            distance += edge_weight(*next_path_node, *current_path_node);
+            printf("Node id: %lu | Distance: %.2lf | Name: %s \n", id, distance, next_path_node->name);
+            current_path_node = next_path_node; 
+        }
+*/

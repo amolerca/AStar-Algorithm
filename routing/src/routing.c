@@ -35,6 +35,12 @@ int main()
 
     // Read graph
     node = ReadBin(BIN_DIR, &nnodes);
+    /*for(int i = 0; i < nnodes; i++){
+    	printf("Name current node: %s\n", node[i].name);
+
+    }*/
+    PrintNodeByIndex(0,node,nnodes);
+
 
     AStar(node, nnodes, 771979683, 429854583);
 }
