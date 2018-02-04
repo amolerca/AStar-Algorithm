@@ -362,13 +362,20 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
     printf("%f %f\n%f %f\n", asnode[id_start].node->lat,asnode[id_start].node->lon,asnode[id_goal].node->lat,asnode[id_goal].node->lon);
     printf("%f\n", asnode[id_start].f);
 
-    while (AnyOpen(asnode, nnodes))
-    {
+    int max_iterations = 10000;
+    int current_iteration = 0;
+
+    while ( AnyOpen(asnode, nnodes) & (current_iteration <= max_iterations) )
+    {   
+        current_iteration += 1;
         current_node = NodeWithLowestF(asnode, nnodes);
 
         if (current_node->node->id == id_goal)
             break;
-
+        
+        if(current_iteration % 100 == 0){
+             printf("Finished iteration %d\n", current_iteration);
+        }
         //printf("%lu\n", current_node->node->id);
         //asnode[id_start].stat = CLOSE;
     }
