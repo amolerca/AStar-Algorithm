@@ -50,10 +50,12 @@ Node GetNodeFromFields(char *fields)
 {
     int fn = 0;
     Node node;
-    if( (node.name = (char *) malloc(sizeof(char) * 184)) == NULL){
+    int name_size;
+
+   /* if( (node.name = (char *) malloc(sizeof(char) * 184)) == NULL){
         ExitError("when allocating memory for a node.name in GetNodeFromFields from reader.c \n", 184);
     } //184 is the maximum length of name (PDF of the assignment)
-
+*/
     while(fields)
     {
         char *value = strdup(fields);
@@ -64,9 +66,16 @@ Node GetNodeFromFields(char *fields)
             node.id = atol(fields);
 
         // Get node NAME
-        else if (fn == NODE_FIELD_NAME)
-            node.name = strdup(fields);
-
+        else if (fn == NODE_FIELD_NAME){
+                    //node.name = strdup(fields);
+             name_size = strlen(fields);
+             if( (node.name = (char *) malloc(sizeof(char) * (name_size +1) )) == NULL){
+                ExitError("when allocating memory for a node.name in GetNodeFromFields from reader.c \n", 184);
+                } //184
+             node.name = strcpy(node.name, fields);
+             //printf("Just before printing the name in the GetNodeFromFields\n");
+             //printf("node.name = %s, fields = %s \n", node.name, fields);
+        }
         // Get node LATITUDE
         else if (fn == NODE_FIELD_LAT)
             node.lat = atof(fields);
@@ -208,6 +217,9 @@ Node *ReadFile(const char file_dir[], unsigned long *nnodes,
     printf("Parsing data from file...\n Registering nodes...\n");
     FileParser(f, "n", node, *nnodes);
 
+    PrintNodeById(13850449,node,*nnodes);
+    printf("despres del NODES file parser del ReadFile, intento printejar info del node start\n");
+
     // Check if node ids were sorted in map file
     printf(" Checking nodes...\n");
     if (!CheckNodes(node, *nnodes))
@@ -217,6 +229,8 @@ Node *ReadFile(const char file_dir[], unsigned long *nnodes,
     // Link nodes according to ways
     printf(" Stablishing edges...\n");
     FileParser(f, "w", node, *nnodes);
+    PrintNodeById(13850449,node,*nnodes);
+    printf("despres del WAYS file parser del ReadFile, intento printejar info del node start\n");
 
     // Close input map file
     fclose(f);
