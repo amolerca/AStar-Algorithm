@@ -375,7 +375,7 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
     int current_iteration = 0;
 
     // Initialization of auxiliary id and node objects for successors
-    unsigned long id_successor;
+    unsigned long id_successor, id_current;
     AStarNode * successor_node;
     unsigned short current_nsucc;
     double successor_current_cost;
@@ -386,13 +386,15 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
 
         current_node = NodeWithLowestF(asnode, nnodes);
         current_nsucc = current_node->node->nsucc;
+        id_current = BinarySearchChkd(current_node->node->id, node, 0, nnodes - 1, 200);
 
-        if (current_node->node->id == id_goal)
+
+        if (id_current == id_goal)
             break;
 
         for (i = 0; i < current_nsucc; i++)
         {
-            id_successor = BinarySearchChkd(current_node->node->successor[i]->id, node, 0, nnodes - 1, 142);
+            id_successor = BinarySearchChkd(current_node->node->successor[i]->id, node, 0, nnodes - 1, 201);
             successor_node = &asnode[id_successor];
             successor_current_cost = current_node->g + HeuristicHaversine(*current_node, *successor_node);
 
@@ -420,8 +422,10 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
             }  
 
         }//END WHILE
-        if(current_node->node->id != id_goal) ExitError("the OPEN list is empty.", 300);  // exit with error (the OPEN list is empty)  
-
+        if(id_current != id_goal) ExitError("the OPEN list is empty.", 300);  // exit with error (the OPEN list is empty)  
+        else{
+            printf("Optimal path found!\n");
+        }
         //printf("%lu\n", current_node->node->id);
         //asnode[id_start].stat = CLOSE;
     //free(asnode);
