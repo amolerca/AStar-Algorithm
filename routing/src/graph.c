@@ -303,7 +303,15 @@ double HeuristicHaversine(AStarNode node1, AStarNode node2)
     double deltalon = ToRadians(node2.node->lon - node1.node->lon);
     double a = sin(deltalat / 2) * sin(deltalat / 2) + cos(lat1) * cos(lat2) *
                sin(deltalon / 2) * sin(deltalon / 2);
-    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    double c = 2 * atan2(sqrt(a), sqrt( (1 - a)*(1+a)));
+
+    //double c = 2 * asin(sqrt(a));
+
+    /*double y1 = cos(lat2)*sin(deltalon);
+    double y2 = cos(lat1)*cos(lat2)-sin(lat1)*cos(lat2)*cos(deltalon);
+    double y = sqrt(y1*y1 + y2*y2);
+    double x = sin(lat1)*sin(lat2) + cos(lat1)*cos(lat2)*cos(deltalon);
+    double c = atan2(y,x);  */
 
     return EARTH_RADIUS * c;
 }
