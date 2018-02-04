@@ -50,6 +50,9 @@ Node GetNodeFromFields(char *fields)
 {
     int fn = 0;
     Node node;
+    if( (node.name = (char *) malloc(sizeof(char) * 184)) == NULL){
+        ExitError("when allocating memory for a node.name in GetNodeFromFields from reader.c \n", 184);
+    } //184 is the maximum length of name (PDF of the assignment)
 
     while(fields)
     {
@@ -194,6 +197,12 @@ Node *ReadFile(const char file_dir[], unsigned long *nnodes,
     Node *node = (Node *) malloc(sizeof(Node) * (*nnodes));
     if (node == NULL)
         ExitError("when allocating memory to save the graph", 5);
+    for(int i = 0; i<(*nnodes) ;i++){
+        if( (node[i].name = (char *) malloc(sizeof(char) * 184)) == NULL){
+            ExitError("when allocating memory for a node.name in ReadFile from reader.c \n", 184);
+        } //184 is the maximum length of name (PDF of the assignment)
+    }
+
 
     // Read and parse nodes (line by line)
     printf("Parsing data from file...\n Registering nodes...\n");
