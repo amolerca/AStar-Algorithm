@@ -376,10 +376,11 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
 
     // Initialization of auxiliary id and node objects for successors
     unsigned long id_successor;
-    AStarNOde * successor_node;
+    AStarNode * successor_node;
     unsigned short current_nsucc;
+    double successor_current_cost;
 
-    while ( AnyOpen(asnode, nnodes) & (current_iteration <= max_iterations) )
+    while ( AnyOpen(asnode, nnodes) )// & (current_iteration <= max_iterations) )
     {   
         current_iteration += 1;
 
@@ -393,21 +394,36 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
         {
             id_successor = BinarySearchChkd(current_node->node->successor[i]->id, node, 0, nnodes - 1, 142);
             successor_node = &asnode[id_successor];
+            successor_current_cost = current_node->g + HeuristicHaversine(*current_node, *successor_node);
 
+            if(successor_node->stat == OPEN){ // node_successor is in the OPEN list
+                if(successor_node->g <= successor_current_cost)  continue;                  
+                //g(node_successor) <= successor_current_cost continue (to line 20 )
+            } //END IF  
+            else if (successor_node->stat == CLOSE){ //node_successor is in the CLOSED list
+                if(successor_node->g <= successor_current_cost)  continue; 
+                successor_node->stat = CLOSE; // Move node_successor from the CLOSED list to the OPEN list
+            } //END ELSE IF 
+            else { //it means node has not been visited: node NOT_VISITED
+                    successor_node->stat = OPEN; // Add node_successor to the OPEN list
+                    successor_node->f = successor_node->g + HeuristicHaversine(*successor_node, *goal_node);
+                    // Set h(node_successor) to be the heuristic distance to node_goal
+            } //END ELSE
+                successor_node->g = successor_current_cost; //Set g(node_successor) = successor_current_cost                 
+                successor_node->parent = current_node->node; //Set the parent of node_successor to node_current
+         } //END FOR, "line 20"
+            current_node->stat = CLOSE; // Add node_current to the CLOSED list
 
-
-
-
-        }
-
-        
-        //END A* ITERATION
-
-        if(current_iteration % 100 == 0){
+         //END A* ITERATION
+            if(current_iteration % 100 == 0){
              printf("Finished iteration %d\n", current_iteration);
-        }
+            }  
+
+        }//END WHILE
+        if(current_node->node->id != id_goal) ExitError("the OPEN list is empty.", 300);  // exit with error (the OPEN list is empty)  
+
         //printf("%lu\n", current_node->node->id);
         //asnode[id_start].stat = CLOSE;
-    }
     //free(asnode);
 }
+
