@@ -22,7 +22,7 @@ LFLAGS = -L lib
 
 # define any libraries to link into executable (only Linux needs this)
 ifeq ($(UNAME), Linux)
-	LFLAGS = -D LINUX -lm -lbsd
+	LFLAGS = -D LINUX -lm
 endif
 
 # define C source files
