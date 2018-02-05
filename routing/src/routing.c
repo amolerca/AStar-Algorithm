@@ -39,8 +39,6 @@ int main()
     	printf("Name current node: %s\n", node[i].name);
 
     }*/
-    PrintNodeByIndex(0,node,nnodes);
-
 
     AStar(node, nnodes, 771979683, 429854583);
 }

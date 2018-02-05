@@ -390,7 +390,7 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
 
     printf("\nlatitude (start): %f longitude (start): %f\nlatitude (goal): %f longitude (goal): %f\n", asnode[id_start].node->lat,asnode[id_start].node->lon,asnode[id_goal].node->lat,asnode[id_goal].node->lon);
     printf("Distance from node start to node goal: %f\n\n", asnode[id_start].f);
-    
+
     //Extra stop condition parameters
     int max_iterations = 10000;
     int current_iteration = 0;
@@ -401,14 +401,15 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
     unsigned short current_nsucc;
     double successor_current_cost;
 
-    while ( AnyOpen(asnode, nnodes) )// & (current_iteration <= max_iterations) )
-    {   
+    while (AnyOpen(asnode, nnodes))
+    {
         current_iteration += 1;
 
         current_node = NodeWithLowestF(asnode, nnodes);
         current_nsucc = current_node->node->nsucc;
         id_current = BinarySearchChkd(current_node->node->id, node, 0, nnodes - 1, 200);
-        if(current_iteration == 1){
+        if (current_iteration == 1)
+        {
                 printf("ID of current node in iteration 1: %lu\n ", current_node->node->id);
                 printf("Name current node iteration 1: %c\n", current_node->node->name[0]);
         }
@@ -423,19 +424,19 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
             successor_current_cost = current_node->g + HeuristicHaversine(*current_node, *successor_node);
 
             if(successor_node->stat == OPEN){ // node_successor is in the OPEN list
-                if(successor_node->g <= successor_current_cost)  continue;                  
+                if(successor_node->g <= successor_current_cost)  continue;
                 //g(node_successor) <= successor_current_cost continue (to line 20 )
-            } //END IF  
+            } //END IF
             else if (successor_node->stat == CLOSE){ //node_successor is in the CLOSED list
-                if(successor_node->g <= successor_current_cost)  continue; 
+                if(successor_node->g <= successor_current_cost)  continue;
                 successor_node->stat = CLOSE; // Move node_successor from the CLOSED list to the OPEN list
-            } //END ELSE IF 
+            } //END ELSE IF
             else { //it means node has not been visited: node NOT_VISITED
                     successor_node->stat = OPEN; // Add node_successor to the OPEN list
                     successor_node->f = successor_node->g + HeuristicHaversine(*successor_node, *goal_node);
                     // Set h(node_successor) to be the heuristic distance to node_goal
             } //END ELSE
-                successor_node->g = successor_current_cost; //Set g(node_successor) = successor_current_cost                 
+                successor_node->g = successor_current_cost; //Set g(node_successor) = successor_current_cost
                 successor_node->parent = current_node->node; //Set the parent of node_successor to node_current
          } //END FOR, "line 20"
             current_node->stat = CLOSE; // Add node_current to the CLOSED list
@@ -443,15 +444,15 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
          //END A* ITERATION
             if(current_iteration % 100 == 0){
              printf("Finished iteration %d\n", current_iteration);
-            }  
+            }
 
         }//END WHILE
-        if(id_current != id_goal) ExitError("the OPEN list is empty.", 300);  // exit with error (the OPEN list is empty)  
+        if(id_current != id_goal) ExitError("the OPEN list is empty.", 300);  // exit with error (the OPEN list is empty)
         else{
             printf("ID of current node in iteration %i: %lu\n ", current_iteration, current_node->node->id);
             printf("Optimal path found!\n");
         }
-        
+
         //Print the path:
        // Node *current_path_node = current_node->node;
         //Node *next_path_node;
@@ -463,14 +464,15 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
         current_iteration = 0;
 
         printf("Node id: %lu | Distance: %.2lf | Name: %s \n", id, distance, current_node->node->name);
-        while( id != goal_node->node->id &  (current_iteration <= max_iterations) ){
-            current_iteration+=1;
+        while (id != goal_node->node->id && (current_iteration <= max_iterations))
+        {
+            current_iteration += 1;
 
             //next_path_node = current_node->parent;
             id = current_node->parent->id;
             distance += edge_weight(*(current_node->parent), *(current_node->node));
             printf("Node id: %lu | Distance: %.2lf | Name: %s \n", id, distance, current_node->parent->name);
-            //current_path_node = next_path_node; 
+            //current_path_node = next_path_node;
         }
 
        /* Node id:  240949599                             | Name: PlaÃ§a Santa Maria
@@ -501,6 +503,6 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
             id = next_path_node->id;
             distance += edge_weight(*next_path_node, *current_path_node);
             printf("Node id: %lu | Distance: %.2lf | Name: %s \n", id, distance, next_path_node->name);
-            current_path_node = next_path_node; 
+            current_path_node = next_path_node;
         }
 */

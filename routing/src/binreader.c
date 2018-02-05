@@ -34,5 +34,5 @@ int main()
     const char BIN_DIR[100] = "bin/map.bin";
 
     // Read graph
-    node = ReadCmap(BIN_DIR, &nnodes);
+    node = ReadBin(BIN_DIR, &nnodes);
 }

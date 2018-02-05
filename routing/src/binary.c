@@ -59,6 +59,17 @@ void WriteBin(const char bin_dir[], Node *node, unsigned long nnodes)
     if ((fwrite(ids, sizeof(unsigned long), nsucc, f)) != nsucc)
         ExitError("when writing node successors to binary file", 15);
 
+    // Write node names
+    unsigned int name_len;
+    for (i = 0; i < nnodes; i++)
+    {
+        name_len = strlen(node[i].name);
+        if ((fwrite(&name_len, sizeof(unsigned int), 1, f)) != 1)
+            ExitError("when writing node names", 16);
+        if ((fwrite(node[i].name, sizeof(char), name_len, f)) != name_len)
+            ExitError("when writing node names", 17);
+    }
+
     // Free memory
     free(ids);
 
@@ -147,6 +158,19 @@ Node *ReadBin(const char bin_dir[], unsigned long *nnodes)
                 index++;
             }
         }
+
+    // Read node names
+    unsigned int name_len;
+    char *node_name;
+    for (i = 0; i < *nnodes; i++)
+    {
+        if ((fread(&name_len, sizeof(unsigned int), 1, f)) != 1)
+            ExitError("when node names from binary file", 74);
+        node_name = (char *) malloc(sizeof(char) * name_len);
+        if ((fread(node_name, sizeof(char), name_len, f)) != name_len)
+            ExitError("when node names from binary file", 75);
+        node[i].name = node_name;
+    }
 
     // Close file
     fclose(f);
