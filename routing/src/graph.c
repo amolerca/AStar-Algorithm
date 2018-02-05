@@ -429,7 +429,7 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
             } //END IF
             else if (successor_node->stat == CLOSE){ //node_successor is in the CLOSED list
                 if(successor_node->g <= successor_current_cost)  continue;
-                successor_node->stat = CLOSE; // Move node_successor from the CLOSED list to the OPEN list
+                successor_node->stat = OPEN; // Move node_successor from the CLOSED list to the OPEN list
             } //END ELSE IF
             else { //it means node has not been visited: node NOT_VISITED
                     successor_node->stat = OPEN; // Add node_successor to the OPEN list
@@ -453,56 +453,27 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
             printf("Optimal path found!\n");
         }
 
-        //Print the path:
-       // Node *current_path_node = current_node->node;
-        //Node *next_path_node;
-        //Node **tmp;
+        //Print the path (from node goal to node start, i.e., inverted path):
 
         unsigned long id = current_node->node->id;
+        unsigned long id_current_antecessor;
         double distance = 0.0;
 
         current_iteration = 0;
 
         printf("Node id: %lu | Distance: %.2lf | Name: %s \n", id, distance, current_node->node->name);
-        while (id != goal_node->node->id && (current_iteration <= max_iterations))
+        while (id != start_node->node->id && (current_iteration <= max_iterations))
         {
             current_iteration += 1;
 
-            //next_path_node = current_node->parent;
             id = current_node->parent->id;
             distance += edge_weight(*(current_node->parent), *(current_node->node));
             printf("Node id: %lu | Distance: %.2lf | Name: %s \n", id, distance, current_node->parent->name);
-            //current_path_node = next_path_node;
+            id_current_antecessor = BinarySearchChkd(id, node, 0, nnodes - 1, 205);
+            current_node = &asnode[id_current_antecessor]; 
         }
-
-       /* Node id:  240949599                             | Name: PlaÃ§a Santa Maria
-          Node id:  240944785 | Distance:           26.93 | Name: Carrer Abaixadors; PlaÃ§a Santa Maria*/
 
         //printf("%lu\n", current_node->node->id);
         //asnode[id_start].stat = CLOSE;
     //free(asnode);
 }
-
-/*
-
- //Print the path:
-        Node *current_path_node = current_node->node;
-        Node *next_path_node;
-        //Node **tmp;
-
-        unsigned long id = current_path_node->id;
-        double distance = 0.0;
-
-        current_iteration = 0;
-
-        printf("Node id: %lu | Distance: %.2lf | Name: %s \n", id, distance, current_path_node->name);
-        while( id != goal_node->node->id &  (current_iteration <= max_iterations) ){
-            current_iteration+=1;
-
-            next_path_node = current_node->parent;
-            id = next_path_node->id;
-            distance += edge_weight(*next_path_node, *current_path_node);
-            printf("Node id: %lu | Distance: %.2lf | Name: %s \n", id, distance, next_path_node->name);
-            current_path_node = next_path_node;
-        }
-*/
