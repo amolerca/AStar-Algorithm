@@ -22,6 +22,7 @@
 #include "routing.h"
 #include "util.h"
 #include "constants.h"
+#include "graph.h"
 
 /*
 void RemoveNewLine(char* string)

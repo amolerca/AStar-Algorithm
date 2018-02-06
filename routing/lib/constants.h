@@ -19,3 +19,4 @@ const unsigned char OPEN;
 const unsigned char CLOSE;
 const float EARTH_RADIUS;
 const double PI;
+const int DYN_REALLOC_SIZE;

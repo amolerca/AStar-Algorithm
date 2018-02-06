@@ -3,6 +3,7 @@
 /*****************************************************************************/
 
 typedef struct Node Node;
+typedef struct AStarNode AStarNode;
 
 struct Node
 {
@@ -16,16 +17,22 @@ struct Node
     Node **successor;          /* Pointer to successor nodes */
 };
 
-typedef struct
+struct AStarNode
 {
     Node *node;                 /* Pointer to a node */
     unsigned char stat;         /* Node status */
     double g;                   /* Path cost from start to current node */
-    double f;                   /* f(n) = g(n) + h(n), g(n) is the path cost
-                                   from start to node n and h(n) is the
-                                   heuristic function at node n */
-    Node *parent;               /* Parent of the (current) node*/
-} AStarNode;
+    double h;                   /* Cost from current node to goal node
+                                   predicted by Heuristic function */
+    AStarNode *parent;          /* Parent of the (current) node*/
+};
+
+typedef struct
+{
+    AStarNode **node;                /* Pointer to node pointers */
+    unsigned long length;       /* Current length of the dynamic array */
+    unsigned long alloc_len;    /* Allocated length */
+} DynamicNodeArray;
 
 void PrintNodeByIndex(unsigned long id, Node *node, unsigned long nnodes);
 
@@ -54,9 +61,10 @@ bool CheckNodes(Node *node, unsigned long nnodes);
 Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
                        unsigned long nedges);
 
-bool AnyOpen(AStarNode *asnode, unsigned long nnodes);
-
 double HeuristicHaversine(AStarNode node1, AStarNode node2);
+
+void PrintSolution(AStarNode *asnode, Node *node, unsigned long nnodes,
+                   AStarNode *start_node, AStarNode *goal_node);
 
 void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
            unsigned long id_goal);

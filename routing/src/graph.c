@@ -286,15 +286,6 @@ Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
     return node;
 }
 
-bool AnyOpen(AStarNode *asnode, unsigned long nnodes)
-{
-    int i;
-    for (i = 0; i < nnodes; i++)
-        if (asnode[i].stat == OPEN)
-            return true;
-    return false;
-}
-
 double HeuristicHaversine(AStarNode node1, AStarNode node2)
 {
     double lat1 = ToRadians(node1.node->lat);
@@ -337,37 +328,104 @@ double edge_weight(Node node1, Node node2)
     return EARTH_RADIUS * c;
 }
 
-AStarNode *NodeWithLowestF(AStarNode *asnode, unsigned long nnodes)
+void AppendToDynArray(DynamicNodeArray *array, AStarNode *asnode)
 {
-    AStarNode *lowfnode = NULL;
-    int i;
-    for (i = 0; i < nnodes; i++)
+    //printf("append: ");
+    if (array->length == array->alloc_len)
     {
-        if (asnode[i].stat == OPEN)
+        array->alloc_len += DYN_REALLOC_SIZE;
+        array->node = (AStarNode **) realloc(array->node,
+                                            sizeof(AStarNode *) *
+                                            (array->alloc_len));
+    }
+    array->node[array->length] = asnode;
+    array->length++;
+    /*
+    printf("%lu, %lu\n", array->length, array->alloc_len);
+    for (unsigned long i = 0; i < array->length; i++)
+        printf("%lu ", array->node[i]->node->id);
+    printf("\n");*/
+
+}
+
+void RemoveFromDynArray(DynamicNodeArray *array, AStarNode *asnode)
+{
+    //printf("remove: ");
+    unsigned long i, j = 0;
+    bool found = false;
+    for (i = 0; i < array->length; i++)
+    {
+        if (array->node[i]->node->id == asnode->node->id)
+            found = true;
+        else
         {
-            if (lowfnode != NULL)
-            {
-                if (lowfnode->f > asnode[i].f)
-                {
-                    lowfnode = &asnode[i];
-                }
-            }
-            else
-                lowfnode = &asnode[i];
+            array->node[j] = array->node[i];
+            j++;
         }
     }
 
-    if (lowfnode == NULL)
-        ExitError("unable to find the lowest f node", 150);
+    if (!found)
+        ExitError("when removing node from dynamic array. Node to remove not"
+                  " found", 420);
+
+    //array->node[i] = NULL;
+    array->length--;
+    /*
+    printf("%lu\n", array->length);
+    for (i = 0; i < array->length; i++)
+        printf("%lu ", array->node[i]->node->id);
+    printf("\n");*/
+}
+
+AStarNode *NodeWithLowestF(DynamicNodeArray *open_list)
+{
+    AStarNode *lowfnode = open_list->node[0];
+    unsigned long i;
+
+    for (i = 1; i < open_list->length; i++)
+        if (lowfnode->g + lowfnode->h >
+            open_list->node[i]->g + open_list->node[i]->h)
+            lowfnode = open_list->node[i];
 
     return lowfnode;
+}
+
+void PrintSolution(AStarNode *asnode, Node *node, unsigned long nnodes,
+                   AStarNode *start_node, AStarNode *goal_node)
+{
+    printf("Results:\n");
+    printf(" Starting node:\n");
+    PrintNodeById(start_node->node->id, node, nnodes);
+    printf(" Goal node:\n");
+    PrintNodeById(goal_node->node->id, node, nnodes);
+    printf(" Distance: %f\n", goal_node->h + goal_node->g);
+    printf(" Path:\n");
+
+    AStarNode *current_node = goal_node;
+    printf("  Node id: %10lu | Distance: %5.0f | Name: %s\n", current_node->node->id, current_node->g, current_node->node->name);
+    while (current_node->node->id != start_node->node->id)
+    {
+        current_node = current_node->parent;
+        printf("  Node id: %10lu | Distance: %5.0f | Name: %s\n", current_node->node->id, current_node->g, current_node->node->name);
+    }
 }
 
 void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
            unsigned long id_goal)
 {
-    AStarNode *asnode, *start_node, *goal_node, *current_node;
+    AStarNode *asnode, *start_node, *goal_node, *current_node, *successor_node;
     asnode = (AStarNode *) malloc(sizeof(AStarNode) * nnodes);
+    unsigned short j;
+    unsigned long id_successor;
+    double successor_current_cost;
+
+    // Initialize dynamic array to save OPEN nodes
+    DynamicNodeArray array, *open_list;
+    open_list = &array;
+    open_list->node = (AStarNode **) malloc(sizeof(AStarNode *) *
+                                           DYN_REALLOC_SIZE);
+    open_list->length = 0;
+    open_list->alloc_len = DYN_REALLOC_SIZE;
 
     // Initiate status of all nodes
     unsigned long i;
@@ -383,126 +441,92 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
     id_goal = BinarySearchChkd(id_goal, node, 0, nnodes - 1, 141);
     goal_node = &asnode[id_goal];
 
-    // Initialization
-    asnode[id_start].stat = OPEN;
-    asnode[id_start].g = 0;
-    asnode[id_start].f = HeuristicHaversine(asnode[id_start], *goal_node);
+    // AStar initialization
+    start_node->stat = OPEN;
+    AppendToDynArray(open_list, start_node);
+    start_node->g = 0;
+    start_node->h = HeuristicHaversine(*start_node, *goal_node);
 
     printf("\nlatitude (start): %f longitude (start): %f\nlatitude (goal): %f longitude (goal): %f\n", asnode[id_start].node->lat,asnode[id_start].node->lon,asnode[id_goal].node->lat,asnode[id_goal].node->lon);
-    printf("Distance from node start to node goal: %f\n\n", asnode[id_start].f);
+    printf("Distance from node start to node goal: %f\n\n", start_node->h);
 
-    //Extra stop condition parameters
-    int max_iterations = 10000;
-    int current_iteration = 0;
-
-    // Initialization of auxiliary id and node objects for successors
-    unsigned long id_successor, id_current;
-    AStarNode * successor_node;
-    unsigned short current_nsucc;
-    double successor_current_cost;
-
-    while (AnyOpen(asnode, nnodes))
+    // @TODO Implement a dynamic array to save all OPEN nodes. It will speed up
+    // both the while loop check and the NodeWithLowestF() function
+    unsigned int current_iteration = 0;
+    printf("%lu\n", open_list->length);
+    while (open_list->length != 0)
     {
         current_iteration += 1;
 
-        current_node = NodeWithLowestF(asnode, nnodes);
-        current_nsucc = current_node->node->nsucc;
-        id_current = BinarySearchChkd(current_node->node->id, node, 0, nnodes - 1, 200);
+        current_node = NodeWithLowestF(open_list);
+
         if (current_iteration == 1)
         {
-                printf("ID of current node in iteration 1: %lu\n ", current_node->node->id);
-                printf("Name current node iteration 1: %c\n", current_node->node->name[0]);
+            printf("ID of current node in iteration 1: %lu\n ", current_node->node->id);
+            printf("Name current node iteration 1: %s\n", current_node->node->name);
         }
 
-        if (id_current == id_goal)
+        // Finish loop in case of finding a solution
+        if (current_node->node->id == goal_node->node->id)
             break;
 
-        for (i = 0; i < current_nsucc; i++)
+        for (j = 0; j < current_node->node->nsucc; j++)
         {
-            id_successor = BinarySearchChkd(current_node->node->successor[i]->id, node, 0, nnodes - 1, 201);
+            id_successor = BinarySearchChkd(current_node->node->successor[j]->id, node, 0, nnodes - 1, 201);
             successor_node = &asnode[id_successor];
             successor_current_cost = current_node->g + HeuristicHaversine(*current_node, *successor_node);
 
-            if(successor_node->stat == OPEN){ // node_successor is in the OPEN list
-                if(successor_node->g <= successor_current_cost)  continue;
-                //g(node_successor) <= successor_current_cost continue (to line 20 )
-            } //END IF
-            else if (successor_node->stat == CLOSE){ //node_successor is in the CLOSED list
-                if(successor_node->g <= successor_current_cost)  continue;
-                successor_node->stat = CLOSE; // Move node_successor from the CLOSED list to the OPEN list
-            } //END ELSE IF
-            else { //it means node has not been visited: node NOT_VISITED
-                    successor_node->stat = OPEN; // Add node_successor to the OPEN list
-                    successor_node->f = successor_node->g + HeuristicHaversine(*successor_node, *goal_node);
-                    // Set h(node_successor) to be the heuristic distance to node_goal
-            } //END ELSE
-                successor_node->g = successor_current_cost; //Set g(node_successor) = successor_current_cost
-                successor_node->parent = current_node->node; //Set the parent of node_successor to node_current
-         } //END FOR, "line 20"
-            current_node->stat = CLOSE; // Add node_current to the CLOSED list
-
-         //END A* ITERATION
-            if(current_iteration % 100 == 0){
-             printf("Finished iteration %d\n", current_iteration);
+            // node_successor is in the OPEN list
+            if (successor_node->stat == OPEN)
+            {
+                if(successor_node->g <= successor_current_cost)
+                    continue;
             }
 
-        }//END WHILE
-        if(id_current != id_goal) ExitError("the OPEN list is empty.", 300);  // exit with error (the OPEN list is empty)
-        else{
-            printf("ID of current node in iteration %i: %lu\n ", current_iteration, current_node->node->id);
-            printf("Optimal path found!\n");
+            // node_successor is in the CLOSED list
+            else if (successor_node->stat == CLOSE)
+            {
+                if(successor_node->g <= successor_current_cost)
+                    continue;
+                // Move node_successor from the CLOSED list to the OPEN list
+                AppendToDynArray(open_list, successor_node);
+                successor_node->stat = OPEN;
+            }
+
+            // node_successor has not been visited so far
+            else
+            {
+                AppendToDynArray(open_list, successor_node);
+                successor_node->stat = OPEN; // Add node_successor to the OPEN list
+                successor_node->h = HeuristicHaversine(*successor_node, *goal_node);
+                    // Set h(node_successor) to be the heuristic distance to node_goal
+            }
+
+            // In case that either the successor current cost is lower than the
+            // previous one or
+            successor_node->g = successor_current_cost; //Set g(node_successor) = successor_current_cost
+            successor_node->parent = current_node; //Set the parent of node_successor to node_current
         }
 
-        //Print the path:
-       // Node *current_path_node = current_node->node;
-        //Node *next_path_node;
-        //Node **tmp;
+        RemoveFromDynArray(open_list, current_node);
+        current_node->stat = CLOSE; // Add node_current to the CLOSED list
 
-        unsigned long id = current_node->node->id;
-        double distance = 0.0;
-
-        current_iteration = 0;
-
-        printf("Node id: %lu | Distance: %.2lf | Name: %s \n", id, distance, current_node->node->name);
-        while (id != goal_node->node->id && (current_iteration <= max_iterations))
+         //END A* ITERATION
+        if (current_iteration % 100000 == 0)
         {
-            current_iteration += 1;
-
-            //next_path_node = current_node->parent;
-            id = current_node->parent->id;
-            distance += edge_weight(*(current_node->parent), *(current_node->node));
-            printf("Node id: %lu | Distance: %.2lf | Name: %s \n", id, distance, current_node->parent->name);
-            //current_path_node = next_path_node;
+            printf("Finished iteration %d\n", current_iteration);
+            printf("Current node %lu\n", current_node->node->id);
         }
 
-       /* Node id:  240949599                             | Name: PlaÃ§a Santa Maria
-          Node id:  240944785 | Distance:           26.93 | Name: Carrer Abaixadors; PlaÃ§a Santa Maria*/
+    }
 
-        //printf("%lu\n", current_node->node->id);
-        //asnode[id_start].stat = CLOSE;
-    //free(asnode);
+    if (current_node->node->id != goal_node->node->id)
+        ExitError("when finishing A* algorithm. OPEN list is empty and no "
+                  "solution was found", 460);
+
+    printf("ID of current node in iteration %i: %lu\n ", current_iteration,
+           current_node->node->id);
+    printf("Optimal path found!\n");
+
+    PrintSolution(asnode, node, nnodes, start_node, goal_node);
 }
-
-/*
-
- //Print the path:
-        Node *current_path_node = current_node->node;
-        Node *next_path_node;
-        //Node **tmp;
-
-        unsigned long id = current_path_node->id;
-        double distance = 0.0;
-
-        current_iteration = 0;
-
-        printf("Node id: %lu | Distance: %.2lf | Name: %s \n", id, distance, current_path_node->name);
-        while( id != goal_node->node->id &  (current_iteration <= max_iterations) ){
-            current_iteration+=1;
-
-            next_path_node = current_node->parent;
-            id = next_path_node->id;
-            distance += edge_weight(*next_path_node, *current_path_node);
-            printf("Node id: %lu | Distance: %.2lf | Name: %s \n", id, distance, next_path_node->name);
-            current_path_node = next_path_node;
-        }
-*/

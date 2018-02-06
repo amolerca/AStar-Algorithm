@@ -36,3 +36,5 @@ const unsigned char CLOSE = 2;
 const float EARTH_RADIUS = 6371000;
 
 const double PI = 3.141592653589793;
+
+const int DYN_REALLOC_SIZE = 10;
