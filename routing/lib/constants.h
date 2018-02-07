@@ -18,6 +18,8 @@ const unsigned char NOT_VISITED;
 const unsigned char OPEN;
 const unsigned char CLOSE;
 const float EARTH_RADIUS;
+const float EARTH_EQUATORIAL_RADIUS;
+const float EARTH_POLAR_RADIUS;
 const double PI;
 const int DYN_REALLOC_SIZE;
 const int ROUTE_REALLOC_SIZE;

@@ -35,6 +35,10 @@ const unsigned char CLOSE = 2;
 
 const float EARTH_RADIUS = 6371000;
 
+const float EARTH_EQUATORIAL_RADIUS = 6378137;
+
+const float EARTH_POLAR_RADIUS = 6356.752;
+
 const double PI = 3.141592653589793;
 
 const int DYN_REALLOC_SIZE = 10;
