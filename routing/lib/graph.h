@@ -63,6 +63,7 @@ Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
 
 double Haversine_distance(AStarNode node1, AStarNode node2);
 double Equirectangular_distance(AStarNode node1, AStarNode node2);
+double Spherical_law_of_cosines_distance(AStarNode node1, AStarNode node2);
 
 void AppendToDynArray(DynamicNodeArray *array, AStarNode *asnode);
 

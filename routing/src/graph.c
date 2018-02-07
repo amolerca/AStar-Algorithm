@@ -319,6 +319,21 @@ double Equirectangular_distance(AStarNode node1, AStarNode node2)
     return EARTH_RADIUS * c;
 }
 
+double Spherical_law_of_cosines_distance(AStarNode node1, AStarNode node2)
+{
+    double lat1 = ToRadians(node1.node->lat);
+    double lat2 = ToRadians(node2.node->lat);
+    double deltalat = lat2 - lat1;
+    double deltalon = ToRadians(node2.node->lon - node1.node->lon);
+   
+    double c = acos(sin(lat1)*sin(lat2) + cos(lat1)*cos(lat2)*cos(deltalon));
+
+    /*var φ1 = lat1.toRadians(), φ2 = lat2.toRadians(), Δλ = (lon2-lon1).toRadians(), R = 6371e3; // gives d in metres
+      var d = Math.acos( Math.sin(φ1)*Math.sin(φ2) + Math.cos(φ1)*Math.cos(φ2) * Math.cos(Δλ) ) * R;*/
+
+    return EARTH_RADIUS * c;
+}
+
 /*
 double edge_weight(Node node1, Node node2)
 {
