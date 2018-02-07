@@ -31,3 +31,7 @@ unsigned int MakeAQuery(char query[], unsigned int min, unsigned int max);
 void PrintOutDistOptions();
 
 void AStarWelcome();
+
+void PrintOutIterationInfo(unsigned int current_iteration, double g, double h);
+
+void PrintOutResults(unsigned int current_iteration, double g, double h);

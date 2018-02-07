@@ -107,7 +107,7 @@ Node *ReadBin(const char bin_dir[], unsigned long *nnodes)
     f = OpenFile(bin_dir, "r", 34);
 
     // Read total number of nodes
-    printf(" Reading number of nodes and successors...\n");
+    printf(" - Reading number of nodes and successors...\n");
     unsigned long nsucc;
     if ((fread(nnodes, sizeof(unsigned long), 1, f)) != 1)
         ExitError("when reading binary file", 70);
@@ -117,8 +117,8 @@ Node *ReadBin(const char bin_dir[], unsigned long *nnodes)
         ExitError("when reading binary file", 71);
 
     // Print number of nodes and succesors that were read
-    printf("  Nodes: %lu\n", *nnodes);
-    printf("  Successors: %lu\n", nsucc);
+    printf("  - Nodes: %lu\n", *nnodes);
+    printf("  - Successors: %lu\n", nsucc);
 
     // Allocate memory to save the graph
     Node *node = (Node *) malloc(sizeof(Node) * (*nnodes));
@@ -132,7 +132,7 @@ Node *ReadBin(const char bin_dir[], unsigned long *nnodes)
         ExitError("when allocating memory to save the graph", 8);
 
     // Read nodes
-    printf(" Reading nodes...\n");
+    printf(" - Reading nodes...\n");
     if ((fread(node, sizeof(Node), *nnodes, f)) != *nnodes)
         ExitError("when reading binary file", 72);
 
@@ -147,12 +147,12 @@ Node *ReadBin(const char bin_dir[], unsigned long *nnodes)
     */
 
     // Read successors
-    printf(" Linking nodes...\n");
+    printf(" - Linking nodes...\n");
     if ((fread(ids, sizeof(unsigned long), nsucc, f)) != nsucc)
         ExitError("when reading binary file", 73);
 
     // Check if node ids were indexed (in case of having run GraphEnhancement)
-    printf("  Warning! A non-reindexed graph is being used. Performance\n  "
+    printf("   Warning! A non-reindexed graph is being used. Performance\n   "
            "will be highly reduced.\n");
     bool indexed = IsIndexed(node, *nnodes);
 
@@ -176,7 +176,7 @@ Node *ReadBin(const char bin_dir[], unsigned long *nnodes)
         }
 
     // Read node names
-    printf(" Labeling nodes...\n");
+    printf(" - Labeling nodes...\n");
     unsigned int name_len;
     char *node_name;
     for (i = 0; i < *nnodes; i++)

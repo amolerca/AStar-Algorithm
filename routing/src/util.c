@@ -282,36 +282,63 @@ unsigned int MakeAQuery(char query[], unsigned int min, unsigned int max)
 {
     unsigned int choice;
 
-    printf(" %s\n", query);
-    printf("  Enter your choice (%d-%d): ", min, max);
+    printf(" - %s\n", query);
+    printf("   Enter your choice (%d-%d): ", min, max);
 
     char *p, input[100];
     while (fgets(input, sizeof(input), stdin))
     {
         choice = strtol(input, &p, 10);
         if (p == input || *p != '\n' || choice < min || choice > max)
-            printf("  Wrong input. Enter your choice (%d-%d): ", min, max);
+            printf("   Wrong input. Enter your choice (%d-%d): ", min, max);
         else
             break;
     }
 
+    printf("\n");
     return choice;
 }
 
 void PrintOutDistOptions()
 {
-    printf(" Distance functions available:\n");
+    printf(" - Distance functions available:\n");
     printf("\t1: Haversine\n");
     printf("\t2: Spherical law of cosines\n");
     printf("\t3: Equirectangular approximation\n");
     printf("\t4: Haversine with variable Earth radius\n");
     printf("\t5: Zero distance (equal to 0.0)\n");
     printf("\t6: Uniform distance (equal to 1.0)\n");
+    printf("\n");
 }
 
 void AStarWelcome()
 {
     printf("------------------------------------------------------------\n");
-    printf("Starting AStar Algorithm...\n");
+    printf("AStar Algorithm execution\n");
     printf("------------------------------------------------------------\n");
+}
+
+void PrintOutIterationInfo(unsigned int current_iteration, double g, double h)
+{
+    printf("               +----------------------------+\n");
+    printf("               | Iteration number %8u  |\n", current_iteration);
+    printf("               +----------------------------+\n");
+    printf("               | g(n) = %7.0f m           |\n", g);
+    printf("               | h(n) = %7.0f m           |\n", h);
+    printf("               | f(n) = %7.0f m           |\n", g + h);
+    printf("               +----------------------------+\n\n");
+}
+
+void PrintOutResults(unsigned int current_iteration, double g, double h)
+{
+    printf(" - Optimal path found!\n\n");
+    printf("               +----------------------------+\n");
+    printf("               |       AStar Results        |\n");
+    printf("               +----------------------------+\n");
+    printf("               | Total iterations: %8u |\n", current_iteration);
+    printf("               +----------------------------+\n");
+    printf("               | g(n) = %7.0f m           |\n", g);
+    printf("               | h(n) = %7.0f m           |\n", h);
+    printf("               | f(n) = %7.0f m           |\n", g + h);
+    printf("               +----------------------------+\n\n");
 }

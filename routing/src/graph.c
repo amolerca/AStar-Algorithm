@@ -554,7 +554,7 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
                                                 "the weight between edges");
 
     // Let user know that AStar algorithm is starting
-    printf("Calculating route with AStar algorithm...\n\n");
+    printf(" - Calculating route with AStar algorithm...\n\n");
 
     // Initiate variables before starting the algorithm
     AStarNode *asnode, *start_node, *goal_node, *current_node, *successor_node;
@@ -662,16 +662,8 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
 
         // Print useful information in a certain time interval
         if (current_iteration % 200000 == 0)
-        {
-            printf(" +----------------------------+\n");
-            printf(" | Iteration number %8d  |\n", current_iteration);
-            printf(" +----------------------------+\n");
-            printf(" | g(n) = %7.0f m           |\n", current_node->g);
-            printf(" | h(n) = %7.0f m           |\n", current_node->h);
-            printf(" | f(n) = %7.0f m           |\n", current_node->g +
-                                                        current_node->h);
-            printf(" +----------------------------+\n\n");
-        }
+            PrintOutIterationInfo(current_iteration, current_node->g,
+                                  current_node->h);
     }
 
     // Check for errors
@@ -680,17 +672,7 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
                   "solution was found", 460);
 
     // Notify success
-    printf(" Optimal path found!\n\n");
-    printf(" +----------------------------+\n");
-    printf(" |       AStar Results        |\n");
-    printf(" +----------------------------+\n");
-    printf(" | Total iterations: %8d |\n", current_iteration);
-    printf(" +----------------------------+\n");
-    printf(" | g(n) = %7.0f m           |\n", current_node->g);
-    printf(" | h(n) = %7.0f m           |\n", current_node->h);
-    printf(" | f(n) = %7.0f m           |\n", current_node->g +
-           current_node->h);
-    printf(" +----------------------------+\n\n");
+    PrintOutResults(current_iteration, current_node->g, current_node->h);
 
     // Get route from AStar nodes
     AStarNode **route = GetRoute(start_node, goal_node);
