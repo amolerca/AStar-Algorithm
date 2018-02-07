@@ -51,19 +51,29 @@ void AddSuccessor(Node *A, Node *B);
 
 Node *FromIdToNode(unsigned long id, Node *node, unsigned long nnodes);
 
+bool CheckNodes(Node *node, unsigned long nnodes);
+
 char *GetLinkedNodes(Node *node, unsigned long nnodes);
 
 Node *CleanGraph(Node *node, char *linked_nodes, unsigned long nnodes,
                  unsigned long n_del);
-
-bool CheckNodes(Node *node, unsigned long nnodes);
 
 Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
                        unsigned long nedges);
 
 double HeuristicHaversine(AStarNode node1, AStarNode node2);
 
+void AppendToDynArray(DynamicNodeArray *array, AStarNode *asnode);
+
+void RemoveFromDynArray(DynamicNodeArray *array, AStarNode *asnode);
+
+AStarNode *NodeWithLowestF(DynamicNodeArray *open_list);
+
+AStarNode **GetRoute(AStarNode *start_node, AStarNode *goal_node);
+
 void PrintSolution(AStarNode **route, AStarNode *goal_node);
+
+void WriteSolution(AStarNode **route, AStarNode *goal_node, char filename[]);
 
 void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
            unsigned long id_goal);

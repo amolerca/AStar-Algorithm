@@ -382,34 +382,6 @@ AStarNode *NodeWithLowestF(DynamicNodeArray *open_list)
     return lowfnode;
 }
 
-void PrintSolution(AStarNode **route, AStarNode *goal_node)
-{
-    printf("Route summary:\n");
-    printf(" Starting node: %lu %s\n", route[0]->node->id,
-           route[0]->node->name);
-    printf(" Goal node: %lu %s\n", goal_node->node->id, goal_node->node->name);
-    printf(" Distance: %f\n", goal_node->h + goal_node->g);
-    printf(" Path summary:\n");
-
-    printf("%10d | %10lu | %6.5f | %6.5f | %s \n", 1,
-           route[0]->node->id, route[0]->node->lat, route[0]->node->lon,
-           route[0]->node->name);
-
-    unsigned int i = 1;
-    while (route[++i]->node->id != goal_node->node->id)
-    {
-        if (strlen(route[i]->node->name) == 0)
-            continue;
-        printf("%10d | %10lu | %6.5f | %6.5f | %s \n", i + 1,
-               route[i]->node->id, route[i]->node->lat, route[i]->node->lon,
-               route[i]->node->name);
-    }
-
-    printf("%10d | %10lu | %6.5f | %6.5f | %s \n", i + 1,
-           route[i]->node->id, route[i]->node->lat, route[i]->node->lon,
-           route[i]->node->name);
-}
-
 AStarNode **GetRoute(AStarNode *start_node, AStarNode *goal_node)
 {
     // Let user know what we are doing
@@ -439,6 +411,34 @@ AStarNode **GetRoute(AStarNode *start_node, AStarNode *goal_node)
         route[j] = inverted_route[i - j];
 
     return route;
+}
+
+void PrintSolution(AStarNode **route, AStarNode *goal_node)
+{
+    printf("Route summary:\n");
+    printf(" Starting node: %lu %s\n", route[0]->node->id,
+           route[0]->node->name);
+    printf(" Goal node: %lu %s\n", goal_node->node->id, goal_node->node->name);
+    printf(" Distance: %f\n", goal_node->h + goal_node->g);
+    printf(" Path summary:\n");
+
+    printf("%10d | %10lu | %6.5f | %6.5f | %s \n", 1,
+           route[0]->node->id, route[0]->node->lat, route[0]->node->lon,
+           route[0]->node->name);
+
+    unsigned int i = 1;
+    while (route[++i]->node->id != goal_node->node->id)
+    {
+        if (strlen(route[i]->node->name) == 0)
+            continue;
+        printf("%10d | %10lu | %6.5f | %6.5f | %s \n", i + 1,
+               route[i]->node->id, route[i]->node->lat, route[i]->node->lon,
+               route[i]->node->name);
+    }
+
+    printf("%10d | %10lu | %6.5f | %6.5f | %s \n", i + 1,
+           route[i]->node->id, route[i]->node->lat, route[i]->node->lon,
+           route[i]->node->name);
 }
 
 void WriteSolution(AStarNode **route, AStarNode *goal_node, char filename[])
