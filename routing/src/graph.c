@@ -286,6 +286,32 @@ Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
     return node;
 }
 
+double MeanEarthRadius(double lat1, double lat2){
+    /*
+        Computes the mean earth radius between two nodes
+        using the geocentric radius formula.
+    */
+    #define a EARTH_EQUATORIAL_RADIUS
+    #define b EARTH_POLAR_RADIUS
+
+    double R1 = sqrt(((a * a * cos(lat1)) * (a * a * cos(lat1)) +
+                      (b * b * sin(lat1)) * (b * b * sin(lat1)))
+                     / ((a * cos(lat1)) * (a * cos(lat1)) +
+                        (b * sin(lat1)) * (b * sin(lat1))));
+
+    double R2 = sqrt(((a * a * cos(lat2)) * (a * a * cos(lat2)) +
+                      (b * b * sin(lat2)) * (b * b * sin(lat2)))
+                     / ((a * cos(lat2)) * (a * cos(lat2)) +
+                        (b * sin(lat2)) * (b * sin(lat2))));
+
+    double R = (R1 + R2) / 2.0;
+
+    #undef a
+    #undef b
+
+    return R;
+}
+
 double HaversineDistance(AStarNode node1, AStarNode node2)
 {
     double lat1 = ToRadians(node1.node->lat);
@@ -297,6 +323,20 @@ double HaversineDistance(AStarNode node1, AStarNode node2)
     double c = 2 * atan2(sqrt(a), sqrt(1-a));
 
     return EARTH_RADIUS * c;
+}
+
+// RVH stands for Radius Varying Haversine
+double RVHDistance(AStarNode node1, AStarNode node2)
+{
+    double lat1 = ToRadians(node1.node->lat);
+    double lat2 = ToRadians(node2.node->lat);
+    double deltalat = lat2 - lat1;
+    double deltalon = ToRadians(node2.node->lon - node1.node->lon);
+    double a = sin(deltalat / 2) * sin(deltalat / 2) + cos(lat1) * cos(lat2) *
+               sin(deltalon / 2) * sin(deltalon / 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1-a));
+
+    return MeanEarthRadius(lat1, lat2) * c;
 }
 
 double EquirectangularDistance(AStarNode node1, AStarNode node2)
@@ -312,10 +352,6 @@ double EquirectangularDistance(AStarNode node1, AStarNode node2)
 
     double c = sqrt(x*x + y*y);
 
-    /*var x = (λ2-λ1) * Math.cos((φ1+φ2)/2);
-    var y = (φ2-φ1);
-    var d = Math.sqrt(x*x + y*y) * R;*/
-
     return EARTH_RADIUS * c;
 }
 
@@ -329,34 +365,18 @@ double SLOCDistance(AStarNode node1, AStarNode node2)
 
     double c = acos(sin(lat1)*sin(lat2) + cos(lat1)*cos(lat2)*cos(deltalon));
 
-    /*var φ1 = lat1.toRadians(), φ2 = lat2.toRadians(), Δλ = (lon2-lon1).toRadians(), R = 6371e3; // gives d in metres
-      var d = Math.acos( Math.sin(φ1)*Math.sin(φ2) + Math.cos(φ1)*Math.cos(φ2) * Math.cos(Δλ) ) * R;*/
-
     return EARTH_RADIUS * c;
 }
 
-/*
-double edge_weight(Node node1, Node node2)
+double ZeroDistance(AStarNode node1, AStarNode node2)
 {
-    double lat1 = ToRadians(node1.lat);
-    double lat2 = ToRadians(node2.lat);
-    double deltalat = lat2 - lat1;
-    double deltalon = ToRadians(node2.lon - node1.lon);
-    double a = sin(deltalat / 2) * sin(deltalat / 2) + cos(lat1) * cos(lat2) *
-               sin(deltalon / 2) * sin(deltalon / 2);
-    double c = 2 * atan2(sqrt(a), sqrt( (1 - a)*(1+a)));
-
-    //double c = 2 * asin(sqrt(a));
-
-    double y1 = cos(lat2)*sin(deltalon);
-    double y2 = cos(lat1)*cos(lat2)-sin(lat1)*cos(lat2)*cos(deltalon);
-    double y = sqrt(y1*y1 + y2*y2);
-    double x = sin(lat1)*sin(lat2) + cos(lat1)*cos(lat2)*cos(deltalon);
-    double c = atan2(y,x);
-
-    return EARTH_RADIUS * c;
+    return 0.0;
 }
-*/
+
+double UniformDistance(AStarNode node1, AStarNode node2)
+{
+    return 1.0;
+}
 
 void AppendToDynArray(DynamicNodeArray *array, AStarNode *asnode)
 {
@@ -501,7 +521,7 @@ void WriteSolution(AStarNode **route, AStarNode *goal_node, char filename[])
 
 dist_function SelDistFunction(char query[])
 {
-    unsigned int choice = MakeAQuery(query, 1, 3);
+    unsigned int choice = MakeAQuery(query, 1, 6);
 
     dist_function chosen_function;
     if (choice == 1)
@@ -510,6 +530,12 @@ dist_function SelDistFunction(char query[])
         chosen_function = &SLOCDistance;
     else if (choice == 3)
         chosen_function = &EquirectangularDistance;
+    else if (choice == 4)
+        chosen_function = &RVHDistance;
+    else if (choice == 5)
+        chosen_function = &ZeroDistance;
+    else if (choice == 6)
+        chosen_function = &UniformDistance;
     else
         ExitError("wrong user selection", 514);
 
@@ -519,13 +545,8 @@ dist_function SelDistFunction(char query[])
 void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
            unsigned long id_goal)
 {
-    printf("------------------------------------------------------------\n");
-    printf("Starting AStar Algorithm...\n");
-    printf("------------------------------------------------------------\n");
-    printf(" Distance functions available:\n");
-    printf("\t1: Haversine\n");
-    printf("\t2: Spherical law of cosines\n");
-    printf("\t3: Equirectangular approximation\n");
+    AStarWelcome();
+    PrintOutDistOptions();
 
     dist_function heuristic = SelDistFunction("Choose a method to compute the "
                                               "heuristic distance");

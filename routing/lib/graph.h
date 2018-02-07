@@ -63,9 +63,19 @@ Node *CleanGraph(Node *node, char *linked_nodes, unsigned long nnodes,
 Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
                        unsigned long nedges);
 
-double Haversine_distance(AStarNode node1, AStarNode node2);
-double Equirectangular_distance(AStarNode node1, AStarNode node2);
-double Spherical_law_of_cosines_distance(AStarNode node1, AStarNode node2);
+double MeanEarthRadius(double lat1, double lat2);
+
+double HaversineDistance(AStarNode node1, AStarNode node2);
+
+double RVHDistance(AStarNode node1, AStarNode node2);
+
+double EquirectangularDistance(AStarNode node1, AStarNode node2);
+
+double SLOCDistance(AStarNode node1, AStarNode node2);
+
+double ZeroDistance(AStarNode node1, AStarNode node2);
+
+double UniformDistance(AStarNode node1, AStarNode node2);
 
 void AppendToDynArray(DynamicNodeArray *array, AStarNode *asnode);
 

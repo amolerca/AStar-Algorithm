@@ -295,10 +295,23 @@ unsigned int MakeAQuery(char query[], unsigned int min, unsigned int max)
             break;
     }
 
-/*
-    if (choice >= min && choice <= max)
-        return choice;
-    printf("  Wrong input.");
-    return MakeAQuery("", min, max);*/
     return choice;
+}
+
+void PrintOutDistOptions()
+{
+    printf(" Distance functions available:\n");
+    printf("\t1: Haversine\n");
+    printf("\t2: Spherical law of cosines\n");
+    printf("\t3: Equirectangular approximation\n");
+    printf("\t4: Haversine with variable Earth radius\n");
+    printf("\t5: Zero distance (equal to 0.0)\n");
+    printf("\t6: Uniform distance (equal to 1.0)\n");
+}
+
+void AStarWelcome()
+{
+    printf("------------------------------------------------------------\n");
+    printf("Starting AStar Algorithm...\n");
+    printf("------------------------------------------------------------\n");
 }
