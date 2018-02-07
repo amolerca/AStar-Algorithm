@@ -286,7 +286,7 @@ Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
     return node;
 }
 
-double HeuristicHaversine(AStarNode node1, AStarNode node2)
+double Haversine_distance(AStarNode node1, AStarNode node2)
 {
     double lat1 = ToRadians(node1.node->lat);
     double lat2 = ToRadians(node2.node->lat);
@@ -294,7 +294,42 @@ double HeuristicHaversine(AStarNode node1, AStarNode node2)
     double deltalon = ToRadians(node2.node->lon - node1.node->lon);
     double a = sin(deltalat / 2) * sin(deltalat / 2) + cos(lat1) * cos(lat2) *
                sin(deltalon / 2) * sin(deltalon / 2);
-    double c = 2 * atan2(sqrt(a), sqrt( (1 - a)*(1+a)));
+    double c = 2 * atan2(sqrt(a), sqrt(1-a));
+
+    return EARTH_RADIUS * c;
+}
+
+double Equirectangular_distance(AStarNode node1, AStarNode node2)
+{
+    double lat1 = ToRadians(node1.node->lat);
+    double lat2 = ToRadians(node2.node->lat);
+    double deltalat = lat2 - lat1;
+    double mean_lat = (lat1+lat2)/2.0;
+    double deltalon = ToRadians(node2.node->lon - node1.node->lon);
+   
+    double x = deltalon * cos(mean_lat);
+    double y = deltalat;
+
+    double c = sqrt(x*x + y*y);
+
+    /*var x = (λ2-λ1) * Math.cos((φ1+φ2)/2);
+    var y = (φ2-φ1);
+    var d = Math.sqrt(x*x + y*y) * R;*/
+
+    return EARTH_RADIUS * c;
+}
+
+double Spherical_law_of_cosines_distance(AStarNode node1, AStarNode node2)
+{
+    double lat1 = ToRadians(node1.node->lat);
+    double lat2 = ToRadians(node2.node->lat);
+    double deltalat = lat2 - lat1;
+    double deltalon = ToRadians(node2.node->lon - node1.node->lon);
+   
+    double c = acos(sin(lat1)*sin(lat2) + cos(lat1)*cos(lat2)*cos(deltalon));
+
+    /*var φ1 = lat1.toRadians(), φ2 = lat2.toRadians(), Δλ = (lon2-lon1).toRadians(), R = 6371e3; // gives d in metres
+      var d = Math.acos( Math.sin(φ1)*Math.sin(φ2) + Math.cos(φ1)*Math.cos(φ2) * Math.cos(Δλ) ) * R;*/
 
     return EARTH_RADIUS * c;
 }

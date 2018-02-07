@@ -34,6 +34,10 @@ typedef struct
     unsigned long alloc_len;    /* Allocated length */
 } DynamicNodeArray;
 
+
+typedef double (*Distance_function)(AStarNode node1, AStarNode node2);
+
+
 void PrintNodeByIndex(unsigned long id, Node *node, unsigned long nnodes);
 
 void PrintNodeById(unsigned long id, Node *node, unsigned long nnodes);
@@ -61,7 +65,9 @@ Node *CleanGraph(Node *node, char *linked_nodes, unsigned long nnodes,
 Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
                        unsigned long nedges);
 
-double HeuristicHaversine(AStarNode node1, AStarNode node2);
+double Haversine_distance(AStarNode node1, AStarNode node2);
+double Equirectangular_distance(AStarNode node1, AStarNode node2);
+double Spherical_law_of_cosines_distance(AStarNode node1, AStarNode node2);
 
 void AppendToDynArray(DynamicNodeArray *array, AStarNode *asnode);
 

@@ -40,9 +40,43 @@ int main()
 
     }*/
 
+    printf("\n Distance functions available:\n");
+    printf("        1: Haversine\n");
+    printf("        2: Spherical law of cosines\n");
+    printf("        3: Equirectangular approximation\n");
+
+    Distance_function heuristic; // = &Haversine_distance;
+    Distance_function edge_weight;// = &Spherical_law_of_cosines_distance;
+
+    int h_choice, w_choice;
+
+    printf("Choose a heuristic distance (enter the corresponding number): ");
+    scanf("%d", &h_choice);
+
+    printf("Choose a wight distance between edges (enter the corresponding number): ");
+    scanf("%d", &w_choice);
+
+    if(h_choice == 1){heuristic = &Haversine_distance;}
+    else if(h_choice == 2){heuristic = &Spherical_law_of_cosines_distance;}
+    else if(h_choice == 3){heuristic = &Equirectangular_distance;}
+    else{
+        printf("Incorrect distance number identifier, using default distance: Haversine\n");
+        heuristic= &Haversine_distance;
+    }
+
+    if(w_choice == 1){edge_weight = &Haversine_distance;}
+    else if(w_choice == 2){edge_weight = &Spherical_law_of_cosines_distance;}
+    else if(w_choice == 3){edge_weight = &Equirectangular_distance;}
+    else{
+        printf("Incorrect distance number identifier, using default distance: Haversine\n");
+        edge_weight = &Haversine_distance;
+    } 
+
+
     // Catalonia
     //AStar(node, nnodes, 771979683, 429854583);
 
     // Spain
-    AStar(node, nnodes, 240949599, 195977239, HeuristicHaversine, HeuristicHaversine);
+    
+    AStar(node, nnodes, 240949599, 195977239, heuristic, edge_weight);
 }
