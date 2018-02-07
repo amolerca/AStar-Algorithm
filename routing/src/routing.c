@@ -45,6 +45,10 @@ int main()
     printf("        2: Spherical law of cosines\n");
     printf("        3: Equirectangular approximation\n");
     printf("        4: Haversine (variable earth radius)\n");
+    printf("        5: Zero distance ( equal to 0.0 )\n");
+    printf("        6: Uniform distance ( equal to 1.0 )\n");
+
+
 
 
     Distance_function heuristic; // = &Haversine_distance;
@@ -62,6 +66,8 @@ int main()
     else if(h_choice == 2){heuristic = &Spherical_law_of_cosines_distance;}
     else if(h_choice == 3){heuristic = &Equirectangular_distance;}
     else if(h_choice == 4){heuristic = &Radius_varying_Haversine_distance;}
+    else if(h_choice == 5){heuristic = &Zero_distance;}
+    else if(h_choice == 6){heuristic = &Uniform_distance;}
     else{
         printf("Incorrect distance number identifier, using default distance: Haversine\n");
         heuristic= &Haversine_distance;
@@ -70,7 +76,9 @@ int main()
     if(w_choice == 1){edge_weight = &Haversine_distance;}
     else if(w_choice == 2){edge_weight = &Spherical_law_of_cosines_distance;}
     else if(w_choice == 3){edge_weight = &Equirectangular_distance;}
-    else if(h_choice == 4){edge_weight = &Radius_varying_Haversine_distance;}
+    else if(w_choice == 4){edge_weight = &Radius_varying_Haversine_distance;}
+    else if(w_choice == 5){edge_weight = &Zero_distance;}
+    else if(w_choice == 6){edge_weight = &Uniform_distance;}
     else{
         printf("Incorrect distance number identifier, using default distance: Haversine\n");
         edge_weight = &Haversine_distance;

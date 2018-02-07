@@ -75,6 +75,10 @@ double Equirectangular_distance(AStarNode node1, AStarNode node2);
 
 double Spherical_law_of_cosines_distance(AStarNode node1, AStarNode node2);
 
+double Zero_distance(AStarNode node1, AStarNode node2);
+
+double Uniform_distance(AStarNode node1, AStarNode node2);
+
 void AppendToDynArray(DynamicNodeArray *array, AStarNode *asnode);
 
 void RemoveFromDynArray(DynamicNodeArray *array, AStarNode *asnode);

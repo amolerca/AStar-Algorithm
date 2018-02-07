@@ -369,6 +369,18 @@ double Spherical_law_of_cosines_distance(AStarNode node1, AStarNode node2)
     return EARTH_RADIUS * c;
 }
 
+double Zero_distance(AStarNode node1, AStarNode node2)
+{
+    return 0.0;
+}
+
+double Uniform_distance(AStarNode node1, AStarNode node2)
+{
+    return 1.0;
+}
+
+
+
 /*
 double edge_weight(Node node1, Node node2)
 {
