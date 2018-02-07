@@ -299,6 +299,26 @@ double Haversine_distance(AStarNode node1, AStarNode node2)
     return EARTH_RADIUS * c;
 }
 
+double Equirectangular_distance(AStarNode node1, AStarNode node2)
+{
+    double lat1 = ToRadians(node1.node->lat);
+    double lat2 = ToRadians(node2.node->lat);
+    double deltalat = lat2 - lat1;
+    double mean_lat = (lat1+lat2)/2.0;
+    double deltalon = ToRadians(node2.node->lon - node1.node->lon);
+   
+    double x = deltalon * cos(mean_lat);
+    double y = deltalat;
+
+    double c = sqrt(x*x + y*y);
+
+    /*var x = (λ2-λ1) * Math.cos((φ1+φ2)/2);
+    var y = (φ2-φ1);
+    var d = Math.sqrt(x*x + y*y) * R;*/
+
+    return EARTH_RADIUS * c;
+}
+
 /*
 double edge_weight(Node node1, Node node2)
 {
