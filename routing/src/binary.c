@@ -1,5 +1,4 @@
 #include "routing.h"
-//#include "constants.h"
 #include "util.h"
 #include "graph.h"
 #include "binary.h"
@@ -16,7 +15,9 @@ void WriteCmap(const char bin_dir[], Node *node, unsigned long nnodes)
 void WriteBin(const char bin_dir[], Node *node, unsigned long nnodes)
 {
     // Let user know what we are doing
+    printf("------------------------------------------------------------\n");
     printf("Writting graph to binary file \'%s\'...\n", bin_dir);
+    printf("------------------------------------------------------------\n");
 
     // Open file
     FILE *f;
@@ -70,6 +71,11 @@ void WriteBin(const char bin_dir[], Node *node, unsigned long nnodes)
             ExitError("when writing node names", 17);
     }
 
+    // Print out success
+    printf("------------------------------------------------------------\n");
+    printf("Completed.\n");
+    printf("------------------------------------------------------------\n\n");
+
     // Free memory
     free(ids);
 
@@ -92,7 +98,9 @@ Node *ReadCmap(const char bin_dir[], unsigned long *nnodes)
 Node *ReadBin(const char bin_dir[], unsigned long *nnodes)
 {
     // Let user know what we are doing
+    printf("------------------------------------------------------------\n");
     printf("Reading graph from binary file \'%s\'...\n", bin_dir);
+    printf("------------------------------------------------------------\n");
 
     // Open file
     FILE *f;
@@ -139,10 +147,13 @@ Node *ReadBin(const char bin_dir[], unsigned long *nnodes)
     */
 
     // Read successors
+    printf(" Linking nodes...\n");
     if ((fread(ids, sizeof(unsigned long), nsucc, f)) != nsucc)
         ExitError("when reading binary file", 73);
 
     // Check if node ids were indexed (in case of having run GraphEnhancement)
+    printf("  Warning! A non-reindexed graph is being used. Performance\n  "
+           "will be highly reduced.\n");
     bool indexed = IsIndexed(node, *nnodes);
 
     // Assign successors
@@ -165,6 +176,7 @@ Node *ReadBin(const char bin_dir[], unsigned long *nnodes)
         }
 
     // Read node names
+    printf(" Labeling nodes...\n");
     unsigned int name_len;
     char *node_name;
     for (i = 0; i < *nnodes; i++)
@@ -176,6 +188,11 @@ Node *ReadBin(const char bin_dir[], unsigned long *nnodes)
             ExitError("when node names from binary file", 75);
         node[i].name = node_name;
     }
+
+    // Print out success
+    printf("------------------------------------------------------------\n");
+    printf("Completed.\n");
+    printf("------------------------------------------------------------\n\n");
 
     // Close file
     fclose(f);

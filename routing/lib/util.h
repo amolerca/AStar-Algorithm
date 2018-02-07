@@ -25,3 +25,5 @@ void Compress(const char *bin_dir);
 void Decompress(const char *bin_dir);
 
 double ToRadians(double degrees);
+
+unsigned int MakeAQuery(char query[], unsigned int min, unsigned int max);

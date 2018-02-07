@@ -277,3 +277,28 @@ double ToRadians(double degrees)
 {
     return degrees * PI / 180;
 }
+
+unsigned int MakeAQuery(char query[], unsigned int min, unsigned int max)
+{
+    unsigned int choice;
+
+    printf(" %s\n", query);
+    printf("  Enter your choice (%d-%d): ", min, max);
+
+    char *p, input[100];
+    while (fgets(input, sizeof(input), stdin))
+    {
+        choice = strtol(input, &p, 10);
+        if (p == input || *p != '\n' || choice < min || choice > max)
+            printf("  Wrong input. Enter your choice (%d-%d): ", min, max);
+        else
+            break;
+    }
+
+/*
+    if (choice >= min && choice <= max)
+        return choice;
+    printf("  Wrong input.");
+    return MakeAQuery("", min, max);*/
+    return choice;
+}

@@ -34,9 +34,7 @@ typedef struct
     unsigned long alloc_len;    /* Allocated length */
 } DynamicNodeArray;
 
-
-typedef double (*Distance_function)(AStarNode node1, AStarNode node2);
-
+typedef double (*dist_function)(AStarNode node1, AStarNode node2);
 
 void PrintNodeByIndex(unsigned long id, Node *node, unsigned long nnodes);
 
@@ -81,6 +79,7 @@ void PrintSolution(AStarNode **route, AStarNode *goal_node);
 
 void WriteSolution(AStarNode **route, AStarNode *goal_node, char filename[]);
 
+dist_function SelDistFunction(char query[]);
+
 void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
-           unsigned long id_goal, double (*heuristic)(AStarNode node1, AStarNode node2),
-           double (*edge_weight)(AStarNode node1, AStarNode node2));
+           unsigned long id_goal);

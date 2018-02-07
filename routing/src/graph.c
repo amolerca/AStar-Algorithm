@@ -286,7 +286,7 @@ Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
     return node;
 }
 
-double Haversine_distance(AStarNode node1, AStarNode node2)
+double HaversineDistance(AStarNode node1, AStarNode node2)
 {
     double lat1 = ToRadians(node1.node->lat);
     double lat2 = ToRadians(node2.node->lat);
@@ -299,14 +299,14 @@ double Haversine_distance(AStarNode node1, AStarNode node2)
     return EARTH_RADIUS * c;
 }
 
-double Equirectangular_distance(AStarNode node1, AStarNode node2)
+double EquirectangularDistance(AStarNode node1, AStarNode node2)
 {
     double lat1 = ToRadians(node1.node->lat);
     double lat2 = ToRadians(node2.node->lat);
     double deltalat = lat2 - lat1;
     double mean_lat = (lat1+lat2)/2.0;
     double deltalon = ToRadians(node2.node->lon - node1.node->lon);
-   
+
     double x = deltalon * cos(mean_lat);
     double y = deltalat;
 
@@ -319,13 +319,14 @@ double Equirectangular_distance(AStarNode node1, AStarNode node2)
     return EARTH_RADIUS * c;
 }
 
-double Spherical_law_of_cosines_distance(AStarNode node1, AStarNode node2)
+// SLOC stands for Spherical Lay of Cosines
+double SLOCDistance(AStarNode node1, AStarNode node2)
 {
     double lat1 = ToRadians(node1.node->lat);
     double lat2 = ToRadians(node2.node->lat);
     double deltalat = lat2 - lat1;
     double deltalon = ToRadians(node2.node->lon - node1.node->lon);
-   
+
     double c = acos(sin(lat1)*sin(lat2) + cos(lat1)*cos(lat2)*cos(deltalon));
 
     /*var φ1 = lat1.toRadians(), φ2 = lat2.toRadians(), Δλ = (lon2-lon1).toRadians(), R = 6371e3; // gives d in metres
@@ -498,10 +499,39 @@ void WriteSolution(AStarNode **route, AStarNode *goal_node, char filename[])
                 route[i]->node->name);
 }
 
-void AStar(Node *node, unsigned long nnodes, unsigned long id_start, unsigned long id_goal,
-            double (*heuristic)(AStarNode node1, AStarNode node2),
-            double (*edge_weight)(AStarNode node1, AStarNode node2))
+dist_function SelDistFunction(char query[])
 {
+    unsigned int choice = MakeAQuery(query, 1, 3);
+
+    dist_function chosen_function;
+    if (choice == 1)
+        chosen_function = &HaversineDistance;
+    else if (choice == 2)
+        chosen_function = &SLOCDistance;
+    else if (choice == 3)
+        chosen_function = &EquirectangularDistance;
+    else
+        ExitError("wrong user selection", 514);
+
+    return chosen_function;
+}
+
+void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
+           unsigned long id_goal)
+{
+    printf("------------------------------------------------------------\n");
+    printf("Starting AStar Algorithm...\n");
+    printf("------------------------------------------------------------\n");
+    printf(" Distance functions available:\n");
+    printf("\t1: Haversine\n");
+    printf("\t2: Spherical law of cosines\n");
+    printf("\t3: Equirectangular approximation\n");
+
+    dist_function heuristic = SelDistFunction("Choose a method to compute the "
+                                              "heuristic distance");
+    dist_function edge_weight = SelDistFunction("Choose a method to compute "
+                                                "the weight between edges");
+
     // Let user know that AStar algorithm is starting
     printf("Calculating route with AStar algorithm...\n\n");
 
