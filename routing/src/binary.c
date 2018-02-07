@@ -128,10 +128,15 @@ Node *ReadBin(const char bin_dir[], unsigned long *nnodes)
     if ((fread(node, sizeof(Node), *nnodes, f)) != *nnodes)
         ExitError("when reading binary file", 72);
 
+    // This node checking slows down the code and maybe it is not necessary
+    // since the binary file have already been checked and ordered before.
+    // We can assume that their nodes will be ordered properly.
+    /*
     // Check if node ids were sorted in map file
     printf(" Checking nodes...\n");
     if (!CheckNodes(node, *nnodes))
             ExitError("nodes are not sorted in binary file", 58);
+    */
 
     // Read successors
     if ((fread(ids, sizeof(unsigned long), nsucc, f)) != nsucc)

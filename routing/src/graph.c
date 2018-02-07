@@ -454,11 +454,11 @@ void WriteSolution(AStarNode **route, AStarNode *goal_node, char filename[])
             "Node longitude | Node name\n");
 
     unsigned int i = 0;
-    fprintf(file, "%10d | %10lu | %6.5f | %6.5f | %s \n", i + 1,
+    fprintf(file, "%10d | %10lu | % 6.5f | % 6.5f | %s \n", i + 1,
             route[i]->node->id, route[i]->node->lat, route[i]->node->lon,
             route[i]->node->name);
     while (route[i++]->node->id != goal_node->node->id)
-        fprintf(file, "%10d | %10lu | %6.5f | %6.5f | %s \n", i + 1,
+        fprintf(file, "%10d | %10lu | % 6.5f | % 6.5f | %s \n", i + 1,
                 route[i]->node->id, route[i]->node->lat, route[i]->node->lon,
                 route[i]->node->name);
 }
