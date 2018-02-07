@@ -63,7 +63,7 @@ $(P3):
 	@$(CC) $(CFLAGS) $(INCLUDES) -o $(P3) $(SRCS3) $(LFLAGS)
 
 $(P4):
-	cp $(SRCS4) $(P4)
+	@cp $(SRCS4) $(P4)
 
 $(T):
 	@$(CC) $(CFLAGS) $(INCLUDES) -o $(T) $(SRCST) $(LFLAGS)
