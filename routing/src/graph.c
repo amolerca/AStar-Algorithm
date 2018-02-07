@@ -286,7 +286,7 @@ Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
     return node;
 }
 
-double HeuristicHaversine(AStarNode node1, AStarNode node2)
+double Haversine_distance(AStarNode node1, AStarNode node2)
 {
     double lat1 = ToRadians(node1.node->lat);
     double lat2 = ToRadians(node2.node->lat);

@@ -61,7 +61,7 @@ Node *CleanGraph(Node *node, char *linked_nodes, unsigned long nnodes,
 Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
                        unsigned long nedges);
 
-double HeuristicHaversine(AStarNode node1, AStarNode node2);
+double Haversine_distance(AStarNode node1, AStarNode node2);
 
 void AppendToDynArray(DynamicNodeArray *array, AStarNode *asnode);
 
