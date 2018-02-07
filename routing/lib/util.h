@@ -8,6 +8,8 @@ bool StartsWith(const char *pre, const char *str);
 
 char *SplitFields(char * str, char const * delims);
 
+int FieldsCounter(const char array[], char delimiter[]);
+
 bool ParseYesNo();
 
 void ExitError(char * message, int num);

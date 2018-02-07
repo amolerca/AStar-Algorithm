@@ -29,7 +29,7 @@ struct AStarNode
 
 typedef struct
 {
-    AStarNode **node;                /* Pointer to node pointers */
+    AStarNode **node;           /* Pointer to node pointers */
     unsigned long length;       /* Current length of the dynamic array */
     unsigned long alloc_len;    /* Allocated length */
 } DynamicNodeArray;
@@ -63,8 +63,7 @@ Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
 
 double HeuristicHaversine(AStarNode node1, AStarNode node2);
 
-void PrintSolution(AStarNode *asnode, Node *node, unsigned long nnodes,
-                   AStarNode *start_node, AStarNode *goal_node);
+void PrintSolution(AStarNode **route, AStarNode *goal_node);
 
 void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
            unsigned long id_goal);

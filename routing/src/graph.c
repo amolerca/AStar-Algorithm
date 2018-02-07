@@ -296,17 +296,10 @@ double HeuristicHaversine(AStarNode node1, AStarNode node2)
                sin(deltalon / 2) * sin(deltalon / 2);
     double c = 2 * atan2(sqrt(a), sqrt( (1 - a)*(1+a)));
 
-    //double c = 2 * asin(sqrt(a));
-
-    /*double y1 = cos(lat2)*sin(deltalon);
-    double y2 = cos(lat1)*cos(lat2)-sin(lat1)*cos(lat2)*cos(deltalon);
-    double y = sqrt(y1*y1 + y2*y2);
-    double x = sin(lat1)*sin(lat2) + cos(lat1)*cos(lat2)*cos(deltalon);
-    double c = atan2(y,x);  */
-
     return EARTH_RADIUS * c;
 }
 
+/*
 double edge_weight(Node node1, Node node2)
 {
     double lat1 = ToRadians(node1.lat);
@@ -319,18 +312,19 @@ double edge_weight(Node node1, Node node2)
 
     //double c = 2 * asin(sqrt(a));
 
-    /*double y1 = cos(lat2)*sin(deltalon);
+    double y1 = cos(lat2)*sin(deltalon);
     double y2 = cos(lat1)*cos(lat2)-sin(lat1)*cos(lat2)*cos(deltalon);
     double y = sqrt(y1*y1 + y2*y2);
     double x = sin(lat1)*sin(lat2) + cos(lat1)*cos(lat2)*cos(deltalon);
-    double c = atan2(y,x);  */
+    double c = atan2(y,x);
 
     return EARTH_RADIUS * c;
 }
+*/
 
 void AppendToDynArray(DynamicNodeArray *array, AStarNode *asnode)
 {
-    //printf("append: ");
+    // Append node to dynamic array
     if (array->length == array->alloc_len)
     {
         array->alloc_len += DYN_REALLOC_SIZE;
@@ -339,18 +333,17 @@ void AppendToDynArray(DynamicNodeArray *array, AStarNode *asnode)
                                             (array->alloc_len));
     }
     array->node[array->length] = asnode;
-    array->length++;
-    /*
-    printf("%lu, %lu\n", array->length, array->alloc_len);
-    for (unsigned long i = 0; i < array->length; i++)
-        printf("%lu ", array->node[i]->node->id);
-    printf("\n");*/
 
+    // Update dynamic array's length
+    array->length++;
+
+    // Update node's status
+    asnode->stat = OPEN;
 }
 
 void RemoveFromDynArray(DynamicNodeArray *array, AStarNode *asnode)
 {
-    //printf("remove: ");
+    // Remove node from dynamic array
     unsigned long i, j = 0;
     bool found = false;
     for (i = 0; i < array->length; i++)
@@ -368,13 +361,12 @@ void RemoveFromDynArray(DynamicNodeArray *array, AStarNode *asnode)
         ExitError("when removing node from dynamic array. Node to remove not"
                   " found", 420);
 
-    //array->node[i] = NULL;
+    // Update dynamic array's length
     array->length--;
-    /*
-    printf("%lu\n", array->length);
-    for (i = 0; i < array->length; i++)
-        printf("%lu ", array->node[i]->node->id);
-    printf("\n");*/
+
+    // Update node's status
+    asnode->stat = CLOSE;
+
 }
 
 AStarNode *NodeWithLowestF(DynamicNodeArray *open_list)
@@ -390,33 +382,98 @@ AStarNode *NodeWithLowestF(DynamicNodeArray *open_list)
     return lowfnode;
 }
 
-void PrintSolution(AStarNode *asnode, Node *node, unsigned long nnodes,
-                   AStarNode *start_node, AStarNode *goal_node)
+void PrintSolution(AStarNode **route, AStarNode *goal_node)
 {
-    printf("Results:\n");
-    printf(" Starting node:\n");
-    PrintNodeById(start_node->node->id, node, nnodes);
-    printf(" Goal node:\n");
-    PrintNodeById(goal_node->node->id, node, nnodes);
+    printf("Route summary:\n");
+    printf(" Starting node: %lu %s\n", route[0]->node->id,
+           route[0]->node->name);
+    printf(" Goal node: %lu %s\n", goal_node->node->id, goal_node->node->name);
     printf(" Distance: %f\n", goal_node->h + goal_node->g);
-    printf(" Path:\n");
+    printf(" Path summary:\n");
 
-    AStarNode *current_node = goal_node;
-    printf("  Node id: %10lu | Distance: %5.0f | Name: %s\n", current_node->node->id, current_node->g, current_node->node->name);
-    while (current_node->node->id != start_node->node->id)
+    printf("%10d | %10lu | %6.5f | %6.5f | %s \n", 1,
+           route[0]->node->id, route[0]->node->lat, route[0]->node->lon,
+           route[0]->node->name);
+
+    unsigned int i = 1;
+    while (route[++i]->node->id != goal_node->node->id)
     {
-        current_node = current_node->parent;
-        printf("  Node id: %10lu | Distance: %5.0f | Name: %s\n", current_node->node->id, current_node->g, current_node->node->name);
+        if (strlen(route[i]->node->name) == 0)
+            continue;
+        printf("%10d | %10lu | %6.5f | %6.5f | %s \n", i + 1,
+               route[i]->node->id, route[i]->node->lat, route[i]->node->lon,
+               route[i]->node->name);
     }
+
+    printf("%10d | %10lu | %6.5f | %6.5f | %s \n", i + 1,
+           route[i]->node->id, route[i]->node->lat, route[i]->node->lon,
+           route[i]->node->name);
+}
+
+AStarNode **GetRoute(AStarNode *start_node, AStarNode *goal_node)
+{
+    // Let user know what we are doing
+    printf("Getting route from AStar results...\n");
+
+    unsigned int route_size = ROUTE_REALLOC_SIZE;
+    AStarNode **inverted_route = (AStarNode **) malloc(sizeof(AStarNode *) *
+                                                       route_size);
+    unsigned int i = 0, j;
+    inverted_route[i] = goal_node;
+
+    while (inverted_route[i]->node->id != start_node->node->id)
+    {
+        if (i == route_size - 1)
+        {
+            route_size += ROUTE_REALLOC_SIZE;
+            inverted_route = realloc(inverted_route, sizeof(AStarNode *) *
+                                     route_size);
+        }
+        i++;
+        inverted_route[i] = inverted_route[i-1]->parent;
+    }
+
+    AStarNode **route = (AStarNode **) malloc(sizeof(AStarNode *) * (i + 1));
+
+    for (j = 0; j < i + 1; j++)
+        route[j] = inverted_route[i - j];
+
+    return route;
+}
+
+void WriteSolution(AStarNode **route, AStarNode *goal_node, char filename[])
+{
+    FILE *file = OpenFile(filename, "wb", 418);
+
+    fprintf(file, "# ROUTE RESULTS\n");
+    fprintf(file, "# This file is written with the purpose to be easily read "
+            "by plot_route.py. Read README.md file to get more information "
+            "about it\n");
+    fprintf(file, "# Fields arrangement:\n");
+    fprintf(file, "# Node number | Node ID | Node longitude | Node latitude | "
+            "Node longitude | Node name\n");
+
+    unsigned int i = 0;
+    fprintf(file, "%10d | %10lu | %6.5f | %6.5f | %s \n", i + 1,
+            route[i]->node->id, route[i]->node->lat, route[i]->node->lon,
+            route[i]->node->name);
+    while (route[i++]->node->id != goal_node->node->id)
+        fprintf(file, "%10d | %10lu | %6.5f | %6.5f | %s \n", i + 1,
+                route[i]->node->id, route[i]->node->lat, route[i]->node->lon,
+                route[i]->node->name);
 }
 
 void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
            unsigned long id_goal)
 {
+    // Let user know that AStar algorithm is starting
+    printf("Calculating route with AStar algorithm...\n\n");
+
+    // Initiate variables before starting the algorithm
     AStarNode *asnode, *start_node, *goal_node, *current_node, *successor_node;
     asnode = (AStarNode *) malloc(sizeof(AStarNode) * nnodes);
     unsigned short j;
-    unsigned long id_successor;
+    unsigned long succ_ID;
     double successor_current_cost;
 
     // Initialize dynamic array to save OPEN nodes
@@ -442,91 +499,115 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
     goal_node = &asnode[id_goal];
 
     // AStar initialization
-    start_node->stat = OPEN;
     AppendToDynArray(open_list, start_node);
     start_node->g = 0;
     start_node->h = HeuristicHaversine(*start_node, *goal_node);
 
-    printf("\nlatitude (start): %f longitude (start): %f\nlatitude (goal): %f longitude (goal): %f\n", asnode[id_start].node->lat,asnode[id_start].node->lon,asnode[id_goal].node->lat,asnode[id_goal].node->lon);
-    printf("Distance from node start to node goal: %f\n\n", start_node->h);
-
-    // @TODO Implement a dynamic array to save all OPEN nodes. It will speed up
-    // both the while loop check and the NodeWithLowestF() function
+    // Initiate AStar algorithm
     unsigned int current_iteration = 0;
-    printf("%lu\n", open_list->length);
     while (open_list->length != 0)
     {
+        // Sum up one iteration
         current_iteration += 1;
 
+        // Get the Node with lowest f(n) = g(h) + h(n), where g(h) is the cost
+        // of the path from starting node to current node and h(n) is the cost
+        // from the current node to the goal node which is calculated with the
+        // heuristic function
         current_node = NodeWithLowestF(open_list);
-
-        if (current_iteration == 1)
-        {
-            printf("ID of current node in iteration 1: %lu\n ", current_node->node->id);
-            printf("Name current node iteration 1: %s\n", current_node->node->name);
-        }
 
         // Finish loop in case of finding a solution
         if (current_node->node->id == goal_node->node->id)
             break;
 
+        // Find all the successors of the current node
         for (j = 0; j < current_node->node->nsucc; j++)
         {
-            id_successor = BinarySearchChkd(current_node->node->successor[j]->id, node, 0, nnodes - 1, 201);
-            successor_node = &asnode[id_successor];
-            successor_current_cost = current_node->g + HeuristicHaversine(*current_node, *successor_node);
+            // Get successor's ID
+            succ_ID = BinarySearchChkd(current_node->node->successor[j]->id,
+                                       node, 0, nnodes - 1, 201);
 
-            // node_successor is in the OPEN list
+            // Find successor's node
+            successor_node = &asnode[succ_ID];
+
+            // Calculate successor's cost according to the current path
+            successor_current_cost = current_node->g +
+                                     HeuristicHaversine(*current_node,
+                                                        *successor_node);
+
+            // Depending on whether the successor's node was previously visited
+            // or not, perform a specific action
             if (successor_node->stat == OPEN)
             {
+                // If successor's node was previously visited and it is still
+                // open, update its status if and only if its former cost is
+                // higher than the current one
                 if(successor_node->g <= successor_current_cost)
                     continue;
             }
-
-            // node_successor is in the CLOSED list
             else if (successor_node->stat == CLOSE)
             {
+                // If successor's node was previously visited and now it is
+                // closed, update its status and place it in OPEN list if and
+                // only if its former cost is higher than the current one
                 if(successor_node->g <= successor_current_cost)
                     continue;
-                // Move node_successor from the CLOSED list to the OPEN list
                 AppendToDynArray(open_list, successor_node);
-                successor_node->stat = OPEN;
             }
-
-            // node_successor has not been visited so far
             else
             {
+                // If successor's node has not been visited yet, update its
+                // status, place it in OPEN list and calculate its heuristic
+                // cost (since it is the first time for this node to be read)
                 AppendToDynArray(open_list, successor_node);
-                successor_node->stat = OPEN; // Add node_successor to the OPEN list
-                successor_node->h = HeuristicHaversine(*successor_node, *goal_node);
-                    // Set h(node_successor) to be the heuristic distance to node_goal
+                successor_node->h = HeuristicHaversine(*successor_node,
+                                                       *goal_node);
             }
 
-            // In case that either the successor current cost is lower than the
-            // previous one or
-            successor_node->g = successor_current_cost; //Set g(node_successor) = successor_current_cost
-            successor_node->parent = current_node; //Set the parent of node_successor to node_current
+            // The status of those nodes that satisfied one of the previous
+            // conditions are updated
+            successor_node->g = successor_current_cost;
+            successor_node->parent = current_node;
         }
 
+        // We remove the current node from the OPEN list
         RemoveFromDynArray(open_list, current_node);
-        current_node->stat = CLOSE; // Add node_current to the CLOSED list
 
-         //END A* ITERATION
-        if (current_iteration % 100000 == 0)
+        // Print useful information in a certain time interval
+        if (current_iteration % 200000 == 0)
         {
-            printf("Finished iteration %d\n", current_iteration);
-            printf("Current node %lu\n", current_node->node->id);
+            printf(" +----------------------------+\n");
+            printf(" | Iteration number %8d  |\n", current_iteration);
+            printf(" +----------------------------+\n");
+            printf(" | g(n) = %7.0f m           |\n", current_node->g);
+            printf(" | h(n) = %7.0f m           |\n", current_node->h);
+            printf(" | f(n) = %7.0f m           |\n", current_node->g +
+                                                        current_node->h);
+            printf(" +----------------------------+\n\n");
         }
-
     }
 
+    // Check for errors
     if (current_node->node->id != goal_node->node->id)
         ExitError("when finishing A* algorithm. OPEN list is empty and no "
                   "solution was found", 460);
 
-    printf("ID of current node in iteration %i: %lu\n ", current_iteration,
-           current_node->node->id);
-    printf("Optimal path found!\n");
+    // Notify success
+    printf(" Optimal path found!\n\n");
+    printf(" +----------------------------+\n");
+    printf(" |       AStar Results        |\n");
+    printf(" +----------------------------+\n");
+    printf(" | Total iterations: %8d |\n", current_iteration);
+    printf(" +----------------------------+\n");
+    printf(" | g(n) = %7.0f m           |\n", current_node->g);
+    printf(" | h(n) = %7.0f m           |\n", current_node->h);
+    printf(" | f(n) = %7.0f m           |\n", current_node->g + current_node->h);
+    printf(" +----------------------------+\n\n");
 
-    PrintSolution(asnode, node, nnodes, start_node, goal_node);
+    // Get route from AStar nodes
+    AStarNode **route = GetRoute(start_node, goal_node);
+
+    // Print results and save route
+    PrintSolution(route, goal_node);
+    WriteSolution(route, goal_node, "results/path1.out");
 }

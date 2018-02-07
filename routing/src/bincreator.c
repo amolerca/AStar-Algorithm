@@ -31,7 +31,7 @@ int main()
 {
     Node *node;
     unsigned long nnodes, nways, nedges;
-    const char FILE_DIR[100] = "inputs/catalonia.map";
+    const char FILE_DIR[100] = "inputs/spain.map";
     const char BIN_DIR[100] = "bin/map.bin";
 
     // Read and check map file data

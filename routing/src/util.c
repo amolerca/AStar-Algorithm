@@ -60,7 +60,7 @@ bool StartsWith(const char *pre, const char *str)
     return strncmp(pre, str, strlen(pre)) == 0;
 }
 
-char * SplitFields(char *str, char const *delims)
+char *SplitFields(char *str, char const *delims)
 {
     /*
     Source: https://stackoverflow.com/questions/8705844/need-to-know-when-no-da
@@ -89,6 +89,37 @@ char * SplitFields(char *str, char const *delims)
     return ret;
 }
 
+int FieldsCounter(const char str[], char delimiter[])
+{
+    char *array_ptr = strdup(str);
+    char *fields = SplitFields(array_ptr, delimiter);
+    int n_fields = 0;
+
+    while (fields)
+    {
+        n_fields++;
+        fields = SplitFields(NULL, delimiter);
+    }
+
+    free(array_ptr);
+
+    return n_fields;
+}
+
+char *GetField(const char *str, char delimiter[], int field_num)
+{
+    int i;
+    char *array_ptr = strdup(str);
+    char *fields = SplitFields(array_ptr, delimiter);
+
+    for (i = 0; i < field_num; i++)
+        fields = SplitFields(NULL, delimiter);
+
+    free(array_ptr);
+
+    return fields;
+}
+
 bool ParseYesNo()
 {
     printf("Yes[Y] or No[N]?\n");
@@ -110,12 +141,39 @@ void ExitError(char * message, int num)
     exit(num);
 }
 
-FILE *OpenFile(const char file_dir[], char mode[], int i)
+FILE *OpenFile(const char file_dir[], char mode[], int error_num)
 {
-    FILE *f;
+    // Check if folders to file exist. Create required path otherwise.
+    // Only if we want to write a file
+    if (StartsWith("w", mode))
+    {
+        int i, j;
+        char *folder = SplitFields(strdup(file_dir), "/");
+        int n_folders = FieldsCounter(file_dir, "/") - 1;
 
+        for (i = 0; i < n_folders; i++)
+        {
+            char *path = strdup(folder);
+            for (j = 1; j <= i; j++)
+                path = Concat(path, Concat("/", GetField(file_dir, "/", j)));
+
+            if (access(path, F_OK) == -1)
+            {
+                char *file_name = GetField(file_dir, "/", n_folders);
+                printf(" Creating folder \'%s\' to store file \'%s\'\n", path,
+                       file_name);
+                mkdir(path, 0700);
+            }
+
+            free(path);
+        }
+    }
+
+    // Open file
+    FILE *f;
     f = fopen(file_dir, mode);
 
+    // Check if a file was found. Maybe it is compressed.
     if (f == NULL)
     {
         char *dir = Concat(SplitFields(strdup(file_dir), "."), ".cmap");
@@ -123,15 +181,16 @@ FILE *OpenFile(const char file_dir[], char mode[], int i)
         {
             Decompress(file_dir);
             free(dir);
-            return OpenFile(file_dir, mode, i);
+            return OpenFile(file_dir, mode, error_num);
         }
         else
         {
             free(dir);
-            ExitError("when reading input file", i);
+            ExitError("when reading input file", error_num);
         }
     }
 
+    // If everything was okay, return file
     return f;
 
 }
