@@ -44,5 +44,5 @@ int main()
     //AStar(node, nnodes, 771979683, 429854583);
 
     // Spain
-    AStar(node, nnodes, 240949599, 195977239);
+    AStar(node, nnodes, 240949599, 195977239, HeuristicHaversine, HeuristicHaversine);
 }
