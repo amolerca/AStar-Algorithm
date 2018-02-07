@@ -34,6 +34,10 @@ typedef struct
     unsigned long alloc_len;    /* Allocated length */
 } DynamicNodeArray;
 
+
+typedef double (*Distance_function)(AStarNode node1, AStarNode node2);
+
+
 void PrintNodeByIndex(unsigned long id, Node *node, unsigned long nnodes);
 
 void PrintNodeById(unsigned long id, Node *node, unsigned long nnodes);

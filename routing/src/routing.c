@@ -44,5 +44,8 @@ int main()
     //AStar(node, nnodes, 771979683, 429854583);
 
     // Spain
-    AStar(node, nnodes, 240949599, 195977239, Haversine_distance, Spherical_law_of_cosines_distance);
+    Distance_function heuristic = &Haversine_distance;
+    Distance_function edge_weight = &Spherical_law_of_cosines_distance;
+
+    AStar(node, nnodes, 240949599, 195977239, heuristic, edge_weight);
 }
