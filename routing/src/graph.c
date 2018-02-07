@@ -286,6 +286,28 @@ Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
     return node;
 }
 
+double Mean_Earth_radius(double lat1, double lat2){
+    /*
+        Computes the mean earth radius between two nodes
+        using the geocentric radius formula.
+    */
+    #define a EARTH_EQUATORIAL_RADIUS
+    #define b EARTH_POLAR_RADIUS
+
+    double R1 = sqrt( ( (a*a*cos(lat1))*(a*a*cos(lat1)) + (b*b*sin(lat1))*(b*b*sin(lat1)) )
+                        / ( (a*cos(lat1))*(a*cos(lat1)) + (b*sin(lat1))*(b*sin(lat1))  )  );
+
+    double R2 = sqrt( ( (a*a*cos(lat2))*(a*a*cos(lat2)) + (b*b*sin(lat2))*(b*b*sin(lat2)) )
+                        / ( (a*cos(lat2))*(a*cos(lat2)) + (b*sin(lat2))*(b*sin(lat2))  )  );
+
+    double R = (R1 + R2)/2.0;
+
+    #undef a
+    #undef b
+
+    return R;
+}
+
 double Haversine_distance(AStarNode node1, AStarNode node2)
 {
     double lat1 = ToRadians(node1.node->lat);
@@ -297,6 +319,19 @@ double Haversine_distance(AStarNode node1, AStarNode node2)
     double c = 2 * atan2(sqrt(a), sqrt(1-a));
 
     return EARTH_RADIUS * c;
+}
+
+double Radius_varying_Haversine_distance(AStarNode node1, AStarNode node2)
+{
+    double lat1 = ToRadians(node1.node->lat);
+    double lat2 = ToRadians(node2.node->lat);
+    double deltalat = lat2 - lat1;
+    double deltalon = ToRadians(node2.node->lon - node1.node->lon);
+    double a = sin(deltalat / 2) * sin(deltalat / 2) + cos(lat1) * cos(lat2) *
+               sin(deltalon / 2) * sin(deltalon / 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1-a));
+
+    return Mean_Earth_radius(lat1, lat2) * c;
 }
 
 double Equirectangular_distance(AStarNode node1, AStarNode node2)
