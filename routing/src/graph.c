@@ -463,7 +463,7 @@ void WriteSolution(AStarNode **route, AStarNode *goal_node, char filename[])
                 route[i]->node->name);
 }
 
-void AStar(Node *node, unsigned long nnodes, unsigned long id_start, unsigned long id_goal, 
+void AStar(Node *node, unsigned long nnodes, unsigned long id_start, unsigned long id_goal,
             double (*heuristic)(AStarNode node1, AStarNode node2),
             double (*edge_weight)(AStarNode node1, AStarNode node2))
 {
@@ -611,5 +611,5 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start, unsigned lo
 
     // Print results and save route
     PrintSolution(route, goal_node);
-    WriteSolution(route, goal_node, "results/path1.out");
+    WriteSolution(route, goal_node, "routes/path1.out");
 }
