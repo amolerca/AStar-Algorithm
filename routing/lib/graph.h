@@ -76,4 +76,5 @@ void PrintSolution(AStarNode **route, AStarNode *goal_node);
 void WriteSolution(AStarNode **route, AStarNode *goal_node, char filename[]);
 
 void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
-           unsigned long id_goal);
+           unsigned long id_goal, double (*heuristic)(AStarNode node1, AStarNode node2),
+           double (*edge_weight)(AStarNode node1, AStarNode node2));

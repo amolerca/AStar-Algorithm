@@ -463,8 +463,9 @@ void WriteSolution(AStarNode **route, AStarNode *goal_node, char filename[])
                 route[i]->node->name);
 }
 
-void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
-           unsigned long id_goal)
+void AStar(Node *node, unsigned long nnodes, unsigned long id_start, unsigned long id_goal, 
+            double (*heuristic)(AStarNode node1, AStarNode node2),
+            double (*edge_weight)(AStarNode node1, AStarNode node2))
 {
     // Let user know that AStar algorithm is starting
     printf("Calculating route with AStar algorithm...\n\n");
@@ -501,7 +502,7 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
     // AStar initialization
     AppendToDynArray(open_list, start_node);
     start_node->g = 0;
-    start_node->h = HeuristicHaversine(*start_node, *goal_node);
+    start_node->h = (*heuristic)(*start_node, *goal_node);
 
     // Initiate AStar algorithm
     unsigned int current_iteration = 0;
@@ -532,7 +533,7 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
 
             // Calculate successor's cost according to the current path
             successor_current_cost = current_node->g +
-                                     HeuristicHaversine(*current_node,
+                                     (*edge_weight)(*current_node,
                                                         *successor_node);
 
             // Depending on whether the successor's node was previously visited
@@ -560,7 +561,7 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
                 // status, place it in OPEN list and calculate its heuristic
                 // cost (since it is the first time for this node to be read)
                 AppendToDynArray(open_list, successor_node);
-                successor_node->h = HeuristicHaversine(*successor_node,
+                successor_node->h = (*heuristic)(*successor_node,
                                                        *goal_node);
             }
 
