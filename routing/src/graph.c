@@ -431,12 +431,12 @@ void PrintSolution(AStarNode **route, AStarNode *goal_node)
     {
         if (strlen(route[i]->node->name) == 0)
             continue;
-        printf("%10d | %10lu | %6.5f | %6.5f | %s \n", i + 1,
+        printf("%10d | %10lu | % 6.5f | % 6.5f | %s \n", i + 1,
                route[i]->node->id, route[i]->node->lat, route[i]->node->lon,
                route[i]->node->name);
     }
 
-    printf("%10d | %10lu | %6.5f | %6.5f | %s \n", i + 1,
+    printf("%10d | %10lu | % 6.5f | % 6.5f | %s \n", i + 1,
            route[i]->node->id, route[i]->node->lat, route[i]->node->lon,
            route[i]->node->name);
 }
@@ -601,7 +601,8 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
     printf(" +----------------------------+\n");
     printf(" | g(n) = %7.0f m           |\n", current_node->g);
     printf(" | h(n) = %7.0f m           |\n", current_node->h);
-    printf(" | f(n) = %7.0f m           |\n", current_node->g + current_node->h);
+    printf(" | f(n) = %7.0f m           |\n", current_node->g +
+           current_node->h);
     printf(" +----------------------------+\n\n");
 
     // Get route from AStar nodes
