@@ -633,6 +633,12 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
     dist_function edge_weight = SelDistFunction("Choose a method to compute "
                                                 "the weight between edges");
 
+     //Timing the AStar implementation 
+    clock_t start, end;
+    double cpu_time_used;
+     
+    start = clock();
+
     // Let user know that AStar algorithm is starting
     printf(" - Calculating route with AStar algorithm...\n\n");
 
@@ -756,13 +762,20 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
         ExitError("when finishing A* algorithm. OPEN list is empty and no "
                   "solution was found", 460);
 
+    // End timing
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+
     // Notify success
-    PrintOutResults(current_iteration, current_node->g, current_node->h);
+    PrintOutResults(current_iteration, current_node->g, current_node->h, cpu_time_used);
+    
+    printf("Do you want to print a summary of the optimal path found and to save the completed one in a file?\n");
+    if(ParseYesNo()){
+        // Get route from AStar nodes
+        AStarNode **route = GetRoute(start_node, goal_node);
 
-    // Get route from AStar nodes
-    AStarNode **route = GetRoute(start_node, goal_node);
-
-    // Print results and save route
-    PrintSolution(route, goal_node);
-    WriteSolution(route, goal_node, "routes/path1.out");
+        // Print results and save route
+        PrintSolution(route, goal_node);
+        WriteSolution(route, goal_node, "routes/path1.out");
+    }
 }

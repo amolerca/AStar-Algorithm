@@ -333,13 +333,14 @@ void PrintOutIterationInfo(unsigned int current_iteration, double g, double h)
     printf("               +----------------------------+\n\n");
 }
 
-void PrintOutResults(unsigned int current_iteration, double g, double h)
+void PrintOutResults(unsigned int current_iteration, double g, double h, double AStar_CPU_time)
 {
     printf(" - Optimal path found!\n\n");
     printf("               +----------------------------+\n");
     printf("               |       AStar Results        |\n");
     printf("               +----------------------------+\n");
     printf("               | Total iterations: %8u |\n", current_iteration);
+    printf("               | Total CPU time  : %.2lf  s |\n", AStar_CPU_time);
     printf("               +----------------------------+\n");
     printf("               | g(n) = %7.0f m           |\n", g);
     printf("               | h(n) = %7.0f m           |\n", h);
