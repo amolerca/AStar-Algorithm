@@ -97,7 +97,8 @@ void PrintSolution(AStarNode **route, AStarNode *goal_node);
 
 void WriteSolution(AStarNode **route, AStarNode *goal_node, char filename[]);
 
-dist_function SelDistFunction(char query[]);
+dist_function SelDistFunction(char query[], unsigned int choice);
 
 void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
-           unsigned long id_goal);
+           unsigned long id_goal, unsigned int heuristic_method,
+           unsigned int weight_method, char *output_file);

@@ -317,7 +317,7 @@ Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
     //Timing the program
     clock_t start, end;
     double cpu_time_used;
-     
+
     start = clock();
 
     // Let user know waht we are doing
@@ -582,12 +582,13 @@ AStarNode **GetRoute(AStarNode *start_node, AStarNode *goal_node)
 
 void PrintSolution(AStarNode **route, AStarNode *goal_node)
 {
-    printf("Route summary:\n");
-    printf(" Starting node: %lu %s\n", route[0]->node->id,
+    printf(" - Route summary:\n");
+    printf("  - Starting node: %lu %s\n", route[0]->node->id,
            route[0]->node->name);
-    printf(" Goal node: %lu %s\n", goal_node->node->id, goal_node->node->name);
-    printf(" Distance: %f\n", goal_node->h + goal_node->g);
-    printf(" Path summary:\n");
+    printf("  - Goal node: %lu %s\n", goal_node->node->id,
+           goal_node->node->name);
+    printf("  - Distance: %f\n", goal_node->h + goal_node->g);
+    printf("  - Path summary:\n\n");
 
     printf("%10d | %10lu | % 6.5f | % 6.5f | %s \n", 1,
            route[0]->node->id, route[0]->node->lat, route[0]->node->lon,
@@ -603,7 +604,7 @@ void PrintSolution(AStarNode **route, AStarNode *goal_node)
                route[i]->node->name);
     }
 
-    printf("%10d | %10lu | % 6.5f | % 6.5f | %s \n", i + 1,
+    printf("%10d | %10lu | % 6.5f | % 6.5f | %s \n\n", i + 1,
            route[i]->node->id, route[i]->node->lat, route[i]->node->lon,
            route[i]->node->name);
 }
@@ -630,9 +631,10 @@ void WriteSolution(AStarNode **route, AStarNode *goal_node, char filename[])
                 route[i]->node->name);
 }
 
-dist_function SelDistFunction(char query[])
+dist_function SelDistFunction(char query[], unsigned int choice)
 {
-    unsigned int choice = MakeAQuery(query, 1, 8);
+    if (choice == 0)
+        choice = MakeAQuery(query, 1, 8);
 
     dist_function chosen_function;
     if (choice == 1)
@@ -658,20 +660,25 @@ dist_function SelDistFunction(char query[])
 }
 
 void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
-           unsigned long id_goal)
+           unsigned long id_goal, unsigned int heuristic_method,
+           unsigned int weight_method, char *output_file)
 {
     AStarWelcome();
-    PrintOutDistOptions();
+    if (heuristic_method == 0 || weight_method == 0)
+        PrintOutDistOptions();
 
     dist_function heuristic = SelDistFunction("Choose a method to compute the "
-                                              "heuristic distance");
-    dist_function edge_weight = SelDistFunction("Choose a method to compute "
-                                                "the weight between edges");
+                                              "heuristic distance",
+                                              heuristic_method);
 
-     //Timing the AStar implementation 
+    dist_function edge_weight = SelDistFunction("Choose a method to compute "
+                                                "the weight between edges",
+                                                weight_method);
+
+    // Start timing
     clock_t start, end;
     double cpu_time_used;
-     
+
     start = clock();
 
     // Let user know that AStar algorithm is starting
@@ -802,15 +809,25 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 
     // Notify success
-    PrintOutResults(current_iteration, current_node->g, current_node->h, cpu_time_used);
-    
-    printf("Do you want to print a summary of the optimal path found and to save the completed one in a file?\n");
-    if(ParseYesNo()){
+    PrintOutResults(current_iteration, current_node->g, current_node->h,
+                    cpu_time_used);
+
+    bool answer = false;
+    if (output_file == NULL)
+    {
+        printf("Do you want to print a summary of the optimal path found and\n"
+               " to save the completed one in a file?\n");
+        if (ParseYesNo())
+            output_file = strdup(DEFAULT_ROUTE_DIR);
+    }
+
+    if (output_file != NULL)
+    {
         // Get route from AStar nodes
         AStarNode **route = GetRoute(start_node, goal_node);
 
         // Print results and save route
         PrintSolution(route, goal_node);
-        WriteSolution(route, goal_node, "routes/path1.out");
+        WriteSolution(route, goal_node, output_file);
     }
 }

@@ -480,7 +480,7 @@ void SetDefaultRoutingArgs(RoutingArguments *args)
     args->ending_node = 0;
 
     // Optional arguments
-    args->output_file = strdup(DEFAULT_BIN_DIR);
+    args->output_file = NULL;
     args->heuristic_method = 0;
     args->weight_method = 0;
 }
@@ -499,9 +499,9 @@ void ParseRoutingArgs(int argc, char **argv, RoutingArguments *args)
 
             case 'o':
                 if (EndsWith("/", optarg))
-                    args->output_file = Concat(optarg, "map.bin");
+                    args->output_file = Concat(optarg, "path.out");
                 else
-                    args->output_file = Concat(optarg, "/map.bin");
+                    args->output_file = Concat(optarg, "/path.out");
                 break;
 
             case 's':
@@ -517,9 +517,11 @@ void ParseRoutingArgs(int argc, char **argv, RoutingArguments *args)
                 break;
 
             case 'd':
+                args->heuristic_method = strtoul(optarg, &ptr , 10);
                 break;
 
             case 'w':
+                args->weight_method = strtoul(optarg, &ptr , 10);
                 break;
 
             case '?':

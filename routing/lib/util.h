@@ -11,8 +11,8 @@ typedef struct
     char *output_file;
     unsigned long starting_node;
     unsigned long ending_node;
-    int heuristic_method;
-    int weight_method;
+    unsigned int heuristic_method;
+    unsigned int weight_method;
 } RoutingArguments;
 
 void CopyString(char *target, char *source);

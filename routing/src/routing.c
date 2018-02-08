@@ -45,5 +45,6 @@ int main(int argc, char **argv)
 
     // Spain
     //AStar(node, nnodes, 240949599, 195977239);
-    AStar(node, nnodes, args.starting_node, args.ending_node);
+    AStar(node, nnodes, args.starting_node, args.ending_node,
+          args.heuristic_method, args.weight_method, args.output_file);
 }
