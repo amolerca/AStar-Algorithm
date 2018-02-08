@@ -186,6 +186,12 @@ void FileParser(FILE *f, char line_type[], Node *node, unsigned long nnodes)
 Node *ReadFile(const char file_dir[], unsigned long *nnodes,
                unsigned long *nways, unsigned long *nedges)
 {
+    //Timing the program
+    clock_t start, end;
+    double cpu_time_used;
+     
+    start = clock();
+
     // Let user know what we are doing
     printf("------------------------------------------------------------\n");
     printf("Reading map file \'%s\'...\n", file_dir);
@@ -222,9 +228,13 @@ Node *ReadFile(const char file_dir[], unsigned long *nnodes,
     printf("  - Stablishing edges...\n");
     FileParser(f, "w", node, *nnodes);
 
+    // End timing
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+
     // Print out success
     printf("------------------------------------------------------------\n");
-    printf("Completed.\n");
+    printf("Completed in %.2f CPU seconds.\n", cpu_time_used);
     printf("------------------------------------------------------------\n\n");
 
     // Close input map file

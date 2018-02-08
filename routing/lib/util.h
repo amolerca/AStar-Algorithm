@@ -41,7 +41,8 @@ void AStarWelcome();
 
 void PrintOutIterationInfo(unsigned int current_iteration, double g, double h);
 
-void PrintOutResults(unsigned int current_iteration, double g, double h);
+void PrintOutResults(unsigned int current_iteration, double g, double h,
+                     double AStar_CPU_time);
 
 void PrintOutCLUsage();
 

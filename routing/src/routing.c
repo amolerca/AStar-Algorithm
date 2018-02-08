@@ -33,6 +33,15 @@ int main()
     unsigned long nnodes;
     const char BIN_DIR[100] = "bin/map.bin";
 
+    //Timing the program
+    clock_t start, end;
+    double cpu_time_used;
+     
+    start = clock();
+
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+
     // Read graph
     node = ReadBin(BIN_DIR, &nnodes);
 

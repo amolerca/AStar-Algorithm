@@ -314,6 +314,12 @@ Node *CleanGraph(Node *node, char *linked_nodes, unsigned long nnodes,
 Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
                        unsigned long nedges)
 {
+    //Timing the program
+    clock_t start, end;
+    double cpu_time_used;
+     
+    start = clock();
+
     // Let user know waht we are doing
     printf("------------------------------------------------------------\n");
     printf("Minimizing graph inconsistencies...\n");
@@ -353,9 +359,13 @@ Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
         printf("  - Number of ways: %lu\n", nways);
         printf("  - Number of edges: %lu\n", nedges);
 
+        // End timing
+        end = clock();
+        cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+
         printf("------------------------------------------------------------"
                "\n");
-        printf("Completed.\n");
+        printf("Completed in %.2f CPU seconds.\n", cpu_time_used);
         printf("------------------------------------------------------------"
                "\n\n");
     }
@@ -420,6 +430,7 @@ double RVHDistance(AStarNode node1, AStarNode node2)
     return MeanEarthRadius(lat1, lat2) * c;
 }
 
+// Equirectangular approximation
 double EquirectangularDistance(AStarNode node1, AStarNode node2)
 {
     double lat1 = ToRadians(node1.node->lat);
@@ -436,6 +447,23 @@ double EquirectangularDistance(AStarNode node1, AStarNode node2)
     return EARTH_RADIUS * c;
 }
 
+//  RVEA stands for Radius Varying Equirectangular approximation
+double RVEADistance(AStarNode node1, AStarNode node2)
+{
+    double lat1 = ToRadians(node1.node->lat);
+    double lat2 = ToRadians(node2.node->lat);
+    double deltalat = lat2 - lat1;
+    double mean_lat = (lat1+lat2)/2.0;
+    double deltalon = ToRadians(node2.node->lon - node1.node->lon);
+
+    double x = deltalon * cos(mean_lat);
+    double y = deltalat;
+
+    double c = sqrt(x*x + y*y);
+
+    return MeanEarthRadius(lat1, lat2) * c;
+}
+
 // SLOC stands for Spherical Lay of Cosines
 double SLOCDistance(AStarNode node1, AStarNode node2)
 {
@@ -447,6 +475,19 @@ double SLOCDistance(AStarNode node1, AStarNode node2)
     double c = acos(sin(lat1)*sin(lat2) + cos(lat1)*cos(lat2)*cos(deltalon));
 
     return EARTH_RADIUS * c;
+}
+
+// RVSLOC stands for Radius Varying Spherical Lay of Cosines
+double RVSLOCDistance(AStarNode node1, AStarNode node2)
+{
+    double lat1 = ToRadians(node1.node->lat);
+    double lat2 = ToRadians(node2.node->lat);
+    double deltalat = lat2 - lat1;
+    double deltalon = ToRadians(node2.node->lon - node1.node->lon);
+
+    double c = acos(sin(lat1)*sin(lat2) + cos(lat1)*cos(lat2)*cos(deltalon));
+
+    return MeanEarthRadius(lat1, lat2) * c;
 }
 
 double ZeroDistance(AStarNode node1, AStarNode node2)
@@ -591,7 +632,7 @@ void WriteSolution(AStarNode **route, AStarNode *goal_node, char filename[])
 
 dist_function SelDistFunction(char query[])
 {
-    unsigned int choice = MakeAQuery(query, 1, 6);
+    unsigned int choice = MakeAQuery(query, 1, 8);
 
     dist_function chosen_function;
     if (choice == 1)
@@ -603,8 +644,12 @@ dist_function SelDistFunction(char query[])
     else if (choice == 4)
         chosen_function = &RVHDistance;
     else if (choice == 5)
-        chosen_function = &ZeroDistance;
+        chosen_function = &RVSLOCDistance;
     else if (choice == 6)
+        chosen_function = &RVEADistance;
+    else if (choice == 7)
+        chosen_function = &ZeroDistance;
+    else if (choice == 8)
         chosen_function = &UniformDistance;
     else
         ExitError("wrong user selection", 514);
@@ -622,6 +667,12 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
                                               "heuristic distance");
     dist_function edge_weight = SelDistFunction("Choose a method to compute "
                                                 "the weight between edges");
+
+     //Timing the AStar implementation 
+    clock_t start, end;
+    double cpu_time_used;
+     
+    start = clock();
 
     // Let user know that AStar algorithm is starting
     printf(" - Calculating route with AStar algorithm...\n\n");
@@ -746,13 +797,20 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
         ExitError("when finishing A* algorithm. OPEN list is empty and no "
                   "solution was found", 460);
 
+    // End timing
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+
     // Notify success
-    PrintOutResults(current_iteration, current_node->g, current_node->h);
+    PrintOutResults(current_iteration, current_node->g, current_node->h, cpu_time_used);
+    
+    printf("Do you want to print a summary of the optimal path found and to save the completed one in a file?\n");
+    if(ParseYesNo()){
+        // Get route from AStar nodes
+        AStarNode **route = GetRoute(start_node, goal_node);
 
-    // Get route from AStar nodes
-    AStarNode **route = GetRoute(start_node, goal_node);
-
-    // Print results and save route
-    PrintSolution(route, goal_node);
-    WriteSolution(route, goal_node, "routes/path1.out");
+        // Print results and save route
+        PrintSolution(route, goal_node);
+        WriteSolution(route, goal_node, "routes/path1.out");
+    }
 }

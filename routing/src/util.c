@@ -251,16 +251,16 @@ void Compress(const char *bin_dir)
     if( system(command) == -1)
         ExitError("when calling system() to change file extension, from Compress()" , -1);
 
+    // Print out success
+    printf("------------------------------------------------------------\n");
+    printf("Completed.\n");
+    printf("------------------------------------------------------------\n\n");
+
     // Free memory
     free(dir);
     free(c1);
     free(c2);
     free(command);
-
-    // Print out success
-    printf("------------------------------------------------------------\n");
-    printf("Completed.\n");
-    printf("------------------------------------------------------------\n\n");
 }
 
 void Decompress(const char *bin_dir)
@@ -290,14 +290,13 @@ void Decompress(const char *bin_dir)
     if( system(command) == -1)
         ExitError("when calling system() to decompress a file, from Decompress()" , -1);
 
-    // Free memory
-    free(command);
-
     // Print out success
     printf("------------------------------------------------------------\n");
     printf("Completed.\n");
     printf("------------------------------------------------------------\n\n");
 
+    // Free memory
+    free(command);
 }
 
 double ToRadians(double degrees)
@@ -333,8 +332,10 @@ void PrintOutDistOptions()
     printf("\t2: Spherical law of cosines\n");
     printf("\t3: Equirectangular approximation\n");
     printf("\t4: Haversine with variable Earth radius\n");
-    printf("\t5: Zero distance (equal to 0.0)\n");
-    printf("\t6: Uniform distance (equal to 1.0)\n");
+    printf("\t5: Spherical law of cosines with variable Earth radius\n");
+    printf("\t6: Equirectangular approximation with variable Earth radius\n");
+    printf("\t7: Zero distance (equal to 0.0)\n");
+    printf("\t8: Uniform distance (equal to 1.0)\n");
     printf("\n");
 }
 
@@ -356,13 +357,15 @@ void PrintOutIterationInfo(unsigned int current_iteration, double g, double h)
     printf("               +----------------------------+\n\n");
 }
 
-void PrintOutResults(unsigned int current_iteration, double g, double h)
+void PrintOutResults(unsigned int current_iteration, double g, double h,
+                     double AStar_CPU_time)
 {
     printf(" - Optimal path found!\n\n");
     printf("               +----------------------------+\n");
     printf("               |       AStar Results        |\n");
     printf("               +----------------------------+\n");
     printf("               | Total iterations: %8u |\n", current_iteration);
+    printf("               | Total CPU time: %4.2lf  s |\n", AStar_CPU_time);
     printf("               +----------------------------+\n");
     printf("               | g(n) = %7.0f m           |\n", g);
     printf("               | h(n) = %7.0f m           |\n", h);

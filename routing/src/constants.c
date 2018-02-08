@@ -45,4 +45,4 @@ const int DYN_REALLOC_SIZE = 100;
 
 const int ROUTE_REALLOC_SIZE = 10;
 
-const char DEFAULT_BIN_DIR[100] = "bin";
+const char DEFAULT_BIN_DIR[100] = "bin/map.bin";
