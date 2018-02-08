@@ -26,6 +26,42 @@
 #include "reader.h"
 #include "binary.h"
 
+double Euclidean_distance(double x, double y, double x0, double y0){
+    return sqrtf( (x-x0)*(x-x0) + (y-y0)*(y-y0) );
+}
+
+
+int * FindStartAndGoalNodes( Node * node, unsigned long nnodes, double lat_start, double lon_start, double lat_goal, double lon_goal){
+    double min_norm_start = 1000000, min_norm_goal = 1000000, tmp_norm;
+    unsigned long id_start, id_goal;
+    double current_lat, current_lon;
+    
+    for(int i = 0; i< nnodes; i++)
+    {
+        current_lat = node[i].lat;
+        current_lon = node[i].lat;
+
+        if( ( tmp_norm = Euclidean_distance(current_lat, current_lon, lat_start, lon_start) ) < min_norm_start){
+            id_start = node[i].id;
+            min_norm_start = tmp_norm; 
+        }
+
+        if( ( tmp_norm = Euclidean_distance(current_lat, current_lon, lat_goal, lon_goal) ) < min_norm_goal){
+            id_goal = node[i].id;
+            min_norm_goal = tmp_norm; 
+        }
+
+    }
+
+    int * ids = (int *) malloc(sizeof(int) * 2);
+    ids[0] = id_start;
+    ids[1] = id_goal;
+
+    return ids; 
+}
+
+
+
 // Main function
 int main(int argc, char **argv)
 {
@@ -39,7 +75,7 @@ int main(int argc, char **argv)
 
     // Read graph
     node = ReadBin(args.input_file, &nnodes);
-
+    
     // Catalonia
     //AStar(node, nnodes, 771979683, 429854583);
 
@@ -48,3 +84,4 @@ int main(int argc, char **argv)
     AStar(node, nnodes, args.starting_node, args.ending_node,
           args.heuristic_method, args.weight_method, args.output_file);
 }
+
