@@ -478,7 +478,7 @@ double SLOCDistance(AStarNode node1, AStarNode node2)
 }
 
 // RVSLOC stands for Radius Varying Spherical Lay of Cosines
-double SLOCDistance(AStarNode node1, AStarNode node2)
+double RVSLOCDistance(AStarNode node1, AStarNode node2)
 {
     double lat1 = ToRadians(node1.node->lat);
     double lat2 = ToRadians(node2.node->lat);
@@ -632,7 +632,7 @@ void WriteSolution(AStarNode **route, AStarNode *goal_node, char filename[])
 
 dist_function SelDistFunction(char query[])
 {
-    unsigned int choice = MakeAQuery(query, 1, 6);
+    unsigned int choice = MakeAQuery(query, 1, 8);
 
     dist_function chosen_function;
     if (choice == 1)
@@ -644,8 +644,12 @@ dist_function SelDistFunction(char query[])
     else if (choice == 4)
         chosen_function = &RVHDistance;
     else if (choice == 5)
-        chosen_function = &ZeroDistance;
+        chosen_function = &RVSLOCDistance;
     else if (choice == 6)
+        chosen_function = &RVEADistance;
+    else if (choice == 7)
+        chosen_function = &ZeroDistance;
+    else if (choice == 8)
         chosen_function = &UniformDistance;
     else
         ExitError("wrong user selection", 514);

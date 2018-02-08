@@ -75,7 +75,11 @@ double RVHDistance(AStarNode node1, AStarNode node2);
 
 double EquirectangularDistance(AStarNode node1, AStarNode node2);
 
+double RVEADistance(AStarNode node1, AStarNode node2);
+
 double SLOCDistance(AStarNode node1, AStarNode node2);
+
+double RVSLOCDistance(AStarNode node1, AStarNode node2);
 
 double ZeroDistance(AStarNode node1, AStarNode node2);
 

@@ -310,8 +310,10 @@ void PrintOutDistOptions()
     printf("\t2: Spherical law of cosines\n");
     printf("\t3: Equirectangular approximation\n");
     printf("\t4: Haversine with variable Earth radius\n");
-    printf("\t5: Zero distance (equal to 0.0)\n");
-    printf("\t6: Uniform distance (equal to 1.0)\n");
+    printf("\t5: Spherical law of cosines with variable Earth radius\n");
+    printf("\t6: Equirectangular approximation with variable Earth radius\n");
+    printf("\t7: Zero distance (equal to 0.0)\n");
+    printf("\t8: Uniform distance (equal to 1.0)\n");
     printf("\n");
 }
 
