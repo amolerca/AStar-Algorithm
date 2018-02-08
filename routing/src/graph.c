@@ -629,6 +629,8 @@ void WriteSolution(AStarNode **route, AStarNode *goal_node, char filename[])
         fprintf(file, "%10d | %10lu | % 6.5f | % 6.5f | %s \n", i + 1,
                 route[i]->node->id, route[i]->node->lat, route[i]->node->lon,
                 route[i]->node->name);
+
+    printf(" - Route was written to file \'%s\'...\n", filename);
 }
 
 dist_function SelDistFunction(char query[], unsigned int choice)
@@ -815,8 +817,8 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
     bool answer = false;
     if (output_file == NULL)
     {
-        printf("Do you want to print a summary of the optimal path found and\n"
-               " to save the completed one in a file?\n");
+        printf(" - Do you want to print out a summary of the optimal route\n"
+               "   and to save it to a file?\n");
         if (ParseYesNo())
             output_file = strdup(DEFAULT_ROUTE_DIR);
     }

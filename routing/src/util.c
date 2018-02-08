@@ -129,12 +129,14 @@ char *GetField(const char *str, char delimiter[], int field_num)
     return fields;
 }
 
+//@ToDo
 bool ParseYesNo()
 {
-    printf("Yes[Y] or No[N]?\n");
+    printf("   Yes[Y] or No[N]? ");
 
     char ans[100];
-    if( scanf("%s", ans) == EOF ) ExitError("when scaning 'ans' in ParseYesNo function", -10);
+    if( scanf("%s", ans) == EOF )
+        ExitError("when scaning 'ans' in ParseYesNo function", -10);
 
     if (StartsWith(ans, "Yes") || StartsWith(ans, "yes"))
         return true;
@@ -365,7 +367,7 @@ void PrintOutResults(unsigned int current_iteration, double g, double h,
     printf("               |       AStar Results        |\n");
     printf("               +----------------------------+\n");
     printf("               | Total iterations: %8u |\n", current_iteration);
-    printf("               | Total CPU time: %4.2lf  s |\n", AStar_CPU_time);
+    printf("               | Total CPU time: %7.2lf  s |\n", AStar_CPU_time);
     printf("               +----------------------------+\n");
     printf("               | g(n) = %7.0f m           |\n", g);
     printf("               | h(n) = %7.0f m           |\n", h);
