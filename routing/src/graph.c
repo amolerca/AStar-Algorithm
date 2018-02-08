@@ -106,8 +106,6 @@ unsigned long BinarySearchChkd(unsigned long id, Node *node,
 
 void AddSuccessor(Node *A, Node *B)
 {
-    //printf("%lu -> %lu\n", A->id, B->id);
-
     if (A->asucc == 0)
     {
         A->asucc = 2;
@@ -195,8 +193,6 @@ void CopyNode(Node *original, Node *copy)
     copy->lon = original->lon;
 
     // Copy successors
-    // In this step we are still moving nodes around. We cannot save successor
-    // pointers
     unsigned short i;
     copy->nsucc = copy->asucc = original->nsucc;
     if (copy->successor != NULL)
@@ -245,7 +241,7 @@ Node *CleanGraph(Node *node, char *linked_nodes, unsigned long nnodes,
     // Save node links
     unsigned short j;
     unsigned long index = 0;
-    for (i = 0; i < nnodes; i++)
+    for (i = 0; i < nnodes + n_del; i++)
     {
         for (j = 0; j < node[i].nsucc; j++)
         {
@@ -365,6 +361,8 @@ Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
     }
     else
         printf(" - No unlinked nodes were found\n");
+
+    free(linked_nodes);
 
     return node;
 }
