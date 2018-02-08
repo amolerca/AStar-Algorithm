@@ -125,7 +125,7 @@ bool ParseYesNo()
     printf("Yes[Y] or No[N]?\n");
 
     char ans[100];
-    scanf("%s", ans);
+    if( scanf("%s", ans) == EOF ) ExitError("when scaning 'ans' in ParseYesNo function", -10);
 
     if (StartsWith(ans, "Yes") || StartsWith(ans, "yes"))
         return true;
@@ -226,7 +226,8 @@ void Compress(const char *bin_dir)
 
     // Run command to compress file
     command = Concat("gzip -f ", bin_dir);
-    system(command);
+    if( system(command) == -1) 
+        ExitError("when calling system() to compress a file, from Compress()" , -1);
 
     // Free memory
     free(command);
@@ -236,7 +237,8 @@ void Compress(const char *bin_dir)
     c1 = Concat(bin_dir, ".gz ");
     c2 = Concat("mv ", c1);
     command = Concat(c2, dir);
-    system(command);
+    if( system(command) == -1) 
+        ExitError("when calling system() to change file extension, from Compress()" , -1);
 
     // Free memory
     free(dir);
@@ -257,7 +259,8 @@ void Decompress(const char *bin_dir)
     c1 = Concat(SplitFields(strdup(bin_dir), "."), ".cmap ");
     c2 = Concat("mv ", c1);
     command = Concat(c2, dir);
-    system(command);
+    if( system(command) == -1) 
+        ExitError("when calling system() to change file extension, from Decompress()" , -1);
 
     //Free memory
     free(dir);
@@ -267,7 +270,8 @@ void Decompress(const char *bin_dir)
 
     // Run command to decompress binary file
     command = Concat("gzip -d ", Concat(bin_dir, ".gz"));
-    system(command);
+    if( system(command) == -1) 
+        ExitError("when calling system() to decompress a file, from Decompress()" , -1);
 
     // Free memory
     free(command);
