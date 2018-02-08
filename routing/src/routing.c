@@ -35,15 +35,10 @@ int main()
 
     // Read graph
     node = ReadBin(BIN_DIR, &nnodes);
-    /*for(int i = 0; i < nnodes; i++){
-    	printf("Name current node: %s\n", node[i].name);
-
-    }*/
 
     // Catalonia
     //AStar(node, nnodes, 771979683, 429854583);
 
     // Spain
-
     AStar(node, nnodes, 240949599, 195977239);
 }

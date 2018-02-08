@@ -38,7 +38,7 @@ int main()
     node = ReadFile(FILE_DIR, &nnodes, &nways, &nedges);
 
     // Minimize graph inconsistencies
-    //node = GraphEnhancement(node, &nnodes, nways, nedges);
+    node = GraphEnhancement(node, &nnodes, nways, nedges);
 
     // Write graph to a binary file
     WriteBin(BIN_DIR, node, nnodes);

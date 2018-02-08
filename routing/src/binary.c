@@ -24,11 +24,12 @@ void WriteBin(const char bin_dir[], Node *node, unsigned long nnodes)
     f = OpenFile(bin_dir, "wb", 33);
 
     // Write total number of nodes
+    printf(" - Writting number of nodes and successors...\n");
     if ((fwrite(&nnodes, sizeof(unsigned long), 1, f)) != 1)
         ExitError("when initiating binary file", 12);
 
     // Calculate total number of successors
-    unsigned long i, j;
+    unsigned long i;
     unsigned long nsucc = 0;
     for (i = 0; i < nnodes; i++)
         nsucc += node[i].nsucc;
@@ -38,37 +39,50 @@ void WriteBin(const char bin_dir[], Node *node, unsigned long nnodes)
         ExitError("when initiating binary file", 13);
 
     // Write all nodes
+    printf(" - Writting nodes...\n");
     if ((fwrite(node, sizeof(Node), nnodes, f)) != nnodes)
         ExitError("when writing nodes to binary file", 14);
 
-    // Get a list with all successors ids
-    unsigned long *ids;
-    ids = (unsigned long *) malloc(sizeof(unsigned long) * nsucc);
-    if (ids == NULL)
+    // Get a list with all successors indexes
+    printf(" - Writting successors...\n");
+    unsigned long *indexes;
+    indexes = (unsigned long *) malloc(sizeof(unsigned long) * nsucc);
+    if (indexes == NULL)
         ExitError("when allocating memory to save successors to binary"
                   "file", 6);
 
+    unsigned short j;
     unsigned long index = 0;
     for (i = 0; i < nnodes; i++)
         for (j = 0; j < node[i].nsucc; j++)
         {
-            ids[index] = node[i].successor[j]->id;
+            indexes[index] = node[i].successor[j]->index;
             index++;
         }
 
     // Write all successors
-    if ((fwrite(ids, sizeof(unsigned long), nsucc, f)) != nsucc)
+    if ((fwrite(indexes, sizeof(unsigned long), nsucc, f)) != nsucc)
         ExitError("when writing node successors to binary file", 15);
 
     // Write node names
+    printf(" - Writting node labels...\n");
     unsigned int name_len;
     for (i = 0; i < nnodes; i++)
     {
-        name_len = strlen(node[i].name);
-        if ((fwrite(&name_len, sizeof(unsigned int), 1, f)) != 1)
-            ExitError("when writing node names", 16);
-        if ((fwrite(node[i].name, sizeof(char), name_len, f)) != name_len)
-            ExitError("when writing node names", 17);
+        if (node[i].name == NULL)
+        {
+            name_len = 0;
+            if ((fwrite(&name_len, sizeof(unsigned int), 1, f)) != 1)
+                ExitError("when writing node names", 16);
+        }
+        else
+        {
+            name_len = strlen(node[i].name);
+            if ((fwrite(&name_len, sizeof(unsigned int), 1, f)) != 1)
+                ExitError("when writing node names", 16);
+            if ((fwrite(node[i].name, sizeof(char), name_len, f)) != name_len)
+                ExitError("when writing node names", 17);
+        }
     }
 
     // Print out success
@@ -77,7 +91,7 @@ void WriteBin(const char bin_dir[], Node *node, unsigned long nnodes)
     printf("------------------------------------------------------------\n\n");
 
     // Free memory
-    free(ids);
+    free(indexes);
 
     // Close file
     fclose(f);
@@ -125,55 +139,45 @@ Node *ReadBin(const char bin_dir[], unsigned long *nnodes)
     if (node == NULL)
         ExitError("when allocating memory to save the graph", 7);
 
-    // Allocate memory to save node successor ids
-    unsigned long *ids;
-    ids = (unsigned long *) malloc(sizeof(unsigned long) * nsucc);
-    if (ids == NULL)
-        ExitError("when allocating memory to save the graph", 8);
-
     // Read nodes
     printf(" - Reading nodes...\n");
     if ((fread(node, sizeof(Node), *nnodes, f)) != *nnodes)
         ExitError("when reading binary file", 72);
 
-    // This node checking slows down the code and maybe it is not necessary
-    // since the binary file have already been checked and ordered before.
-    // We can assume that their nodes will be ordered properly.
-    /*
     // Check if node ids were sorted in map file
     printf(" Checking nodes...\n");
     if (!CheckNodes(node, *nnodes))
             ExitError("nodes are not sorted in binary file", 58);
-    */
+
+    // Allocate memory to save node successor indexes
+    unsigned long *indexes;
+    indexes = (unsigned long *) malloc(sizeof(unsigned long) * nsucc);
+    if (indexes == NULL)
+        ExitError("when allocating memory to save the graph", 8);
 
     // Read successors
     printf(" - Linking nodes...\n");
-    if ((fread(ids, sizeof(unsigned long), nsucc, f)) != nsucc)
+    if ((fread(indexes, sizeof(unsigned long), nsucc, f)) != nsucc)
         ExitError("when reading binary file", 73);
 
-    // Check if node ids were indexed (in case of having run GraphEnhancement)
-    printf("   Warning! A non-reindexed graph is being used. Performance\n   "
-           "will be highly reduced.\n");
-    bool indexed = IsIndexed(node, *nnodes);
-
     // Assign successors
-    unsigned long i, j;
-    unsigned long index = 0;
+    unsigned long i, index = 0;
+    unsigned short j;
     for (i = 0; i < *nnodes; i++)
+    {
         if(node[i].nsucc)
         {
             node[i].successor = (Node **) malloc(sizeof(Node *) *
                                                  node[i].nsucc);
             for (j = 0; j < node[i].nsucc; j++)
             {
-                if (indexed)
-                    node[i].successor[j] = &node[ids[index]];
-                else
-                    node[i].successor[j] = FromIdToNode(ids[index], node,
-                                                        *nnodes);
+                node[i].successor[j] = &node[indexes[index]];
                 index++;
             }
         }
+        else
+            node[i].successor = NULL;
+    }
 
     // Read node names
     printf(" - Labeling nodes...\n");
@@ -183,16 +187,24 @@ Node *ReadBin(const char bin_dir[], unsigned long *nnodes)
     {
         if ((fread(&name_len, sizeof(unsigned int), 1, f)) != 1)
             ExitError("when node names from binary file", 74);
-        node_name = (char *) malloc(sizeof(char) * name_len);
-        if ((fread(node_name, sizeof(char), name_len, f)) != name_len)
-            ExitError("when node names from binary file", 75);
-        node[i].name = node_name;
+        if (name_len > 0)
+        {
+            node_name = (char *) malloc(sizeof(char) * name_len);
+            if ((fread(node_name, sizeof(char), name_len, f)) != name_len)
+                ExitError("when node names from binary file", 75);
+            node[i].name = node_name;
+        }
+        else
+            node[i].name = NULL;
     }
 
     // Print out success
     printf("------------------------------------------------------------\n");
     printf("Completed.\n");
     printf("------------------------------------------------------------\n\n");
+
+    // Free memory
+    free(indexes);
 
     // Close file
     fclose(f);

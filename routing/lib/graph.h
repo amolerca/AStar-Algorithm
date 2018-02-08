@@ -8,6 +8,7 @@ typedef struct AStarNode AStarNode;
 struct Node
 {
     unsigned long id;          /* Node identification (up to 4294967295) */
+    unsigned long index;       /* Node index (up to 4294967295) */
     char *name;                /* Pointer to the name of the location */
     double lat;                /* Latitude of the node */
     double lon;                /* Longitude of the node */
@@ -40,8 +41,6 @@ void PrintNodeByIndex(unsigned long id, Node *node, unsigned long nnodes);
 
 void PrintNodeById(unsigned long id, Node *node, unsigned long nnodes);
 
-bool IsIndexed(Node *node, unsigned long nnodes);
-
 long BinarySearch(unsigned long id, Node *node, unsigned long left,
                   unsigned long right);
 
@@ -57,8 +56,12 @@ bool CheckNodes(Node *node, unsigned long nnodes);
 
 char *GetLinkedNodes(Node *node, unsigned long nnodes);
 
+void CopyNode(Node *original, Node *copy);
+
+void RemoveNode(Node *node);
+
 Node *CleanGraph(Node *node, char *linked_nodes, unsigned long nnodes,
-                 unsigned long n_del);
+                 unsigned long n_del, unsigned long nsucc);
 
 Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
                        unsigned long nedges);

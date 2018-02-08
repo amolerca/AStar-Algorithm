@@ -30,32 +30,31 @@ void PrintNodeByIndex(unsigned long index, Node *node, unsigned long nnodes)
         ExitError("when printing node. Node index out of range", 66);
 
     printf("  Node id:            %lu\n", node[index].id);
+    printf("  Node id:            %lu\n", node[index].index);
     printf("  Node name:          %s\n", node[index].name);
     printf("  Node lat:           %f\n", node[index].lat);
     printf("  Node lon:           %f\n", node[index].lon);
     printf("  Node nsucc:         %hu\n", node[index].nsucc);
     printf("  Node asucc:         %hu\n", node[index].nsucc);
     printf("  Node successor ids: ");
-    unsigned long i;
+    unsigned short i;
     for (i = 0; i < node[index].nsucc; i++)
         printf("%lu ", node[index].successor[i]->id);
     printf("\n");
+    printf("  Node successor indexes: ");
+    for (i = 0; i < node[index].nsucc; i++)
+        printf("%lu ", node[index].successor[i]->index);
+    printf("\n");
+
 }
 
 void PrintNodeById(unsigned long id, Node *node, unsigned long nnodes)
 {
-    if (IsIndexed(node, nnodes))
-    {
-        if (id >= nnodes)
-            ExitError("when printing node. Node id out of range", 66);
-    }
-    else
-    {
-        long search_results = BinarySearch(id, node, 0, nnodes - 1);
-        if (search_results == -1)
-            ExitError("when printing node. Node id not found", 67);
-        id = (unsigned long) search_results;
-    }
+
+    long search_results = BinarySearch(id, node, 0, nnodes - 1);
+    if (search_results == -1)
+        ExitError("when printing node. Node id not found", 67);
+    id = (unsigned long) search_results;
 
     printf("  Node id:            %lu\n", node[id].id);
     printf("  Node name:          %s\n", node[id].name);
@@ -64,15 +63,10 @@ void PrintNodeById(unsigned long id, Node *node, unsigned long nnodes)
     printf("  Node nsucc:         %hu\n", node[id].nsucc);
     printf("  Node asucc:         %hu\n", node[id].nsucc);
     printf("  Node successor ids: ");
-    unsigned long i;
+    unsigned short i;
     for (i = 0; i < node[id].nsucc; i++)
         printf("%lu ", node[id].successor[i]->id);
     printf("\n");
-}
-
-bool IsIndexed(Node *node, unsigned long nnodes)
-{
-    return (node[nnodes - 1].id == nnodes - 1);
 }
 
 long BinarySearch(unsigned long id, Node *node, unsigned long left,
@@ -155,7 +149,8 @@ bool CheckNodes(Node *node, unsigned long nnodes)
 
 char *GetLinkedNodes(Node *node, unsigned long nnodes)
 {
-    unsigned long i, j, id;
+    unsigned long i, index;
+    unsigned short j;
     char *linked_nodes = (char *) malloc(sizeof(char) * nnodes);
     memset(linked_nodes, false, sizeof(char) * nnodes);
 
@@ -166,8 +161,8 @@ char *GetLinkedNodes(Node *node, unsigned long nnodes)
             linked_nodes[i] = true;
             for (j = 0; j < node[i].nsucc; j++)
             {
-                id = node[i].successor[j]->id;
-                linked_nodes[id] = true;
+                index = node[i].successor[j]->index;
+                linked_nodes[index] = true;
             }
         }
     }
@@ -175,81 +170,164 @@ char *GetLinkedNodes(Node *node, unsigned long nnodes)
     return linked_nodes;
 }
 
-Node *CleanGraph(Node *node, char *linked_nodes, unsigned long nnodes,
-                 unsigned long n_del)
+void CopyNode(Node *original, Node *copy)
 {
-    unsigned long i, j, id, clean_id;
+    // Copy ID
+    copy->id = original->id;
+
+    // Copy name
+    if (copy->name != NULL)
+    {
+        free(copy->name);
+        copy->name = NULL;
+    }
+    if (original->name == NULL)
+        copy->name = NULL;
+    else
+    {
+        copy->name = (char *) malloc(sizeof(char) * (strlen(original->name) +
+                                                    1));
+        strcpy(copy->name, original->name);
+    }
+
+    // Copy coordinates
+    copy->lat = original->lat;
+    copy->lon = original->lon;
+
+    // Copy successors
+    // In this step we are still moving nodes around. We cannot save successor
+    // pointers
+    unsigned short i;
+    copy->nsucc = copy->asucc = original->nsucc;
+    if (copy->successor != NULL)
+    {
+        free(copy->successor);
+        copy->successor = NULL;
+    }
+    if (original->successor != NULL)
+    {
+        copy->successor = (Node **) malloc(sizeof(Node *) * copy->nsucc);
+        for (i = 0; i < copy->nsucc; i++)
+            copy->successor = original->successor;
+    }
+    else
+        copy->successor = NULL;
+}
+
+void RemoveNode(Node *node)
+{
+    node->id = 0;
+    if (node->name != NULL)
+    {
+        free(node->name);
+        node->name = NULL;
+    }
+    if (node->nsucc > 0)
+    {
+        free(node->successor);
+        node->successor = NULL;
+    }
+}
+
+Node *CleanGraph(Node *node, char *linked_nodes, unsigned long nnodes,
+                 unsigned long n_del, unsigned long nsucc)
+{
+    unsigned long i;
+
+    // Get a list with all successors indexes
+    printf(" - Saving links...\n");
+    unsigned long *ids;
+    ids = (unsigned long *) malloc(sizeof(unsigned long) * nsucc);
+    if (ids == NULL)
+        ExitError("when allocating memory to save successors to binary"
+                  "file", 6);
+
+    // Save node links
+    unsigned short j;
     unsigned long index = 0;
-    long search_results;
-
-    Node *clean_node = (Node *) malloc(sizeof(Node) * nnodes);
-    if (clean_node == NULL)
-        ExitError("when allocating memory to save the enhanced graph", 6);
-
-    // Add nodes (only the linked ones)
-    for (i = 0; i < nnodes + n_del; i++)
-        if (linked_nodes[i] == 1)
+    for (i = 0; i < nnodes; i++)
+    {
+        for (j = 0; j < node[i].nsucc; j++)
         {
-            //memcpy(&clean_node[i], &node[index], sizeof(Node));
-            clean_node[index] = node[i];
+            ids[index] = node[i].successor[j]->id;
             index++;
         }
+        // No need to copy original successors because we are still moving
+        // nodes around. Since we have already saved node links, we can free
+        // successor pointers
+        if (node[i].successor != NULL)
+        {
+            free(node[i].successor);
+            node[i].successor = NULL;
+        }
+    }
 
-    // Add successors to new nodes
+    // Add nodes (only the linked ones)
+    printf(" - Moving nodes...\n");
     index = 0;
     for (i = 0; i < nnodes + n_del; i++)
     {
         if (linked_nodes[i] == 1)
         {
-            // Allocate memory for clean nodes new successors
-            if (node[i].nsucc)
-                clean_node[index].successor = (Node **) malloc(sizeof(Node *) *
-                                                           node[i].nsucc);
-
-            // Assign new clean node ids to old node ones
-            for (j = 0; j < node[i].nsucc; j++)
+            if (i != index)
             {
-                id = node[i].successor[j]->id;
-                clean_id = BinarySearchChkd(id, clean_node, 0, nnodes - 1,
-                                            140);
-                //memcpy(&node[index], &clean_node[i], sizeof(Node));
-                clean_node[index].successor[j] = &clean_node[clean_id];
+                CopyNode(&node[i], &node[index]);
+                RemoveNode(&node[i]);
             }
-
-            // Free old successors memory
-            if (node[i].nsucc)
-                free(node[i].successor);
-
-            // Update clean nodes index
             index++;
+        }
+        else
+            RemoveNode(&node[i]);
+    }
+
+    // Relink nodes
+    printf(" - Relinking nodes...\n");
+    index = 0;
+    unsigned long id_successor;
+    Node *successor;
+    for (i = 0; i < nnodes; i++)
+    {
+        node[i].asucc = node[i].nsucc;
+        if(node[i].asucc)
+        {
+            node[i].nsucc = 0;
+            node[i].successor = (Node **) malloc(sizeof(Node *) *
+                                                 node[i].asucc);
+            for (j = 0; j < node[i].asucc; j++)
+            {
+                id_successor = ids[index];
+                successor = FromIdToNode(id_successor, node, nnodes);
+                AddSuccessor(&node[i], successor);
+                index++;
+            }
         }
     }
 
-    // Free old nodes memory
-    free(node);
-
     // Reindex new nodes
-    printf(" Reindexing nodes...\n");
+    printf(" - Reindexing nodes...\n");
     for (i = 0; i < nnodes; i++)
-        clean_node[i].id = i;
+        node[i].index = i;
+
+    // Free memory
+    free(ids);
 
     // Return new nodes
-    return clean_node;
+    return node;
 }
 
 Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
                        unsigned long nedges)
 {
     // Let user know waht we are doing
+    printf("------------------------------------------------------------\n");
     printf("Minimizing graph inconsistencies...\n");
+    printf("------------------------------------------------------------\n");
 
-    int i;
-    unsigned long ln_size;
-
-    // Ids reindexing
-    printf(" Reindexing nodes...\n");
+    // Get number of successors
+    unsigned long i, nsucc = 0;
     for (i = 0; i < *nnodes; i++)
-        node[i].id = i;
+        nsucc += node[i].nsucc;
+    printf(" - Total number of succesors found: %lu\n", nsucc);
 
     // Get linked nodes
     char *linked_nodes = GetLinkedNodes(node, *nnodes);
@@ -263,25 +341,30 @@ Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
     // Remove unlinked nodes, if any
     if (n_del > 0)
     {
-        printf(" Total number of unlinked nodes found: %lu\n", n_del);
+        printf(" - Total number of unlinked nodes found: %lu\n", n_del);
 
         // Substract the number of nodes that will be removed
         *nnodes -= n_del;
 
         // Copying a clean graph to enh_node
-        printf(" Removing unlinked nodes...\n");
-        Node *enh_node = CleanGraph(node, linked_nodes, *nnodes, n_del);
+        printf(" - Removing unlinked nodes...\n");
+        node = CleanGraph(node, linked_nodes, *nnodes, n_del, nsucc);
 
         // Display new graph size
-        printf("New graph size: \n");
-        printf(" Number of nodes: %lu\n", *nnodes);
-        printf(" Number of ways: %lu\n", nways);
-        printf(" Number of edges: %lu\n", nedges);
+        printf(" - New graph size: \n");
+        printf("  - Number of nodes: %lu\n", *nnodes);
+        printf("  - Number of successors: %lu\n", nsucc);
+        printf("  - Number of ways: %lu\n", nways);
+        printf("  - Number of edges: %lu\n", nedges);
 
-        return enh_node;
+        printf("------------------------------------------------------------"
+               "\n");
+        printf("Completed.\n");
+        printf("------------------------------------------------------------"
+               "\n\n");
     }
-
-    printf(" No unlinked nodes were found\n");
+    else
+        printf(" - No unlinked nodes were found\n");
 
     return node;
 }
@@ -478,14 +561,14 @@ void PrintSolution(AStarNode **route, AStarNode *goal_node)
     printf(" Distance: %f\n", goal_node->h + goal_node->g);
     printf(" Path summary:\n");
 
-    printf("%10d | %10lu | %6.5f | %6.5f | %s \n", 1,
+    printf("%10d | %10lu | % 6.5f | %6.5f | %s \n", 1,
            route[0]->node->id, route[0]->node->lat, route[0]->node->lon,
            route[0]->node->name);
 
     unsigned int i = 1;
     while (route[++i]->node->id != goal_node->node->id)
     {
-        if (strlen(route[i]->node->name) == 0)
+        if (route[i]->node->name == NULL)
             continue;
         printf("%10d | %10lu | % 6.5f | % 6.5f | %s \n", i + 1,
                route[i]->node->id, route[i]->node->lat, route[i]->node->lon,
@@ -602,6 +685,9 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
         // from the current node to the goal node which is calculated with the
         // heuristic function
         current_node = NodeWithLowestF(open_list);
+        //printf("iteration %u\n", current_iteration);
+        //printf("id %lu\n", current_node->node->id);
+        //printf("nsucc %hu\n", current_node->node->nsucc);
 
         // Finish loop in case of finding a solution
         if (current_node->node->id == goal_node->node->id)
@@ -611,8 +697,8 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
         for (j = 0; j < current_node->node->nsucc; j++)
         {
             // Get successor's ID
-            succ_ID = BinarySearchChkd(current_node->node->successor[j]->id,
-                                       node, 0, nnodes - 1, 201);
+            succ_ID = current_node->node->successor[j]->index;
+            //printf("succ_ID %lu\n", succ_ID);
 
             // Find successor's node
             successor_node = &asnode[succ_ID];
@@ -621,6 +707,7 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
             successor_current_cost = current_node->g +
                                      (*edge_weight)(*current_node,
                                                         *successor_node);
+            //printf("%lu %i\n", successor_node->node->id, successor_node->stat);
 
             // Depending on whether the successor's node was previously visited
             // or not, perform a specific action
