@@ -430,6 +430,7 @@ double RVHDistance(AStarNode node1, AStarNode node2)
     return MeanEarthRadius(lat1, lat2) * c;
 }
 
+// Equirectangular approximation
 double EquirectangularDistance(AStarNode node1, AStarNode node2)
 {
     double lat1 = ToRadians(node1.node->lat);
@@ -446,6 +447,23 @@ double EquirectangularDistance(AStarNode node1, AStarNode node2)
     return EARTH_RADIUS * c;
 }
 
+//  RVEA stands for Radius Varying Equirectangular approximation
+double RVEADistance(AStarNode node1, AStarNode node2)
+{
+    double lat1 = ToRadians(node1.node->lat);
+    double lat2 = ToRadians(node2.node->lat);
+    double deltalat = lat2 - lat1;
+    double mean_lat = (lat1+lat2)/2.0;
+    double deltalon = ToRadians(node2.node->lon - node1.node->lon);
+
+    double x = deltalon * cos(mean_lat);
+    double y = deltalat;
+
+    double c = sqrt(x*x + y*y);
+
+    return MeanEarthRadius(lat1, lat2) * c;
+}
+
 // SLOC stands for Spherical Lay of Cosines
 double SLOCDistance(AStarNode node1, AStarNode node2)
 {
@@ -457,6 +475,19 @@ double SLOCDistance(AStarNode node1, AStarNode node2)
     double c = acos(sin(lat1)*sin(lat2) + cos(lat1)*cos(lat2)*cos(deltalon));
 
     return EARTH_RADIUS * c;
+}
+
+// RVSLOC stands for Radius Varying Spherical Lay of Cosines
+double SLOCDistance(AStarNode node1, AStarNode node2)
+{
+    double lat1 = ToRadians(node1.node->lat);
+    double lat2 = ToRadians(node2.node->lat);
+    double deltalat = lat2 - lat1;
+    double deltalon = ToRadians(node2.node->lon - node1.node->lon);
+
+    double c = acos(sin(lat1)*sin(lat2) + cos(lat1)*cos(lat2)*cos(deltalon));
+
+    return MeanEarthRadius(lat1, lat2) * c;
 }
 
 double ZeroDistance(AStarNode node1, AStarNode node2)
