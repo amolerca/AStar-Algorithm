@@ -1,10 +1,17 @@
-//void RemoveNewLine(char* string);
+typedef struct
+{
+  char *input_file;
+  char *output_file;
+  bool fast;
+} Arguments;
 
 void CopyString(char *target, char *source);
 
 bool EqualStrings(const char *s1, const char *s2);
 
 bool StartsWith(const char *pre, const char *str);
+
+bool EndsWith(const char *suffix, const char *str);
 
 char *SplitFields(char * str, char const * delims);
 
@@ -35,3 +42,13 @@ void AStarWelcome();
 void PrintOutIterationInfo(unsigned int current_iteration, double g, double h);
 
 void PrintOutResults(unsigned int current_iteration, double g, double h);
+
+void PrintOutCLUsage();
+
+void PrintOutCLHelp();
+
+void SetDefaultArgs(Arguments *args);
+
+void ParseArgs(int argc, char **argv, Arguments *args);
+
+void CheckArgs(Arguments *args);

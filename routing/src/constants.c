@@ -44,3 +44,5 @@ const double PI = 3.141592653589793;
 const int DYN_REALLOC_SIZE = 100;
 
 const int ROUTE_REALLOC_SIZE = 10;
+
+const char DEFAULT_BIN_DIR[100] = "bin";

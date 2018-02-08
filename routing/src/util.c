@@ -60,6 +60,15 @@ bool StartsWith(const char *pre, const char *str)
     return strncmp(pre, str, strlen(pre)) == 0;
 }
 
+bool EndsWith(const char *suffix, const char *str)
+{
+  int str_len = strlen(str);
+  int suffix_len = strlen(suffix);
+
+  return (str_len >= suffix_len) &&
+         (0 == strcmp(str + (str_len-suffix_len), suffix));
+}
+
 char *SplitFields(char *str, char const *delims)
 {
     /*
@@ -160,8 +169,8 @@ FILE *OpenFile(const char file_dir[], char mode[], int error_num)
             if (access(path, F_OK) == -1)
             {
                 char *file_name = GetField(file_dir, "/", n_folders);
-                printf(" Creating folder \'%s\' to store file \'%s\'\n", path,
-                       file_name);
+                printf(" - Creating folder \'%s\' to store file \'%s\'\n",
+                       path, file_name);
                 mkdir(path, 0700);
             }
 
@@ -220,13 +229,15 @@ char *Concat(const char *s1, const char *s2)
 
 void Compress(const char *bin_dir)
 {
+    printf("------------------------------------------------------------\n");
     printf("Compressing binary file...\n");
+    printf("------------------------------------------------------------\n");
 
     char *command, *dir, *c1, *c2;
 
     // Run command to compress file
     command = Concat("gzip -f ", bin_dir);
-    if( system(command) == -1) 
+    if( system(command) == -1)
         ExitError("when calling system() to compress a file, from Compress()" , -1);
 
     // Free memory
@@ -237,7 +248,7 @@ void Compress(const char *bin_dir)
     c1 = Concat(bin_dir, ".gz ");
     c2 = Concat("mv ", c1);
     command = Concat(c2, dir);
-    if( system(command) == -1) 
+    if( system(command) == -1)
         ExitError("when calling system() to change file extension, from Compress()" , -1);
 
     // Free memory
@@ -246,11 +257,17 @@ void Compress(const char *bin_dir)
     free(c2);
     free(command);
 
+    // Print out success
+    printf("------------------------------------------------------------\n");
+    printf("Completed.\n");
+    printf("------------------------------------------------------------\n\n");
 }
 
 void Decompress(const char *bin_dir)
 {
+    printf("------------------------------------------------------------\n");
     printf("Decompressing binary file...\n");
+    printf("------------------------------------------------------------\n");
 
     char *command, *dir, *c1, *c2;
 
@@ -259,7 +276,7 @@ void Decompress(const char *bin_dir)
     c1 = Concat(SplitFields(strdup(bin_dir), "."), ".cmap ");
     c2 = Concat("mv ", c1);
     command = Concat(c2, dir);
-    if( system(command) == -1) 
+    if( system(command) == -1)
         ExitError("when calling system() to change file extension, from Decompress()" , -1);
 
     //Free memory
@@ -270,11 +287,17 @@ void Decompress(const char *bin_dir)
 
     // Run command to decompress binary file
     command = Concat("gzip -d ", Concat(bin_dir, ".gz"));
-    if( system(command) == -1) 
+    if( system(command) == -1)
         ExitError("when calling system() to decompress a file, from Decompress()" , -1);
 
     // Free memory
     free(command);
+
+    // Print out success
+    printf("------------------------------------------------------------\n");
+    printf("Completed.\n");
+    printf("------------------------------------------------------------\n\n");
+
 }
 
 double ToRadians(double degrees)
@@ -345,4 +368,73 @@ void PrintOutResults(unsigned int current_iteration, double g, double h)
     printf("               | h(n) = %7.0f m           |\n", h);
     printf("               | f(n) = %7.0f m           |\n", g + h);
     printf("               +----------------------------+\n\n");
+}
+
+void PrintOutCLUsage()
+{
+    printf("Usage: /bincreator.exe -i FILE\n");
+    printf("Optional arguments:");
+    printf(" -o DIRECTORY -f\n");
+    printf("Use -h to obtain more information\n");
+    ExitError("wrong command-line argument", 356);
+}
+
+void PrintOutCLHelp()
+{
+    printf("List of command-line arguments:\n");
+    printf(" - Mandatory arguments:\n");
+    printf("\t-i FILE:      path to a suitable input map file.\n");
+    printf(" - Optional arguments:\n");
+    printf("\t-o DIRECTORY: path to the directory where the binary\n"
+           "\t              file will be stored\n");
+    printf("\t-f:           do not minimize graph inconsistencies\n"
+           "\t              (faster script but worse graph)\n");
+    printf("\t-h:           prints this message and exits");
+    exit(0);
+}
+void SetDefaultArgs(Arguments *args)
+{
+    args->input_file = NULL;
+    args->output_file = strdup(DEFAULT_BIN_DIR);
+}
+
+void ParseArgs(int argc, char **argv, Arguments *args)
+{
+    argv[0] = argv[2];
+    int c;
+    while ((c = getopt(argc, argv, "i:o:fh")) != -1)
+        switch (c)
+        {
+            case 'i':
+                args->input_file = strdup(optarg);
+                break;
+
+            case 'o':
+                if (EndsWith("/", optarg))
+                    args->output_file = Concat(optarg, "map.bin");
+                else
+                    args->output_file = Concat(optarg, "/map.bin");
+                break;
+
+            case 'f':
+                args->fast = true;
+                break;
+
+            case 'h':
+                PrintOutCLHelp();
+                break;
+
+            case '?':
+                PrintOutCLUsage();
+                break;
+
+            default:
+                abort();
+        }
+}
+
+void CheckArgs(Arguments *args)
+{
+    if (args->input_file == NULL)
+        PrintOutCLUsage();
 }

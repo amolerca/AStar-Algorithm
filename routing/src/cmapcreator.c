@@ -27,19 +27,23 @@
 #include "binary.h"
 
 // Main function
-int main()
+int main(int argc, char **argv)
 {
+    Arguments args;
+    SetDefaultArgs(&args);
+    ParseArgs(argc, argv, &args);
+    CheckArgs(&args);
+
     Node *node;
     unsigned long nnodes, nways, nedges;
-    const char FILE_DIR[100] = "inputs/catalonia.map";
-    const char BIN_DIR[100] = "bin/map.bin";
 
     // Read and check map file data
-    node = ReadFile(FILE_DIR, &nnodes, &nways, &nedges);
+    node = ReadFile(args.input_file, &nnodes, &nways, &nedges);
 
     // Minimize graph inconsistencies
-    //node = GraphEnhancement(node, &nnodes, nways, nedges);
+    if (!args.fast)
+        node = GraphEnhancement(node, &nnodes, nways, nedges);
 
     // Write graph to a binary file
-    WriteCmap(BIN_DIR, node, nnodes);
+    WriteCmap(args.output_file, node, nnodes);
 }

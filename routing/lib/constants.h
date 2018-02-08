@@ -23,3 +23,4 @@ const float EARTH_POLAR_RADIUS;
 const double PI;
 const int DYN_REALLOC_SIZE;
 const int ROUTE_REALLOC_SIZE;
+const char DEFAULT_BIN_DIR[100];

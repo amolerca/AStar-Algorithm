@@ -548,7 +548,7 @@ void PrintSolution(AStarNode **route, AStarNode *goal_node)
     printf(" Distance: %f\n", goal_node->h + goal_node->g);
     printf(" Path summary:\n");
 
-    printf("%10d | %10lu | % 6.5f | %6.5f | %s \n", 1,
+    printf("%10d | %10lu | % 6.5f | % 6.5f | %s \n", 1,
            route[0]->node->id, route[0]->node->lat, route[0]->node->lon,
            route[0]->node->name);
 
