@@ -29,7 +29,7 @@ This project supports the following C compiler versions:
 Other regular C compilers should work as well but have not been tested yet.
 
 For a graphical representation of the paths via Google Maps, Python 3 need to be installed and the following (additional) packages are required:
-   * requests
+   * _requests_
   
 ### Installing on OSX
   
@@ -38,11 +38,9 @@ For a graphical representation of the paths via Google Maps, Python 3 need to be
 
 To install the _requests_ python package do:
 ```
-sudo apt-get update
-sudo apt-get install python3-gmplot
+pip install requests
 ```
 this require having installed pip:
-
 ```
 sudo apt install python-pip
 ```
