@@ -314,6 +314,12 @@ Node *CleanGraph(Node *node, char *linked_nodes, unsigned long nnodes,
 Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
                        unsigned long nedges)
 {
+    //Timing the program
+    clock_t start, end;
+    double cpu_time_used;
+     
+    start = clock();
+
     // Let user know waht we are doing
     printf("------------------------------------------------------------\n");
     printf("Minimizing graph inconsistencies...\n");
@@ -353,9 +359,13 @@ Node *GraphEnhancement(Node *node, unsigned long *nnodes, unsigned long nways,
         printf("  - Number of ways: %lu\n", nways);
         printf("  - Number of edges: %lu\n", nedges);
 
+        // End timing
+        end = clock();
+        cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+
         printf("------------------------------------------------------------"
                "\n");
-        printf("Completed.\n");
+        printf("Completed in %.2f CPU seconds.\n", cpu_time_used);
         printf("------------------------------------------------------------"
                "\n\n");
     }

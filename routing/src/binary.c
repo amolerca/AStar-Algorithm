@@ -13,7 +13,14 @@ void WriteCmap(const char bin_dir[], Node *node, unsigned long nnodes)
 }
 
 void WriteBin(const char bin_dir[], Node *node, unsigned long nnodes)
-{
+{   
+
+     //Timing the program
+    clock_t start, end;
+    double cpu_time_used;
+     
+    start = clock();
+
     // Let user know what we are doing
     printf("------------------------------------------------------------\n");
     printf("Writting graph to binary file \'%s\'...\n", bin_dir);
@@ -84,10 +91,14 @@ void WriteBin(const char bin_dir[], Node *node, unsigned long nnodes)
                 ExitError("when writing node names", 17);
         }
     }
+    
+    // End timing
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 
     // Print out success
     printf("------------------------------------------------------------\n");
-    printf("Completed.\n");
+    printf("Completed in %.2f CPU seconds.\n", cpu_time_used);
     printf("------------------------------------------------------------\n\n");
 
     // Free memory
@@ -110,12 +121,18 @@ Node *ReadCmap(const char bin_dir[], unsigned long *nnodes)
 }
 
 Node *ReadBin(const char bin_dir[], unsigned long *nnodes)
-{
+{    
+    //Timing the program
+    clock_t start, end;
+    double cpu_time_used;
+     
+    start = clock();
+
     // Let user know what we are doing
     printf("------------------------------------------------------------\n");
     printf("Reading graph from binary file \'%s\'...\n", bin_dir);
     printf("------------------------------------------------------------\n");
-
+    
     // Open file
     FILE *f;
     f = OpenFile(bin_dir, "r", 34);
@@ -198,9 +215,13 @@ Node *ReadBin(const char bin_dir[], unsigned long *nnodes)
             node[i].name = NULL;
     }
 
+    // End timing
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+
     // Print out success
     printf("------------------------------------------------------------\n");
-    printf("Completed.\n");
+    printf("Completed in %.2f CPU seconds.\n", cpu_time_used);
     printf("------------------------------------------------------------\n\n");
 
     // Free memory
