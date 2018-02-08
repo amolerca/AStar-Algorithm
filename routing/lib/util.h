@@ -14,10 +14,10 @@ typedef struct
     unsigned int heuristic_method;
     unsigned int weight_method;
 
-/*    double starting_latitude;
+    double starting_latitude;
     double starting_longitude;
     double goal_latitude;
-    double goal_longitude;*/
+    double goal_longitude;
 
 } RoutingArguments;
 
