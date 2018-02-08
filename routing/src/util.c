@@ -373,7 +373,7 @@ void PrintOutResults(unsigned int current_iteration, double g, double h,
     printf("               +----------------------------+\n\n");
 }
 
-void PrintOutCLUsage()
+void PrintOutReaderCLUsage()
 {
     printf("Usage: /bincreator.exe -i FILE\n");
     printf("Optional arguments:");
@@ -382,7 +382,7 @@ void PrintOutCLUsage()
     ExitError("wrong command-line argument", 356);
 }
 
-void PrintOutCLHelp()
+void PrintOutReaderCLHelp()
 {
     printf("List of command-line arguments:\n");
     printf(" - Mandatory arguments:\n");
@@ -392,16 +392,16 @@ void PrintOutCLHelp()
            "\t              file will be stored\n");
     printf("\t-f:           do not minimize graph inconsistencies\n"
            "\t              (faster script but worse graph)\n");
-    printf("\t-h:           prints this message and exits");
+    printf("\t-h:           prints this message and exits\n");
     exit(0);
 }
-void SetDefaultArgs(Arguments *args)
+void SetDefaultReaderArgs(ReaderArguments *args)
 {
     args->input_file = NULL;
     args->output_file = strdup(DEFAULT_BIN_DIR);
 }
 
-void ParseArgs(int argc, char **argv, Arguments *args)
+void ParseReaderArgs(int argc, char **argv, ReaderArguments *args)
 {
     argv[0] = argv[2];
     int c;
@@ -424,11 +424,11 @@ void ParseArgs(int argc, char **argv, Arguments *args)
                 break;
 
             case 'h':
-                PrintOutCLHelp();
+                PrintOutReaderCLHelp();
                 break;
 
             case '?':
-                PrintOutCLUsage();
+                PrintOutReaderCLUsage();
                 break;
 
             default:
@@ -436,8 +436,107 @@ void ParseArgs(int argc, char **argv, Arguments *args)
         }
 }
 
-void CheckArgs(Arguments *args)
+void CheckReaderArgs(ReaderArguments *args)
 {
     if (args->input_file == NULL)
-        PrintOutCLUsage();
+        PrintOutReaderCLUsage();
+}
+
+void PrintOutRoutingCLUsage()
+{
+    printf("Usage: /routing.exe -i FILE -s INTEGER -e INTEGER\n");
+    printf("Optional arguments:");
+    printf(" -o DIRECTORY -d INTEGER -w INTEGER\n");
+    printf("Use -h to obtain more information\n");
+    ExitError("wrong command-line argument", 356);
+}
+
+void PrintOutRoutingCLHelp()
+{
+    printf("List of command-line arguments:\n");
+    printf(" - Mandatory arguments:\n");
+    printf("\t-i FILE:      path to a suitable input binary or cmap\n"
+           "\t              file.\n");
+    printf("\t-s INTEGER:   latitude and longitude coordinates of\n"
+           "\t              the starting node\n");
+    printf("\t-e INTEGER:   latitude and longitude coordinates of\n"
+           "\t              the ending node\n");
+    printf(" - Optional arguments:\n");
+    printf("\t-o DIRECTORY: path to the directory where the final\n"
+           "\t              route information will be stored\n");
+    printf("\t-d INTEGER:   selection of the method to calculate\n"
+           "\t              the heuristic distance\n");
+    printf("\t-w INTEGER:   selection of the method to calculate\n"
+           "\t              the edges weight\n");
+    printf("\t-h:           prints this message and exits\n");
+    void PrintOutDistOptions();
+    exit(0);
+}
+void SetDefaultRoutingArgs(RoutingArguments *args)
+{
+    // Mandatory arguments
+    args->input_file = NULL;
+    args->starting_node = 0;
+    args->ending_node = 0;
+
+    // Optional arguments
+    args->output_file = strdup(DEFAULT_BIN_DIR);
+    args->heuristic_method = 0;
+    args->weight_method = 0;
+}
+
+void ParseRoutingArgs(int argc, char **argv, RoutingArguments *args)
+{
+    argv[0] = argv[2];
+    int c;
+    char *ptr;
+    while ((c = getopt(argc, argv, "i:s:e:o:d:w:h")) != -1)
+        switch (c)
+        {
+            case 'i':
+                args->input_file = strdup(optarg);
+                break;
+
+            case 'o':
+                if (EndsWith("/", optarg))
+                    args->output_file = Concat(optarg, "map.bin");
+                else
+                    args->output_file = Concat(optarg, "/map.bin");
+                break;
+
+            case 's':
+                args->starting_node = strtoul(optarg, &ptr , 10);
+                break;
+
+            case 'e':
+                args->ending_node = strtoul(optarg, &ptr , 10);
+                break;
+
+            case 'h':
+                PrintOutRoutingCLHelp();
+                break;
+
+            case 'd':
+                break;
+
+            case 'w':
+                break;
+
+            case '?':
+                PrintOutRoutingCLUsage();
+                break;
+
+            default:
+                abort();
+        }
+}
+
+void CheckRoutingArgs(RoutingArguments *args)
+{
+    if (args->input_file == NULL)
+        PrintOutRoutingCLUsage();
+    if (args->starting_node == 0)
+        PrintOutRoutingCLUsage();
+    if (args->ending_node == 0)
+        PrintOutRoutingCLUsage();
 }

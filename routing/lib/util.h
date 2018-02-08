@@ -1,9 +1,19 @@
 typedef struct
 {
-  char *input_file;
-  char *output_file;
-  bool fast;
-} Arguments;
+    char *input_file;
+    char *output_file;
+    bool fast;
+} ReaderArguments;
+
+typedef struct
+{
+    char *input_file;
+    char *output_file;
+    unsigned long starting_node;
+    unsigned long ending_node;
+    int heuristic_method;
+    int weight_method;
+} RoutingArguments;
 
 void CopyString(char *target, char *source);
 
@@ -44,12 +54,22 @@ void PrintOutIterationInfo(unsigned int current_iteration, double g, double h);
 void PrintOutResults(unsigned int current_iteration, double g, double h,
                      double AStar_CPU_time);
 
-void PrintOutCLUsage();
+void PrintOutReaderCLUsage();
 
-void PrintOutCLHelp();
+void PrintOutReaderCLHelp();
 
-void SetDefaultArgs(Arguments *args);
+void SetDefaultReaderArgs(ReaderArguments *args);
 
-void ParseArgs(int argc, char **argv, Arguments *args);
+void ParseReaderArgs(int argc, char **argv, ReaderArguments *args);
 
-void CheckArgs(Arguments *args);
+void CheckReaderArgs(ReaderArguments *args);
+
+void PrintOutRoutingCLUsage();
+
+void PrintOutRoutingCLHelp();
+
+void SetDefaultRoutingArgs(RoutingArguments *args);
+
+void ParseRoutingArgs(int argc, char **argv, RoutingArguments *args);
+
+void CheckRoutingArgs(RoutingArguments *args);

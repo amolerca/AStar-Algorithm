@@ -27,27 +27,23 @@
 #include "binary.h"
 
 // Main function
-int main()
+int main(int argc, char **argv)
 {
+    RoutingArguments args;
+    SetDefaultRoutingArgs(&args);
+    ParseRoutingArgs(argc, argv, &args);
+    CheckRoutingArgs(&args);
+
     Node *node;
     unsigned long nnodes;
-    const char BIN_DIR[100] = "bin/map.bin";
-
-    //Timing the program
-    clock_t start, end;
-    double cpu_time_used;
-     
-    start = clock();
-
-    end = clock();
-    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 
     // Read graph
-    node = ReadBin(BIN_DIR, &nnodes);
+    node = ReadBin(args.input_file, &nnodes);
 
     // Catalonia
     //AStar(node, nnodes, 771979683, 429854583);
 
     // Spain
-    AStar(node, nnodes, 240949599, 195977239);
+    //AStar(node, nnodes, 240949599, 195977239);
+    AStar(node, nnodes, args.starting_node, args.ending_node);
 }

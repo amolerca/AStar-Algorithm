@@ -29,10 +29,10 @@
 // Main function
 int main(int argc, char **argv)
 {
-    Arguments args;
-    SetDefaultArgs(&args);
-    ParseArgs(argc, argv, &args);
-    CheckArgs(&args);
+    ReaderArguments args;
+    SetDefaultReaderArgs(&args);
+    ParseReaderArgs(argc, argv, &args);
+    CheckReaderArgs(&args);
 
     Node *node;
     unsigned long nnodes, nways, nedges;
