@@ -472,6 +472,7 @@ void AppendToDynArray(DynamicNodeArray *array, AStarNode *asnode)
                                             (array->alloc_len));
     }
     array->node[array->length] = asnode;
+    asnode->index = array->length;
 
     // Update dynamic array's length
     array->length++;
@@ -482,30 +483,18 @@ void AppendToDynArray(DynamicNodeArray *array, AStarNode *asnode)
 
 void RemoveFromDynArray(DynamicNodeArray *array, AStarNode *asnode)
 {
-    // Remove node from dynamic array
-    unsigned long i, j = 0;
-    bool found = false;
-    for (i = 0; i < array->length; i++)
-    {
-        if (array->node[i]->node->id == asnode->node->id)
-            found = true;
-        else
-        {
-            array->node[j] = array->node[i];
-            j++;
-        }
-    }
-
-    if (!found)
-        ExitError("when removing node from dynamic array. Node to remove not"
-                  " found", 420);
-
     // Update dynamic array's length
     array->length--;
 
+    // Copy last element of the array to the position of the node that we want
+    // to remove
+    array->node[asnode->index] = array->node[array->length];
+
+    // Update index of the node that has been moved
+    array->node[asnode->index]->index = asnode->index;
+
     // Update node's status
     asnode->stat = CLOSE;
-
 }
 
 AStarNode *NodeWithLowestF(DynamicNodeArray *open_list)
@@ -658,6 +647,7 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
     unsigned long i;
     for (i = 0; i < nnodes; i++)
     {
+        asnode[i].index = -1;
         asnode[i].node = &node[i];
         asnode[i].stat = NOT_VISITED;
     }

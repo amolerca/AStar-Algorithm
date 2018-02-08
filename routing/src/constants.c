@@ -41,6 +41,6 @@ const float EARTH_POLAR_RADIUS = 6356.752;
 
 const double PI = 3.141592653589793;
 
-const int DYN_REALLOC_SIZE = 10;
+const int DYN_REALLOC_SIZE = 100;
 
 const int ROUTE_REALLOC_SIZE = 10;

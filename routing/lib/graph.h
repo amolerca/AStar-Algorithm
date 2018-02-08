@@ -21,6 +21,7 @@ struct Node
 struct AStarNode
 {
     Node *node;                 /* Pointer to a node */
+    long index;                 /* OPEN list index */
     unsigned char stat;         /* Node status */
     double g;                   /* Path cost from start to current node */
     double h;                   /* Cost from current node to goal node
