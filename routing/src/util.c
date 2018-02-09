@@ -457,20 +457,22 @@ void PrintOutRoutingCLHelp()
 {
     printf("List of command-line arguments:\n");
     printf(" - Mandatory arguments:\n");
-    printf("\t-i FILE:      path to a suitable input binary or cmap\n"
-           "\t              file.\n");
-    printf("\t-s INTEGER:   latitude and longitude coordinates of\n"
-           "\t              the starting node\n");
-    printf("\t-e INTEGER:   latitude and longitude coordinates of\n"
-           "\t              the ending node\n");
+    printf("\t-i FILE:        path to a suitable input binary or cmap\n"
+           "\t                file.\n");
+    printf("\t-s INTEGER:     id of the starting node\n");
+    printf("\t-s FLOAT,FLOAT: latitude and longitude coordinates of\n"
+           "\t                the starting node\n");
+    printf("\t-e INTEGER:     id of the ending node\n");
+    printf("\t-e FLOAT,FLOAT: latitude and longitude coordinates of\n"
+           "\t                the ending node\n");
     printf(" - Optional arguments:\n");
-    printf("\t-o DIRECTORY: path to the directory where the final\n"
-           "\t              route information will be stored\n");
-    printf("\t-d INTEGER:   selection of the method to calculate\n"
-           "\t              the heuristic distance\n");
-    printf("\t-w INTEGER:   selection of the method to calculate\n"
-           "\t              the edges weight\n");
-    printf("\t-h:           prints this message and exits\n");
+    printf("\t-o DIRECTORY:   path to the directory where the final\n"
+           "\t                route information will be stored\n");
+    printf("\t-d INTEGER:     selection of the method to calculate\n"
+           "\t                the heuristic distance\n");
+    printf("\t-w INTEGER:     selection of the method to calculate\n"
+           "\t                the edges weight\n");
+    printf("\t-h:             prints this message and exits\n");
     void PrintOutDistOptions();
     exit(0);
 }
@@ -478,8 +480,8 @@ void SetDefaultRoutingArgs(RoutingArguments *args)
 {
     // Mandatory arguments
     args->input_file = NULL;
-    args->starting_node = 0;
-    args->ending_node = 0;
+    args->starting_point = 0;
+    args->ending_point = 0;
 
     // Optional arguments
     args->output_file = NULL;
@@ -507,11 +509,11 @@ void ParseRoutingArgs(int argc, char **argv, RoutingArguments *args)
                 break;
 
             case 's':
-                args->starting_node = strtoul(optarg, &ptr , 10);
+                args->starting_point = strdup(optarg);
                 break;
 
             case 'e':
-                args->ending_node = strtoul(optarg, &ptr , 10);
+                args->ending_point = strdup(optarg);
                 break;
 
             case 'h':
@@ -539,8 +541,13 @@ void CheckRoutingArgs(RoutingArguments *args)
 {
     if (args->input_file == NULL)
         PrintOutRoutingCLUsage();
-    if (args->starting_node == 0)
+    if (args->starting_point == 0)
         PrintOutRoutingCLUsage();
-    if (args->ending_node == 0)
+    if (args->ending_point == 0)
         PrintOutRoutingCLUsage();
+}
+
+double QuadranceDistance(double x, double y, double x0, double y0)
+{
+    return pow((x - x0), 2) + pow((y - y0), 2);
 }

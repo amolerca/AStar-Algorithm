@@ -136,6 +136,26 @@ Node *FromIdToNode(unsigned long id, Node *node, unsigned long nnodes)
     return &node[index];
 }
 
+Node *FromCoordinatesToNode(double lat, double lon, Node *node,
+                            unsigned long nnodes)
+{
+    unsigned long i;
+    Node *closest_node = NULL;
+    double current_quadrance, best_quadrance = QUADRANCE_THRESHOLD;
+    for(int i = 0; i< nnodes; i++)
+    {
+        current_quadrance = QuadranceDistance(lat, lon, node[i].lat,
+                                              node[i].lon);
+        if (current_quadrance < best_quadrance)
+        {
+            best_quadrance = current_quadrance;
+            closest_node = &node[i];
+        }
+    }
+
+    return closest_node;
+}
+
 bool CheckNodes(Node *node, unsigned long nnodes)
 {
     unsigned long i;
@@ -552,7 +572,7 @@ AStarNode *NodeWithLowestF(DynamicNodeArray *open_list)
 AStarNode **GetRoute(AStarNode *start_node, AStarNode *goal_node)
 {
     // Let user know what we are doing
-    printf("Getting route from AStar results...\n");
+    printf(" - Getting route from AStar results...\n");
 
     unsigned int route_size = ROUTE_REALLOC_SIZE;
     AStarNode **inverted_route = (AStarNode **) malloc(sizeof(AStarNode *) *
@@ -659,6 +679,46 @@ dist_function SelDistFunction(char query[], unsigned int choice)
         ExitError("wrong user selection", 514);
 
     return chosen_function;
+}
+
+void ParseInputPoint(unsigned long *id, char *point, Node *node,
+                     unsigned long nnodes, char *str)
+{
+    char *ptr;
+    Node *found_node;
+
+    // In case user enters a single point, it will be read as a node ID
+    if (FieldsCounter(point, ",") == 1)
+    {
+        *id = strtoul(point, &ptr , 10);
+        // Verify if node exists
+        found_node = FromIdToNode(*id, node, nnodes);
+        if (found_node == NULL)
+            ExitError("when parsing point. Input node id not found.", 697);
+    }
+
+    // In case
+    else if(FieldsCounter(point, ",") == 2)
+    {
+        double lat_start = atof(GetField(point, ",", 0));
+        double lon_start = atof(GetField(point, ",", 1));
+        found_node = FromCoordinatesToNode(lat_start, lon_start, node,
+                                                    nnodes);
+        if (found_node == NULL)
+            ExitError("when parsing point. No nodes in graph close to input "
+                      "coordinates.", 709);
+        *id = found_node->id;
+    }
+
+    // Otherwise, wrong input
+    else
+        ExitError("when parsing point. Wrong input.", 715);
+
+    // Print out information about the found node
+    printf(" - Found %sing node:\n", str);
+    printf("  - Node id: %lu\n", *id);
+    printf("  - Node latitude: %f\n", found_node->lat);
+    printf("  - Node longitude: %f\n", found_node->lon);
 }
 
 void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
@@ -804,7 +864,8 @@ void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
     // Check for errors
     if (current_node->node->id != goal_node->node->id)
         ExitError("when finishing A* algorithm. OPEN list is empty and no "
-                  "solution was found", 460);
+                  "solution was found. Maybe there is no connection between "
+                  "selected nodes", 460);
 
     // End timing
     end = clock();

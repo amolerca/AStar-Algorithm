@@ -53,6 +53,9 @@ void AddSuccessor(Node *A, Node *B);
 
 Node *FromIdToNode(unsigned long id, Node *node, unsigned long nnodes);
 
+Node *FromCoordinatesToNode(double lat, double lon, Node *node,
+                            unsigned long nnodes);
+
 bool CheckNodes(Node *node, unsigned long nnodes);
 
 char *GetLinkedNodes(Node *node, unsigned long nnodes);
@@ -98,6 +101,9 @@ void PrintSolution(AStarNode **route, AStarNode *goal_node);
 void WriteSolution(AStarNode **route, AStarNode *goal_node, char filename[]);
 
 dist_function SelDistFunction(char query[], unsigned int choice);
+
+void ParseInputPoint(unsigned long *id, char *point, Node *node,
+                     unsigned long nnodes, char *str);
 
 void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
            unsigned long id_goal, unsigned int heuristic_method,
