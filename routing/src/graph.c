@@ -725,19 +725,34 @@ void ParseInputPoint(unsigned long *id, char *point, Node *node,
 void SizeSieve(Node *node, unsigned long nnodes, unsigned short graph_min_size)
 {
     unsigned long i;
-    unsigned short j, open_nodes = 0, closed_nodes = 0;
-    Node **opened_list = (Node *) malloc(sizeof(Node *) * graph_max_size);
-    Node **closed_list = (Node *) malloc(sizeof(Node *) * graph_max_size);
+    unsigned short j;
     SieveNode *sievenode = (SieveNode *) malloc(sizeof(SieveNode *) * nnodes);
     Node *parent;
 
     for (i = 0; i < nnodes; i++)
     {
         sievenode[i].node = node[i];
-        sievenode[i].stat = 1;
+        sievenode[i].stat = 0;
     }
 
-    for (i)
+    for (i = 0; i < nnodes; i++)
+    {
+        // In case sieve has already seen this node, skip it
+        if (sievenode[i].stat != 0)
+            continue;
+
+        unsigned short open_nodes = 0, closed_nodes = 0;
+        Node **opened_list = (Node *) malloc(sizeof(Node *) * graph_min_size);
+        Node **closed_list = (Node *) malloc(sizeof(Node *) * graph_min_size);
+
+        parent = sieve[i].node;
+        for (j = 0; j < parent->nsucc; j++)
+        {
+            if (open_nodes < graph_min_size)
+
+        }
+    }
+
     for (i = 0; i < ??? ; i++)
         if (total_successors < graph_max_size)
             opened_list[open_nodes++] = target->successor[i]->id;
@@ -760,6 +775,7 @@ void SizeSieve(Node *node, unsigned long nnodes, unsigned short graph_min_size)
 
 }
 */
+
 void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
            unsigned long id_goal, unsigned int heuristic_method,
            unsigned int weight_method, char *output_file)

@@ -492,7 +492,6 @@ void SetDefaultRoutingArgs(RoutingArguments *args)
 
 void ParseRoutingArgs(int argc, char **argv, RoutingArguments *args)
 {
-    argv[0] = argv[2];
     int c;
     char *ptr;
     while ((c = getopt(argc, argv, "i:s:e:o:d:w:h")) != -1)
