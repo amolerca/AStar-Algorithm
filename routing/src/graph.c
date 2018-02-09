@@ -722,19 +722,22 @@ void ParseInputPoint(unsigned long *id, char *point, Node *node,
     printf("  - Node longitude: %f\n", found_node->lon);
 }
 
-/*
 void SizeSieve(Node *node, unsigned long nnodes, unsigned short graph_min_size)
 {
     unsigned long i;
     unsigned short j;
-    SieveNode *sievenode = (SieveNode *) malloc(sizeof(SieveNode *) * nnodes);
+    SieveNode *sievenode = (SieveNode *) malloc(sizeof(SieveNode) * nnodes);
     Node *parent, *child;
 
     for (i = 0; i < nnodes; i++)
     {
-        sievenode[i].node = node[i];
+        sievenode[i].node = &node[i];
         sievenode[i].stat = 0;
     }
+
+    unsigned short open_nodes, closed_nodes;
+    Node **opened_list = (Node **) malloc(sizeof(Node *) * graph_min_size);
+    Node **closed_list = (Node **) malloc(sizeof(Node *) * graph_min_size);
 
     for (i = 0; i < nnodes; i++)
     {
@@ -742,44 +745,49 @@ void SizeSieve(Node *node, unsigned long nnodes, unsigned short graph_min_size)
         if (sievenode[i].stat != 0)
             continue;
 
-        unsigned short open_nodes = 0, closed_nodes = 0;
-        Node **opened_list = (Node *) malloc(sizeof(Node *) * graph_min_size);
-        Node **closed_list = (Node *) malloc(sizeof(Node *) * graph_min_size);
+        open_nodes = 0;
+        closed_nodes = 0;
 
-        parent = sievenode[i]->node;
+        parent = sievenode[i].node;
         opened_list[open_nodes++] = parent;
         while(open_nodes > 0 && closed_nodes < graph_min_size)
         {
+            printf("%lu: open list %hu, closed list %hu\n", i, open_nodes, closed_nodes);
             // Pick up a parent and remove it from open list
             parent = opened_list[--open_nodes];
+
+            if (sievenode[i].stat != 0)
+                break;
 
             for (j = 0; j < parent->nsucc; j++)
             {
                 child = parent->successor[i];
 
                 // First, we check if we have already visited the successor
-                if (sievenode[child->index] == 1)
+                if (sievenode[child->index].stat == 1)
                 {
-                    sievenode[i]->stat = 1;
+                    sievenode[i].stat = 1;
                     break;
                 }
 
                 // Otherwise, we include successor to list
                 if (open_nodes < graph_min_size)
-                    opened_list[open_nodes++] = target->successor[i]->id;
+                    opened_list[open_nodes++] = child;
                 else
                 {
-                    sievenode[i]->stat = 2;
+                    sievenode[i].stat = 2;
                     break;
                 }
             }
-        }
 
-        free(opened_list);
-        free(closed_list);
+            // Place parent to closed list
+            closed_list[closed_nodes++] = parent;
+        }
     }
+
+    free(opened_list);
+    free(closed_list);
 }
-*/
 
 void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
            unsigned long id_goal, unsigned int heuristic_method,

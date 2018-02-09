@@ -124,8 +124,6 @@ char *GetField(const char *str, char delimiter[], int field_num)
     for (i = 0; i < field_num; i++)
         fields = SplitFields(NULL, delimiter);
 
-    free(array_ptr);
-
     return fields;
 }
 
@@ -496,9 +494,6 @@ void SetDefaultRoutingArgs(RoutingArguments *args)
 
 void ParseRoutingArgs(int argc, char **argv, RoutingArguments *args)
 {
-    unsigned int i;
-    for (i = 1; i < argc; i++)
-        printf("%s\n", *(argv + i));
     char *ptr, *optarg;
     if (argc > 1)
     {
@@ -508,7 +503,7 @@ void ParseRoutingArgs(int argc, char **argv, RoutingArguments *args)
     else
         PrintOutRoutingCLUsage();
 
-    //unsigned int i;
+    unsigned int i;
     for (i = 1; i < argc; i++)
     {
         if (strcmp(*(argv + i), "-h") == 0)
