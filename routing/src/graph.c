@@ -721,6 +721,37 @@ void ParseInputPoint(unsigned long *id, char *point, Node *node,
     printf("  - Node longitude: %f\n", found_node->lon);
 }
 
+/*
+void SizeSieve(Node *node, unsigned long nnodes, Node *target,
+               unsigned short graph_min_size)
+{
+    unsigned short i, open_nodes = 0, closed_nodes = 0;
+    Node **opened_list = (Node *) malloc(sizeof(Node *) * graph_max_size);
+    Node **closed_list = (Node *) malloc(sizeof(Node *) * graph_max_size);
+    Node *parent;
+
+    for (i = 0; i < target->nsucc; i++)
+        if (total_successors < graph_max_size)
+            opened_list[open_nodes++] = target->successor[i]->id;
+    closed_list[closed_nodes++] = &target;
+
+    while (open_nodes > 0 && closed_nodes < graph_min_size)
+    {
+        parent = opened_list[open_nodes];
+        for (i = 0; i < parent->nsucc; i++)
+        {
+            if parent->
+            if (total_successors < graph_max_size)
+        }
+        opened_list[open_nodes]
+    }
+
+
+    while (minimum_size - total_successors > 0)
+
+
+}
+*/
 void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
            unsigned long id_goal, unsigned int heuristic_method,
            unsigned int weight_method, char *output_file)

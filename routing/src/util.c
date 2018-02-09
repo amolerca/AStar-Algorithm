@@ -446,7 +446,8 @@ void CheckReaderArgs(ReaderArguments *args)
 
 void PrintOutRoutingCLUsage()
 {
-    printf("Usage: /routing.exe -i FILE -s INTEGER -e INTEGER\n");
+    printf("Usage: /routing.exe -i FILE -s INTEGER/FLOAT,FLOAT\n -e "
+           "INTEGER/FLOAT,FLOAT\n");
     printf("Optional arguments:");
     printf(" -o DIRECTORY -d INTEGER -w INTEGER\n");
     printf("Use -h to obtain more information\n");

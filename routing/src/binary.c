@@ -160,7 +160,7 @@ Node *ReadBin(const char bin_dir[], unsigned long *nnodes)
         ExitError("when reading binary file", 72);
 
     // Check if node ids were sorted in map file
-    printf(" Checking nodes...\n");
+    printf(" - Checking nodes...\n");
     if (!CheckNodes(node, *nnodes))
             ExitError("nodes are not sorted in binary file", 58);
 
