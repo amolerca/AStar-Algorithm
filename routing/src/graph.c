@@ -722,15 +722,23 @@ void ParseInputPoint(unsigned long *id, char *point, Node *node,
 }
 
 /*
-void SizeSieve(Node *node, unsigned long nnodes, Node *target,
-               unsigned short graph_min_size)
+void SizeSieve(Node *node, unsigned long nnodes, unsigned short graph_min_size)
 {
-    unsigned short i, open_nodes = 0, closed_nodes = 0;
+    unsigned long i;
+    unsigned short j, open_nodes = 0, closed_nodes = 0;
     Node **opened_list = (Node *) malloc(sizeof(Node *) * graph_max_size);
     Node **closed_list = (Node *) malloc(sizeof(Node *) * graph_max_size);
+    SieveNode *sievenode = (SieveNode *) malloc(sizeof(SieveNode *) * nnodes);
     Node *parent;
 
-    for (i = 0; i < target->nsucc; i++)
+    for (i = 0; i < nnodes; i++)
+    {
+        sievenode[i].node = node[i];
+        sievenode[i].stat = 1;
+    }
+
+    for (i)
+    for (i = 0; i < ??? ; i++)
         if (total_successors < graph_max_size)
             opened_list[open_nodes++] = target->successor[i]->id;
     closed_list[closed_nodes++] = &target;

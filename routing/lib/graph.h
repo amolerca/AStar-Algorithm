@@ -4,6 +4,7 @@
 
 typedef struct Node Node;
 typedef struct AStarNode AStarNode;
+typedef struct SieveNode SieveNode;
 
 struct Node
 {
@@ -27,6 +28,12 @@ struct AStarNode
     double h;                   /* Cost from current node to goal node
                                    predicted by Heuristic function */
     AStarNode *parent;          /* Parent of the (current) node*/
+};
+
+struct SieveNode
+{
+    Node *node;
+    unsigned char stat;
 };
 
 typedef struct
