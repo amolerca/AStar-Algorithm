@@ -48,13 +48,13 @@ int main(int argc, char **argv)
 
     // Sant Joan de Vilatorrada to UAB
     /*
-    double lat_start = 41.76155929999999 , lon_start = 1.797712400000023; //41.38334 |  2.18177
-    double lat_goal = 41.5008327, lon_goal = 2.1072626000000128; //37.38610 | -5.99174
+    double lat_start = 41.76155929999999 , lon_start = 1.797712400000023; //41.76155929999999,1.797712400000023
+    double lat_goal = 41.5008327, lon_goal = 2.1072626000000128; //41.5008327,2.1072626000000128
     */
     /*Barna to Sevilla*/
 
-    //double lat_start = 41.38334 , lon_start =2.18177; //41.38334 |  2.18177
-    //double lat_goal = 37.38610, lon_goal = -5.99174; //37.38610 | -5.99174
+    //double lat_start = 41.38334 , lon_start =2.18177; //41.38334,2.18177
+    //double lat_goal = 37.38610, lon_goal = -5.99174; //37.38610,-5.99174
 
     printf("------------------------------------------------------------\n");
     printf("Locating starting and ending nodes in the graph...\n");
