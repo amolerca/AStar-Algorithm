@@ -40,6 +40,9 @@ int main(int argc, char **argv)
     // Read and check map file data
     node = ReadFile(args.input_file, &nnodes, &nways, &nedges);
 
+    //SizeSieve(Node *node, unsigned long nnodes, unsigned short graph_min_size)
+
+
     // Minimize graph inconsistencies
     if (!args.fast)
         node = GraphEnhancement(node, &nnodes, nways, nedges);

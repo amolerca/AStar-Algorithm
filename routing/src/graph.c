@@ -697,7 +697,8 @@ void ParseInputPoint(unsigned long *id, char *point, Node *node,
             ExitError("when parsing point. Input node id not found.", 697);
     }
 
-    // In case
+    // In case user enters two numbers separated by a comma, they will be read
+    // as node coordinates
     else if(FieldsCounter(point, ",") == 2)
     {
         double lat_start = atof(GetField(point, ",", 0));
@@ -727,7 +728,7 @@ void SizeSieve(Node *node, unsigned long nnodes, unsigned short graph_min_size)
     unsigned long i;
     unsigned short j;
     SieveNode *sievenode = (SieveNode *) malloc(sizeof(SieveNode *) * nnodes);
-    Node *parent;
+    Node *parent, *child;
 
     for (i = 0; i < nnodes; i++)
     {
@@ -745,34 +746,38 @@ void SizeSieve(Node *node, unsigned long nnodes, unsigned short graph_min_size)
         Node **opened_list = (Node *) malloc(sizeof(Node *) * graph_min_size);
         Node **closed_list = (Node *) malloc(sizeof(Node *) * graph_min_size);
 
-        parent = sieve[i].node;
-        for (j = 0; j < parent->nsucc; j++)
+        parent = sievenode[i]->node;
+        opened_list[open_nodes++] = parent;
+        while(open_nodes > 0 && closed_nodes < graph_min_size)
         {
-            if (open_nodes < graph_min_size)
+            // Pick up a parent and remove it from open list
+            parent = opened_list[--open_nodes];
 
+            for (j = 0; j < parent->nsucc; j++)
+            {
+                child = parent->successor[i];
+
+                // First, we check if we have already visited the successor
+                if (sievenode[child->index] == 1)
+                {
+                    sievenode[i]->stat = 1;
+                    break;
+                }
+
+                // Otherwise, we include successor to list
+                if (open_nodes < graph_min_size)
+                    opened_list[open_nodes++] = target->successor[i]->id;
+                else
+                {
+                    sievenode[i]->stat = 2;
+                    break;
+                }
+            }
         }
+
+        free(opened_list);
+        free(closed_list);
     }
-
-    for (i = 0; i < ??? ; i++)
-        if (total_successors < graph_max_size)
-            opened_list[open_nodes++] = target->successor[i]->id;
-    closed_list[closed_nodes++] = &target;
-
-    while (open_nodes > 0 && closed_nodes < graph_min_size)
-    {
-        parent = opened_list[open_nodes];
-        for (i = 0; i < parent->nsucc; i++)
-        {
-            if parent->
-            if (total_successors < graph_max_size)
-        }
-        opened_list[open_nodes]
-    }
-
-
-    while (minimum_size - total_successors > 0)
-
-
 }
 */
 
