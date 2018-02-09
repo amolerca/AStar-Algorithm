@@ -9,15 +9,10 @@ typedef struct
 {
     char *input_file;
     char *output_file;
-    unsigned long starting_node;
-    unsigned long ending_node;
+    char *starting_point;
+    char *ending_point;
     unsigned int heuristic_method;
     unsigned int weight_method;
-
-    double starting_latitude;
-    double starting_longitude;
-    double goal_latitude;
-    double goal_longitude;
 
 } RoutingArguments;
 
@@ -32,6 +27,8 @@ bool EndsWith(const char *suffix, const char *str);
 char *SplitFields(char * str, char const * delims);
 
 int FieldsCounter(const char array[], char delimiter[]);
+
+char *GetField(const char *str, char delimiter[], int field_num);
 
 bool ParseYesNo();
 
@@ -79,3 +76,5 @@ void SetDefaultRoutingArgs(RoutingArguments *args);
 void ParseRoutingArgs(int argc, char **argv, RoutingArguments *args);
 
 void CheckRoutingArgs(RoutingArguments *args);
+
+double QuadranceDistance(double x, double y, double x0, double y0);

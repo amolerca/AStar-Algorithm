@@ -48,3 +48,5 @@ const int ROUTE_REALLOC_SIZE = 10;
 const char DEFAULT_BIN_DIR[100] = "bin/map.bin";
 
 const char DEFAULT_ROUTE_DIR[100] = "routes/path.out";
+
+const double QUADRANCE_THRESHOLD = 1000000;

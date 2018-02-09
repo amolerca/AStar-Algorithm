@@ -26,48 +26,6 @@
 #include "reader.h"
 #include "binary.h"
 
-double Euclidean_distance(double x, double y, double x0, double y0){
-    return (x-x0)*(x-x0) + (y-y0)*(y-y0);
-}
-
-
-unsigned long * FindStartAndGoalNodes( Node * node, unsigned long nnodes, double lat_start, double lon_start, double lat_goal, double lon_goal){
-    double min_norm_start = 10000000000, min_norm_goal = 10000000000, tmp_norm;
-    unsigned long id_start, id_goal;
-    double current_lat, current_lon;
-    double starting_lat, starting_lon, goal_lat, goal_lon;
-    
-    for(int i = 0; i< nnodes; i++)
-    {
-        current_lat = node[i].lat;
-        current_lon = node[i].lon;
-
-        if( ( tmp_norm = Euclidean_distance(current_lat, current_lon, lat_start, lon_start) ) < min_norm_start){
-            id_start = node[i].id;
-            min_norm_start = tmp_norm; 
-            starting_lat = node[i].lat;
-            starting_lon = node[i].lon;
-        }
-
-        if( ( tmp_norm = Euclidean_distance(current_lat, current_lon, lat_goal, lon_goal) ) < min_norm_goal){
-            id_goal = node[i].id;
-            min_norm_goal = tmp_norm; 
-            goal_lat = node[i].lat;
-            goal_lon = node[i].lon;
-        }
-    }
-
-    unsigned long * ids = (unsigned long *) malloc(sizeof(unsigned long) * 2);
-    ids[0] = id_start;
-    ids[1] = id_goal;
-
-    printf("Node start id %lu, latitude %.5lf, longitude %.5lf \n", ids[0], starting_lat, starting_lon);
-    printf("Node goal  id %lu, latitude %.5lf, longitude %.5lf \n", ids[1], goal_lat, goal_lon);
-
-    return ids; 
-}
-
-
 
 // Main function
 int main(int argc, char **argv)
@@ -82,28 +40,30 @@ int main(int argc, char **argv)
 
     // Read graph
     node = ReadBin(args.input_file, &nnodes);
-    
 
-    printf("Finding node start and node goal...\n");
-    //Timing the program
+    // Start timing
     clock_t start, end;
     double cpu_time_used;
-
     start = clock();
-    
+
     // Sant Joan de Vilatorrada to UAB
     /*
     double lat_start = 41.76155929999999 , lon_start = 1.797712400000023; //41.38334 |  2.18177
     double lat_goal = 41.5008327, lon_goal = 2.1072626000000128; //37.38610 | -5.99174
     */
-    
     /*Barna to Sevilla*/
-    double lat_start = 41.38334 , lon_start =2.18177; //41.38334 |  2.18177
-    double lat_goal = 37.38610, lon_goal = -5.99174; //37.38610 | -5.99174
-      
-     
-    unsigned long * ids = FindStartAndGoalNodes(node, nnodes, lat_start,  lon_start,  lat_goal,  lon_goal);
-    
+
+    //double lat_start = 41.38334 , lon_start =2.18177; //41.38334 |  2.18177
+    //double lat_goal = 37.38610, lon_goal = -5.99174; //37.38610 | -5.99174
+
+    printf("------------------------------------------------------------\n");
+    printf("Locating starting and ending nodes in the graph...\n");
+    printf("------------------------------------------------------------\n");
+
+    unsigned long starting_id, ending_id;
+    ParseInputPoint(&starting_id, args.starting_point, node, nnodes, "start");
+    ParseInputPoint(&ending_id, args.ending_point, node, nnodes, "end");
+
     // End timing
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
@@ -121,7 +81,7 @@ int main(int argc, char **argv)
     /*AStar(node, nnodes, args.starting_node, args.ending_node,
           args.heuristic_method, args.weight_method, args.output_file);*/
 
-    AStar(node, nnodes, ids[0], ids[1],
-          args.heuristic_method, args.weight_method, args.output_file);
+    AStar(node, nnodes, starting_id, ending_id, args.heuristic_method,
+          args.weight_method, args.output_file);
 }
 
