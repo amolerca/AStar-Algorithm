@@ -1,6 +1,6 @@
 # AStar assignment - A routing problem
 
-This is an assignment from the Optimisation subject at Master's in modelling for Science and Engineering in the UAB. 
+This is an assignment from the Optimisation subject at Master's in modelling for Science and Engineering in the UAB.
 Professor Lluís Alsedà (http://mat.uab.cat/~alseda/MasterOpt/index.html).
 
 The assignment consists in computing an optimal path (according to distance) from *Basílica de Santa
@@ -30,10 +30,10 @@ Other regular C compilers should work as well but have not been tested yet.
 
 For a graphical representation of the paths via Google Maps, Python 3 need to be installed and the following (additional) packages are required:
    * _requests_
-  
+
 ### Installing on OSX
-  
-  
+
+
 ### Installing on Linux
 
 To install the _requests_ python package do:
@@ -58,5 +58,5 @@ To be continued.
 To be continued.
 
 ## License
-This project is licensed under the GNU License - see the [LICENSE.txt](LICENSE.txt) file for details
+This project is licensed under the GNU License - see the [LICENSE](LICENSE) file for details
 
