@@ -44,7 +44,7 @@ with open(input_file, 'r') as f:
         lons.append(float(fields[3]))
 
 # Add route to map
-gmap.plot(lats, lons, 'cornflowerblue', edge_width=2)
+gmap.plot(lats, lons, 'cornflowerblue', edge_width=6)
 
 # Save map
 gmap.draw(output_file)
