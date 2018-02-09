@@ -64,6 +64,9 @@ int main(int argc, char **argv)
     ParseInputPoint(&starting_id, args.starting_point, node, nnodes, "start");
     ParseInputPoint(&ending_id, args.ending_point, node, nnodes, "end");
 
+    PrintNodeById(starting_id, node, nnodes);
+    PrintNodeById(ending_id, node, nnodes);
+
     // End timing
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
