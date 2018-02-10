@@ -2,7 +2,7 @@
 
 ## Contents
 
-* Solving routing problems 
+* **Routing**: A* Algorithm application to solve routing problems 
 
 ## Authors
 
