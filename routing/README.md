@@ -110,9 +110,135 @@ It will compile 4 executables which are listed and briefly explained below:
    * **routing.exe**: it takes the graph previously parsed by either **bincreator.exe** (_.bin_) or **cmapcreator.exe** (_.cmap_) and uses it to find the shortest route between the two input points.
    * **routeprinter.exe**: it plots the route obtained by **routing.exe** (_.out_) on a map from Google Maps (it requires a proper Python 2.7 environment).
 
-## Test running
+### bincreator.exe
+This program reads a suitable input map file (_.map_) and, from its information, it creates a graph.
+The resulting graph is saved in a binary file (_.bin_).
+To read the map properly, _bincreator.exe_ needs that the input map file satisfies the format rules defined below, in the corresponding section.
+It is executed in the following way:
 
-To be continued.
+```
+bincreator.exe [file] [...]
+```
+
+It requires a mandatory argument `[file]` which is the directory to the input map file.
+Additionally, it accepts the following optional arguments:
+
+   * `[-o directory]` which is the path to the directory where the resulting binary file is going to be saved.
+   * `[-f]` which makes the program to create the graph faster. To achieve this it does not minimize graph inconsistencies and the performance when working with the resulting graph will be lower.
+   * `[-h]` which prints out a brief description of all these arguments.
+
+### cmapcreator.exe
+This program reads a suitable input map file (_.map_) and, from its information, it creates a graph.
+The resulting graph is saved in a compressed binary file (_.cmap_).
+It is much slower than _bincreator.exe_ but the output binary file is much smaller.
+To read the map properly, _cmapcreator.exe_ needs that the input map file satisfies the format rules defined below, in the corresponding section.
+
+It is executed in the following way:
+
+```
+cmapcreator.exe [file] [...]
+```
+
+It requires a mandatory argument `[file]` which is the directory to the input map file.
+
+Additionally, it accepts the following optional arguments:
+
+   * `[-o directory]` which is the path to the directory where the resulting compressed binary file is going to be saved.
+   * `[-f]` which makes the program to create the graph faster. To achieve this it does not minimize graph inconsistencies and the performance when working with the resulting graph will be lower.
+   * `[-h]` which prints out a brief description of all these arguments.
+
+### routing.exe
+This program is the one that performs the AStar Algorithm itself.
+It reads a graph from a suitable binary file, either compressed or not (_.bin_ or _.cmap_), and uses its information to find the shortest route between two of its nodes.
+The starting and ending nodes need to be specified as command-line arguments.
+It is also able to perform the AStar Algorithm by calculating distances between nodes with different approaches.
+
+The program is executed in the following way:
+
+```
+routing.exe [file] [-s id/lat,lon] [-e id/lat,lon] [...]
+```
+
+It requires a mandatory argument `[file]` which is the directory to the input binary file which can be a regular _.bin_ file or a compressed _.cmap_ file.
+Take into account that if a compressed _.cmap_ file is used the execution of the program will take more much time.
+Two more arguments must be included when executing the program:
+   * [-s id/lat,lon] which sets the starting node.
+   * [-s id/lat,lon] which sets the ending node.
+Both nodes can be defined in two different ways.
+First, they can be defined by their id from the graph if a single number is given.
+They can also be defined by entering the latitude and longitude coordinates of a place.
+In this case, the program will search in the graph for the node which is closest to this location.
+Notice that these two values must be written without any white space between them and using only a comma (,) to separate them.
+
+Additionally, _routing.exe_ accepts the following optional arguments:
+
+   * `[-o directory]` which is the path to the directory where the route information is going to be saved.
+   * `[-d number]` which is the selection of the method used to calculate the heuristic distance by the AStar Algorithm.
+   * `[-w number]` which is the selection of the method used to calculate the weight between the edges of the graph.
+   * `[-h]` which prints out a brief description of all these arguments.
+
+## Format rules of compatible map input files
+The two programs that read map files to construct a graph are _bincreator.exe_ and _cmapcreator.exe_.
+They need to work with compatible map input files which have to contain information about the nodes and the ways of the graphs according to some rules.
+Nodes are the points which are used to contruct the paths of the map and the ways contain information about the connectivity between nodes.
+Those map input files which do not fulfill these rules will not be compatible with these programs.
+They are the following:
+   1. Each line of the file contains information about a node or a way.
+   2. Node lines must start with the word `node`.
+   3. Way lines must start with the word `way`.
+   4. Node lines must have the following format: `node|@id|@name|@place|@highway|@route|@ref|@oneway|@maxspeed|node_lat|node_lon`
+   5. The only mandatory parameters are: `@id`, `node_lat` and `node_lon`.
+   6. The program is also able to parse the name of the node if a `@name` is given,
+   7. Way lines must have the following format: `way|@id|@name|@place|@highway|@route|@ref|@oneway|@maxspeed|member nodes|...`
+   8. The only mandatory parameter is `member nodes` which is a list of all the nodes that are sequantially connected.
+   9. If `@oneway` parameter is given, the link between connected nodes will be in a single direction according to the original submitted order.
+
+## Distance functions available
+The _routing.exe_ program is able to calculate distances between nodes with different approaches.
+The user can choose one of the following methods through either command-line arguments or while running the program.
+Below there is a summary of all the methods that are available:
+   1. Haversine
+   2. Spherical law of cosines
+   3. Equirectangular approximation
+   4. Haversine with variable Earth radius
+   5. Spherical law of cosines with variable Earth radius
+   6. Equirectangular approximation with variable Earth radius
+   7. Zero distance (equal to 0.0)
+   8. Uniform distance (equal to 1.0)
+
+## Test running
+A simple test can be run by performing the following steps.
+
+First of all, we need to download a proper map input file.
+You can get a map from Spain [here](http://mat.uab.cat/~alseda/MasterOpt/spain.csv.zip).
+
+Save it into a known folder.
+It is recommended to save it into a folder inside the repository (it is not mandatory but the access to the file will be faster).
+For instance, a good choice is:
+```
+path_to_the_repository/AStar-Algorithm/routing/inputs/spain.csv
+```
+
+Then, you can execute _bincreator.exe_ to read the input map file, create the graph and save it into a binary file.
+```
+bincreator.exe inputs/spain.csv
+```
+Unless it is specified through a command-line argument, the output binary file (_.bin_) will be saved into `bin/` folder.
+
+Afterwards, you can execute _routing.exe_ to calculate the shortest route between two nodes from this map.
+These two nodes correspond to the *Basílica de Santa Maria del Mar* (Plaça de Santa Maria) in Barcelona, `(@id) 240949599`, and to the *Giralda* (Calle Mateos Gago) in Sevilla, `(@id) 195977239`.
+```
+routing.exe bin/map.bin -s 240949599 -e 195977239
+```
+Unless it is specified through a command-line argument, the output route file will be saved as `routes/path.out`.
+
+Finally, we can represent graphically the route on a map from Google Maps by using the last script.
+```
+routeprinter.exe -f routes/path.out
+```
+A plot of the resulting route should be displayed in your default web browser (to see the map an Internet connection is necessary).
+
+![example_route](report/figures/BCNtoMDR.png)
 
 ## References
 
