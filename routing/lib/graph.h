@@ -71,6 +71,9 @@ void CopyNode(Node *original, Node *copy);
 
 void RemoveNode(Node *node);
 
+char *SizeSieve(Node *node, unsigned long nnodes,
+                unsigned short graph_min_size);
+
 Node *CleanGraph(Node *node, char *linked_nodes, unsigned long nnodes,
                  unsigned long n_del, unsigned long nsucc);
 
@@ -111,9 +114,6 @@ dist_function SelDistFunction(char query[], unsigned int choice);
 
 void ParseInputPoint(unsigned long *id, char *point, Node *node,
                      unsigned long nnodes, char *str);
-
-void SizeSieve(Node *node, unsigned long nnodes,
-               unsigned short graph_min_size);
 
 void AStar(Node *node, unsigned long nnodes, unsigned long id_start,
            unsigned long id_goal, unsigned int heuristic_method,
