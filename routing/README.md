@@ -62,7 +62,7 @@ They do not offer a good user experience and their use is recommended only for d
 
 Besides the installation with `Make`, this program includes a Python script which can represent graphically yhe paths on a Google Maps map.
 To run this script a proper Python environment needs to be configured.
-There different ways to get this Python script working. We recommend you two different methods depending on your system architecture.
+There are different ways to get this Python script working. We recommend you two different methods depending on your system architecture.
 
 ### Getting Python libraries on OSX
 
@@ -163,7 +163,7 @@ It requires a mandatory argument `[file]` which is the directory to the input bi
 Take into account that if a compressed _.cmap_ file is used the execution of the program will take more much time.
 Two more arguments must be included when executing the program:
    * [-s id/lat,lon] which sets the starting node.
-   * [-s id/lat,lon] which sets the ending node.
+   * [-e id/lat,lon] which sets the ending node.
 Both nodes can be defined in two different ways.
 First, they can be defined by their id from the graph if a single number is given.
 They can also be defined by entering the latitude and longitude coordinates of a place.
